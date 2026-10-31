@@ -112,7 +112,14 @@ def test_all():
     r = client.get("/api/analytics/crystal-ball")
     assert_test("GET /api/analytics/crystal-ball", r.status_code == 200 and "category_distribution" in r.json())
 
-    # 17. Admin Demo Reset
+    # 17. MongoDB Explorer
+    r = client.get("/api/db/summary")
+    assert_test("GET /api/db/summary", r.status_code == 200 and "collections" in r.json())
+
+    r = client.get("/api/db/collection/ingredients?limit=5")
+    assert_test("GET /api/db/collection/{name}", r.status_code == 200 and r.json()["count_returned"] >= 5)
+
+    # 18. Admin Demo Reset
     r = client.post("/api/admin/reset")
     assert_test("POST /api/admin/reset", r.status_code == 200 and r.json()["status"] == "success")
 

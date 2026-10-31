@@ -209,6 +209,28 @@ class PotionDatabase:
         """Fetches Midnight Curse festival details."""
         return list(self.db.festival_scenario.find({}, {"_id": 0}))
 
+    def get_collections_summary(self):
+        """Returns metadata and counts for all collections."""
+        return {
+            "database_name": DB_NAME,
+            "is_mock": self.is_mock,
+            "connection_type": "MongoDB Atlas" if not self.is_mock else "In-Memory MongoDB (mongomock)",
+            "collections": {
+                "ingredients": self.db.ingredients.count_documents({}),
+                "historical_sales": self.db.historical_sales.count_documents({}),
+                "anomalies": self.db.anomalies.count_documents({}),
+                "festival_scenario": self.db.festival_scenario.count_documents({})
+            }
+        }
+
+    def get_collection_documents(self, collection_name: str, limit: int = 50):
+        """Fetches raw documents from a specific collection."""
+        valid_cols = ["ingredients", "historical_sales", "anomalies", "festival_scenario"]
+        if collection_name not in valid_cols:
+            raise ValueError(f"Collection '{collection_name}' not found. Available: {valid_cols}")
+        cursor = self.db[collection_name].find({}, {"_id": 0}).limit(limit)
+        return list(cursor)
+
     def reset_demo_data(self):
         """Drops and re-seeds all collections to fresh initial demo state."""
         self.db.ingredients.delete_many({})

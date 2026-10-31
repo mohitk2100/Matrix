@@ -289,7 +289,28 @@ def get_crystal_ball_analytics():
     return engine.get_crystal_ball_summary()
 
 # ==========================
-# 9. Admin Demo Reset
+# 9. MongoDB Database Explorer
+# ==========================
+@app.get("/api/db/summary", tags=["MongoDB Explorer"])
+def get_db_summary():
+    """Live status of MongoDB collections and connection info."""
+    return db_instance.get_collections_summary()
+
+@app.get("/api/db/collection/{collection_name}", tags=["MongoDB Explorer"])
+def get_collection_preview(collection_name: str, limit: int = Query(default=20, ge=1, le=100)):
+    """Inspect raw documents inside a specific MongoDB collection."""
+    try:
+        docs = db_instance.get_collection_documents(collection_name, limit=limit)
+        return {
+            "collection": collection_name,
+            "count_returned": len(docs),
+            "documents": docs
+        }
+    except ValueError as e:
+        raise HTTPException(status_code=404, detail=str(e))
+
+# ==========================
+# 10. Admin Demo Reset
 # ==========================
 @app.post("/api/admin/reset", tags=["Admin"])
 def reset_to_demo_state():
