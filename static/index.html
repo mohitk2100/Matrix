@@ -1,2084 +1,1949 @@
 <!DOCTYPE html>
-<html lang="en" class="dark">
+<html lang="en">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>The Skoopy Pantry – Potion Pantry Smart Inventory</title>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>The Skoopy Pantry — Madam Hexley's Potion Pantry</title>
 
-  <!-- Typography: Poppins (Headings), Inter (Body), Roboto Mono (Numbers & Metrics) -->
-  <link rel="preconnect" href="https://fonts.googleapis.com">
-  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Poppins:wght@500;600;700;800&family=Roboto+Mono:wght@400;500;600;700&display=swap" rel="stylesheet">
+<!-- Fonts: Creepster for Spooky Headings, Inter for Body, Roboto Mono for Metrics -->
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Creepster&family=Inter:wght@300;400;500;600;700;800&family=Roboto+Mono:wght@500;600;700&display=swap" rel="stylesheet">
 
-  <!-- Tailwind CSS & Chart.js -->
-  <script src="https://cdn.tailwindcss.com"></script>
-  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-  <!-- Lucide Icons -->
-  <script src="https://unpkg.com/lucide@latest"></script>
+<!-- Chart.js & Lucide Icons -->
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<script src="https://unpkg.com/lucide@latest"></script>
 
-  <style>
-    :root {
-      --bg-dark: #070a13;
-      --sidebar-bg: #0b101d;
-      --card-bg: rgba(15, 22, 38, 0.75);
-      --card-border: rgba(255, 255, 255, 0.08);
-      --pumpkin: #ff7700;
-      --pumpkin-glow: rgba(255, 119, 0, 0.35);
-      --purple: #8b5cf6;
-      --purple-glow: rgba(139, 92, 246, 0.35);
-      --emerald: #10b981;
-      --red: #ef4444;
-      --cyan: #06b6d4;
-    }
+<style>
+:root {
+  --site-primary: #b7df25;
+  --site-secondary: #f47a35;
+  --site-background: #101a14;
+  --site-surface: #14221a;
+  --site-panel: #18261e;
+  --site-border: rgba(183, 223, 37, 0.22);
+  --site-on-primary: #17200b;
+  --site-on-secondary: #1c1008;
+  --site-on-background: #f4f0df;
+  --site-muted: #8fa08e;
+  --site-red: #ef4444;
+  color-scheme: dark;
+}
 
-    * { box-sizing: border-box; }
-    body {
-      font-family: 'Inter', sans-serif;
-      background-color: var(--bg-dark);
-      background-image: 
-        radial-gradient(circle at 15% 10%, rgba(139, 92, 246, 0.12) 0%, transparent 40%),
-        radial-gradient(circle at 85% 15%, rgba(255, 119, 0, 0.1) 0%, transparent 40%),
-        radial-gradient(circle at 50% 90%, rgba(16, 185, 129, 0.08) 0%, transparent 45%),
-        linear-gradient(180deg, #070a13 0%, #05070d 100%);
-      background-attachment: fixed;
-      color: #f1f5f9;
-      min-height: 100vh;
-      overflow-x: hidden;
-    }
+* { box-sizing: border-box; }
+html { scroll-behavior: smooth; }
+body {
+  margin: 0;
+  background: #0c130f;
+  color: var(--site-on-background);
+  font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+  overflow-x: hidden;
+}
 
-    h1, h2, h3, h4, h5, h6, .font-heading {
-      font-family: 'Poppins', sans-serif;
-    }
-    .font-mono {
-      font-family: 'Roboto Mono', monospace;
-    }
+button { font: inherit; cursor: pointer; }
+.font-spooky { font-family: 'Creepster', cursive; letter-spacing: 1.5px; }
+.font-mono { font-family: 'Roboto Mono', monospace; }
 
-    /* Floating Halloween animation effects */
-    @keyframes floatSlow {
-      0%, 100% { transform: translateY(0px) rotate(0deg); }
-      50% { transform: translateY(-8px) rotate(2deg); }
-    }
-    @keyframes floatGhost {
-      0%, 100% { transform: translateY(0px) scale(1); filter: drop-shadow(0 8px 16px rgba(139,92,246,0.3)); }
-      50% { transform: translateY(-10px) scale(1.02); filter: drop-shadow(0 14px 24px rgba(139,92,246,0.5)); }
-    }
-    @keyframes pulseGlow {
-      0%, 100% { box-shadow: 0 0 15px rgba(239,68,68,0.3); }
-      50% { box-shadow: 0 0 35px rgba(239,68,68,0.7); }
-    }
-    @keyframes fadeInSlide {
-      from { opacity: 0; transform: translateY(10px); }
-      to { opacity: 1; transform: translateY(0); }
-    }
+#app {
+  min-height: 100vh;
+  width: 100%;
+  background: radial-gradient(ellipse at 75% 0%, #26391f 0%, #111d16 38%, #0b120e 78%);
+  position: relative;
+}
 
-    .animate-float { animation: floatSlow 4s ease-in-out infinite; }
-    .animate-ghost { animation: floatGhost 5s ease-in-out infinite; }
-    .animate-curse { animation: pulseGlow 2.5s infinite; }
-    .page-fade { animation: fadeInSlide 0.28s cubic-bezier(0.16, 1, 0.3, 1); }
+.decor { position: absolute; pointer-events: none; z-index: 0; }
+.site-shell {
+  width: min(1440px, 100%);
+  margin: auto;
+  padding: 18px clamp(16px, 3vw, 48px) 60px;
+  position: relative;
+  z-index: 1;
+}
 
-    /* Glass Panels & Modern SaaS Cards */
-    .saas-card {
-      background: var(--card-bg);
-      backdrop-filter: blur(16px);
-      -webkit-backdrop-filter: blur(16px);
-      border: 1px solid var(--card-border);
-      border-radius: 16px;
-      transition: all 0.25s cubic-bezier(0.16, 1, 0.3, 1);
-    }
-    .saas-card:hover {
-      border-color: rgba(255, 255, 255, 0.16);
-      box-shadow: 0 10px 30px -10px rgba(0, 0, 0, 0.5);
-    }
-    .saas-card-interactive:hover {
-      transform: translateY(-2px);
-      border-color: rgba(139, 92, 246, 0.4);
-      box-shadow: 0 12px 32px -8px rgba(139, 92, 246, 0.25);
-    }
+/* Midnight Curse banner */
+#curseBanner {
+  display: none;
+  background: linear-gradient(90deg, #7f1d1d, #991b1b, #7f1d1d);
+  border-bottom: 2px solid #ef4444;
+  padding: 10px 20px;
+  text-align: center;
+  position: sticky;
+  top: 0;
+  z-index: 100;
+  box-shadow: 0 0 25px rgba(239, 68, 68, 0.5);
+  animation: pulseGlow 2.5s infinite;
+}
+#curseBanner.active { display: flex; align-items: center; justify-content: space-between; }
+@keyframes pulseGlow {
+  0%, 100% { box-shadow: 0 0 15px rgba(239, 68, 68, 0.4); }
+  50% { box-shadow: 0 0 35px rgba(239, 68, 68, 0.8); }
+}
 
-    /* Buttons */
-    .btn-primary {
-      background: linear-gradient(135deg, #8b5cf6 0%, #7c3aed 100%);
-      color: #fff;
-      font-weight: 600;
-      border-radius: 10px;
-      transition: all 0.2s;
-      box-shadow: 0 4px 14px var(--purple-glow);
-    }
-    .btn-primary:hover {
-      transform: translateY(-1px);
-      box-shadow: 0 6px 20px rgba(139, 92, 246, 0.5);
-      filter: brightness(1.1);
-    }
-    .btn-pumpkin {
-      background: linear-gradient(135deg, #ff7700 0%, #ea580c 100%);
-      color: #fff;
-      font-weight: 600;
-      border-radius: 10px;
-      transition: all 0.2s;
-      box-shadow: 0 4px 14px var(--pumpkin-glow);
-    }
-    .btn-pumpkin:hover {
-      transform: translateY(-1px);
-      box-shadow: 0 6px 20px rgba(255, 119, 0, 0.5);
-      filter: brightness(1.1);
-    }
-    .btn-ghost {
-      background: rgba(255, 255, 255, 0.05);
-      border: 1px solid rgba(255, 255, 255, 0.1);
-      color: #cbd5e1;
-      border-radius: 10px;
-      transition: all 0.2s;
-    }
-    .btn-ghost:hover {
-      background: rgba(255, 255, 255, 0.1);
-      color: #fff;
-    }
+/* Top bar */
+.topbar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 20px;
+  padding: 8px 0 18px;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+}
+.brand { display: flex; align-items: center; gap: 14px; min-width: 0; }
+.brand-mark {
+  width: 48px;
+  height: 48px;
+  display: grid;
+  place-items: center;
+  border: 1px solid rgba(183, 223, 37, 0.45);
+  border-radius: 16px;
+  background: rgba(183, 223, 37, 0.1);
+  box-shadow: 0 0 25px rgba(183, 223, 37, 0.15);
+}
+.brand-name {
+  font-family: 'Creepster', cursive;
+  letter-spacing: 1.5px;
+  font-size: clamp(22px, 2.5vw, 30px);
+  color: #fff;
+  line-height: 1;
+  text-shadow: 0 2px 10px rgba(0,0,0,0.6);
+}
+.brand-sub {
+  color: #aab89e;
+  font-size: 10.5px;
+  margin-top: 4px;
+  letter-spacing: .08em;
+  text-transform: uppercase;
+}
 
-    /* Sidebar Navigation Links */
-    .nav-item {
-      display: flex;
-      align-items: center;
-      gap: 12px;
-      padding: 9px 14px;
-      border-radius: 10px;
-      font-size: 13px;
-      font-weight: 500;
-      color: #94a3b8;
-      cursor: pointer;
-      transition: all 0.18s ease;
-    }
-    .nav-item:hover {
-      background: rgba(255, 255, 255, 0.06);
-      color: #f1f5f9;
-    }
-    .nav-item.active {
-      background: linear-gradient(135deg, rgba(139, 92, 246, 0.2) 0%, rgba(255, 119, 0, 0.1) 100%);
-      color: #fff;
-      font-weight: 600;
-      border: 1px solid rgba(139, 92, 246, 0.35);
-      box-shadow: 0 4px 15px rgba(139, 92, 246, 0.15);
-    }
+.top-actions { display: flex; gap: 10px; align-items: center; }
+.pill-btn {
+  border: 1px solid rgba(255, 255, 255, 0.18);
+  color: #f5f1e5;
+  background: #17231b;
+  border-radius: 999px;
+  padding: 9px 16px;
+  font-size: 12px;
+  font-weight: 700;
+  display: inline-flex;
+  align-items: center;
+  gap: 7px;
+  transition: all .22s ease;
+}
+.pill-btn:hover {
+  transform: translateY(-2px);
+  border-color: var(--site-primary);
+  box-shadow: 0 8px 24px rgba(0,0,0,0.4);
+}
+.pill-btn.orange {
+  background: var(--site-secondary);
+  color: #211207;
+  border-color: transparent;
+  box-shadow: 0 4px 18px rgba(244, 122, 53, 0.4);
+}
+.pill-btn.lime {
+  background: var(--site-primary);
+  color: #17200b;
+  border-color: transparent;
+  box-shadow: 0 4px 18px rgba(183, 223, 37, 0.35);
+}
 
-    /* Progress bar */
-    .meter-track {
-      background: rgba(255, 255, 255, 0.07);
-      border-radius: 999px;
-      overflow: hidden;
-      height: 6px;
-    }
-    .meter-fill {
-      height: 100%;
-      border-radius: 999px;
-      transition: width 0.4s ease-out;
-    }
+/* Layout */
+.layout {
+  display: grid;
+  grid-template-columns: 235px minmax(0, 1fr);
+  gap: 26px;
+  padding-top: 22px;
+}
+.sidebar {
+  border-right: 1px solid rgba(255, 255, 255, 0.1);
+  padding: 4px 18px 0 0;
+}
+.side-label {
+  color: #7b8e75;
+  text-transform: uppercase;
+  letter-spacing: .16em;
+  font-size: 9px;
+  font-weight: 800;
+  margin: 18px 0 8px 10px;
+}
+.nav-item {
+  width: 100%;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  border: 1px solid transparent;
+  border-radius: 12px;
+  padding: 10px 14px;
+  margin: 3px 0;
+  background: transparent;
+  color: #c4cbb9;
+  text-align: left;
+  font-size: 12.5px;
+  font-weight: 600;
+  transition: all .2s;
+}
+.nav-item svg { width: 17px; height: 17px; flex: none; color: #b7df25; }
+.nav-item:hover {
+  background: rgba(255, 255, 255, 0.05);
+  color: white;
+  transform: translateX(3px);
+}
+.nav-item.active {
+  background: linear-gradient(100deg, rgba(183, 223, 37, 0.18), rgba(244, 122, 53, 0.1));
+  border-color: rgba(183, 223, 37, 0.45);
+  color: #fff;
+  box-shadow: inset 3px 0 var(--site-primary), 0 8px 20px rgba(0,0,0,0.25);
+}
 
-    /* Scrollbars */
-    ::-webkit-scrollbar { width: 5px; height: 5px; }
-    ::-webkit-scrollbar-track { background: #070a13; }
-    ::-webkit-scrollbar-thumb { background: #1e293b; border-radius: 4px; }
-    ::-webkit-scrollbar-thumb:hover { background: #ff7700; }
+.main { min-width: 0; }
+.page-head {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-end;
+  gap: 15px;
+  margin: 2px 0 16px;
+}
+.eyebrow {
+  color: var(--site-primary);
+  text-transform: uppercase;
+  font-size: 10px;
+  font-weight: 800;
+  letter-spacing: .18em;
+}
+.page-head h1 {
+  font-size: clamp(24px, 3vw, 34px);
+  margin: 4px 0 4px;
+  letter-spacing: -.03em;
+  font-weight: 800;
+}
+.page-head p { color: #aab7a4; font-size: 12px; margin: 0; }
 
-    /* Interactive Spotlight Tutorial */
-    #tourOverlay {
-      position: fixed;
-      inset: 0;
-      z-index: 9990;
-      pointer-events: none;
-    }
-    #tourOverlay.active {
-      pointer-events: all;
-    }
-    .tour-mask {
-      position: absolute;
-      inset: 0;
-      background: rgba(3, 6, 12, 0.78);
-      backdrop-filter: blur(2px);
-    }
-    .tour-spotlight {
-      position: absolute;
-      border-radius: 16px;
-      box-shadow: 0 0 0 5000px rgba(3, 6, 12, 0.78);
-      border: 2px solid #8b5cf6;
-      transition: all 0.35s cubic-bezier(0.16, 1, 0.3, 1);
-      pointer-events: none;
-    }
-    .tour-card {
-      position: absolute;
-      background: linear-gradient(145deg, #131b2e, #0c1222);
-      border: 1px solid rgba(139, 92, 246, 0.5);
-      border-radius: 16px;
-      padding: 22px;
-      width: 320px;
-      box-shadow: 0 20px 50px rgba(0, 0, 0, 0.8);
-      z-index: 9999;
-    }
+/* Hero section inspired by reference image 1 & 2 */
+.hero {
+  min-height: 270px;
+  border-radius: 24px;
+  overflow: hidden;
+  position: relative;
+  isolation: isolate;
+  background: linear-gradient(90deg, #14251b 0%, #182c20 45%, #111a17 100%);
+  border: 1px solid rgba(183, 223, 37, 0.35);
+  box-shadow: 0 20px 55px rgba(0,0,0,0.45);
+  margin-bottom: 20px;
+}
+.hero-art {
+  position: absolute;
+  inset: 0;
+  z-index: -1;
+  width: 100%;
+  height: 100%;
+}
+.hero-copy {
+  max-width: 580px;
+  padding: 32px clamp(22px, 4vw, 44px);
+  position: relative;
+  z-index: 2;
+}
+.hero-kicker {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  border: 1px solid rgba(183, 223, 37, 0.5);
+  background: rgba(13, 27, 20, 0.85);
+  color: #d4ef85;
+  padding: 6px 12px;
+  border-radius: 999px;
+  font-size: 10px;
+  font-weight: 800;
+  letter-spacing: .08em;
+  text-transform: uppercase;
+}
+.hero h2 {
+  font-family: 'Creepster', cursive;
+  font-size: clamp(34px, 5.5vw, 56px);
+  line-height: 1;
+  letter-spacing: 1px;
+  margin: 14px 0 10px;
+  text-shadow: 0 3px 20px rgba(0,0,0,0.8);
+  color: #ffffff;
+}
+.hero h2 em { color: var(--site-primary); font-style: normal; }
+.hero p {
+  color: #d0d9c9;
+  max-width: 480px;
+  font-size: 13px;
+  line-height: 1.6;
+  margin-bottom: 20px;
+}
+.hero-actions { display: flex; gap: 10px; flex-wrap: wrap; }
+.hero-note {
+  position: absolute;
+  right: 5%;
+  bottom: 16px;
+  color: #d4dfc3;
+  font-size: 10px;
+  letter-spacing: .12em;
+  text-transform: uppercase;
+  z-index: 2;
+}
 
-    /* Custom Toasts */
-    #toast-container {
-      position: fixed;
-      bottom: 24px;
-      right: 24px;
-      z-index: 10000;
-      display: flex;
-      flex-direction: column;
-      gap: 8px;
-    }
-    .toast-msg {
-      background: rgba(13, 20, 36, 0.95);
-      backdrop-filter: blur(12px);
-      border: 1px solid rgba(255, 255, 255, 0.12);
-      padding: 12px 18px;
-      border-radius: 12px;
-      font-size: 13px;
-      font-weight: 500;
-      display: flex;
-      align-items: center;
-      gap: 10px;
-      box-shadow: 0 10px 30px rgba(0, 0, 0, 0.6);
-      animation: fadeInSlide 0.25s ease-out;
-    }
-  </style>
+/* Animations */
+@keyframes float {
+  0%, 100% { transform: translateY(0) rotate(-2deg); }
+  50% { transform: translateY(-12px) rotate(2deg); }
+}
+@keyframes flicker {
+  0%, 100% { opacity: .88; filter: drop-shadow(0 0 14px #ff9b25); }
+  50% { opacity: 1; filter: drop-shadow(0 0 28px #ffb32c); }
+}
+@keyframes drift {
+  from { transform: translateX(-3%); }
+  to { transform: translateX(3%); }
+}
+.pumpkin { animation: float 5s ease-in-out infinite, flicker 3.8s ease-in-out infinite; transform-origin: center; }
+.fog { animation: drift 9s ease-in-out infinite alternate; }
+
+/* Stat Cards */
+.stats {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 12px;
+  margin: 18px 0;
+}
+.stat {
+  background: linear-gradient(145deg, #18281e, #111a15);
+  border: 1px solid rgba(255, 255, 255, 0.11);
+  border-radius: 16px;
+  padding: 16px;
+  min-height: 105px;
+  position: relative;
+  overflow: hidden;
+  transition: all .25s ease;
+}
+.stat:hover {
+  transform: translateY(-3px);
+  border-color: rgba(183, 223, 37, 0.45);
+  box-shadow: 0 12px 28px rgba(0,0,0,0.35);
+}
+.stat small {
+  display: block;
+  color: #a8b5a1;
+  text-transform: uppercase;
+  letter-spacing: .08em;
+  font-size: 9.5px;
+  font-weight: 700;
+}
+.stat strong {
+  display: block;
+  font-family: 'Roboto Mono', monospace;
+  font-size: 28px;
+  margin: 6px 0 2px;
+  color: #fff;
+}
+.stat span { color: #879888; font-size: 10.5px; }
+.stat-icon {
+  position: absolute;
+  right: 14px;
+  top: 14px;
+  width: 34px;
+  height: 34px;
+  border-radius: 11px;
+  display: grid;
+  place-items: center;
+  background: rgba(183, 223, 37, 0.12);
+  color: var(--site-primary);
+}
+.stat-icon svg { width: 18px; height: 18px; }
+
+/* Panel grids */
+.content-grid {
+  display: grid;
+  grid-template-columns: minmax(0, 1.5fr) minmax(280px, .9fr);
+  gap: 15px;
+  margin-top: 15px;
+}
+.panel {
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  border-radius: 18px;
+  background: linear-gradient(145deg, #17241c, #101915);
+  padding: 18px;
+  min-width: 0;
+  position: relative;
+}
+.panel-head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+  margin-bottom: 14px;
+}
+.panel h3 {
+  font-size: 14px;
+  font-weight: 700;
+  margin: 0;
+  letter-spacing: -.01em;
+}
+.panel-sub { color: #8fa08e; font-size: 11px; margin-top: 3px; }
+
+.chart-tabs {
+  display: flex;
+  gap: 4px;
+  background: #0c1511;
+  padding: 4px;
+  border-radius: 999px;
+}
+.chart-tabs button {
+  border: 0;
+  background: transparent;
+  color: #9ba996;
+  padding: 5px 10px;
+  border-radius: 999px;
+  font-size: 10px;
+  font-weight: 600;
+}
+.chart-tabs button.active {
+  background: var(--site-primary);
+  color: #18210c;
+  font-weight: 800;
+}
+
+.chart-wrap { height: 200px; width: 100%; position: relative; }
+
+/* Stock tags */
+.stock-tag {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  padding: 4px 9px;
+  border-radius: 999px;
+  color: #c9ed77;
+  background: rgba(183, 223, 37, 0.14);
+  font-size: 9.5px;
+  font-weight: 800;
+  text-transform: uppercase;
+}
+.stock-tag.low {
+  color: #ffb17e;
+  background: rgba(244, 122, 53, 0.18);
+  border: 1px solid rgba(244, 122, 53, 0.35);
+}
+.stock-tag.critical {
+  color: #fca5a5;
+  background: rgba(239, 68, 68, 0.2);
+  border: 1px solid rgba(239, 68, 68, 0.4);
+}
+
+.quick-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; }
+.quick {
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  background: #0f1914;
+  color: #e7eddf;
+  border-radius: 12px;
+  padding: 12px;
+  text-align: left;
+  transition: all .2s;
+}
+.quick:hover {
+  border-color: var(--site-primary);
+  transform: translateY(-2px);
+  background: #14221a;
+}
+.quick svg {
+  width: 17px;
+  height: 17px;
+  color: var(--site-primary);
+  display: block;
+  margin-bottom: 8px;
+}
+.quick strong { display: block; font-size: 11px; font-weight: 700; }
+.quick span { display: block; color: #899a89; font-size: 9.5px; margin-top: 3px; }
+
+/* Products showcase table */
+.product-row {
+  display: grid;
+  grid-template-columns: 1.5fr .8fr .7fr .8fr;
+  gap: 10px;
+  align-items: center;
+  padding: 12px 0;
+  border-top: 1px solid rgba(255, 255, 255, 0.08);
+  font-size: 12px;
+}
+.product-row:first-of-type { border-top: 0; }
+.product-name { font-weight: 700; color: #fff; }
+.product-meta { color: #8fa08e; font-size: 10px; margin-top: 2px; }
+
+.text-btn {
+  border: 0;
+  color: var(--site-primary);
+  background: transparent;
+  font-size: 11px;
+  font-weight: 700;
+  cursor: pointer;
+  padding: 0;
+}
+.text-btn:hover { text-decoration: underline; }
+
+/* Table styling for dedicated pages */
+.custom-table {
+  width: 100%;
+  border-collapse: collapse;
+  text-align: left;
+  font-size: 12px;
+}
+.custom-table th {
+  padding: 12px 14px;
+  text-transform: uppercase;
+  font-size: 10px;
+  letter-spacing: .08em;
+  color: #8fa08e;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+  font-family: 'Roboto Mono', monospace;
+}
+.custom-table td {
+  padding: 13px 14px;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.06);
+  vertical-align: middle;
+}
+.custom-table tr:hover td {
+  background: rgba(255, 255, 255, 0.03);
+}
+
+/* Modal styling */
+.modal-overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(5, 12, 8, 0.82);
+  backdrop-filter: blur(8px);
+  z-index: 1000;
+  display: none;
+  place-items: center;
+  padding: 20px;
+}
+.modal-overlay.open { display: grid; }
+.modal-box {
+  width: min(480px, 100%);
+  background: #142219;
+  border: 1px solid rgba(183, 223, 37, 0.4);
+  border-radius: 20px;
+  padding: 24px;
+  box-shadow: 0 25px 90px rgba(0,0,0,0.8);
+}
+.modal-box h3 {
+  font-family: 'Creepster', cursive;
+  font-size: 24px;
+  margin: 0 0 6px;
+  color: var(--site-primary);
+  letter-spacing: 1px;
+}
+.modal-box p { font-size: 12px; color: #9cab97; margin: 0 0 18px; }
+
+.form-group { margin-bottom: 14px; }
+.form-group label {
+  display: block;
+  font-size: 11px;
+  color: #aab89e;
+  font-weight: 600;
+  margin-bottom: 5px;
+}
+.form-input {
+  width: 100%;
+  padding: 10px 12px;
+  background: #0c1511;
+  border: 1px solid rgba(255, 255, 255, 0.15);
+  border-radius: 10px;
+  color: #fff;
+  font-size: 12px;
+  outline: none;
+  transition: border .2s;
+}
+.form-input:focus { border-color: var(--site-primary); }
+
+/* Tour Backdrop */
+.tour-backdrop {
+  position: fixed;
+  inset: 0;
+  background: rgba(3, 8, 5, 0.85);
+  display: none;
+  place-items: center;
+  z-index: 2000;
+  padding: 20px;
+}
+.tour-backdrop.show { display: grid; }
+.tour-card {
+  width: min(440px, 100%);
+  border: 1px solid rgba(183, 223, 37, 0.55);
+  background: #142219;
+  border-radius: 20px;
+  padding: 26px;
+  box-shadow: 0 25px 90px rgba(0,0,0,0.85);
+}
+.tour-step {
+  color: var(--site-primary);
+  font-size: 10px;
+  text-transform: uppercase;
+  letter-spacing: .15em;
+  font-weight: 800;
+}
+.tour-card h2 {
+  font-family: 'Creepster', cursive;
+  font-size: 30px;
+  margin: 10px 0 8px;
+  letter-spacing: 1px;
+  color: #fff;
+}
+.tour-card p { color: #c1cdbb; font-size: 12.5px; line-height: 1.65; }
+.tour-actions {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-top: 22px;
+  gap: 8px;
+}
+.tour-progress { display: flex; gap: 5px; }
+.tour-progress i {
+  width: 18px;
+  height: 4px;
+  border-radius: 5px;
+  background: rgba(255, 255, 255, 0.18);
+}
+.tour-progress i.on { background: var(--site-primary); }
+
+/* Toast */
+.toast {
+  position: fixed;
+  bottom: 22px;
+  right: 22px;
+  z-index: 3000;
+  background: #d4ef85;
+  color: #17200b;
+  padding: 12px 18px;
+  border-radius: 12px;
+  font-size: 12px;
+  font-weight: 700;
+  box-shadow: 0 12px 30px rgba(0,0,0,0.5);
+  opacity: 0;
+  transform: translateY(10px);
+  transition: all .25s;
+  pointer-events: none;
+}
+.toast.show { opacity: 1; transform: translateY(0); }
+
+@media(max-width: 1024px) {
+  .layout { grid-template-columns: 200px minmax(0, 1fr); gap: 18px; }
+  .stats { grid-template-columns: repeat(2, 1fr); }
+  .content-grid { grid-template-columns: 1fr; }
+}
+@media(max-width: 768px) {
+  .layout { display: block; }
+  .sidebar {
+    border: 0;
+    padding: 0 0 14px;
+    display: flex;
+    gap: 6px;
+    overflow-x: auto;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+  }
+  .side-label { display: none; }
+  .nav-item { width: auto; flex: none; padding: 9px 12px; white-space: nowrap; font-size: 11px; }
+  .hero-copy { padding: 25px 20px; }
+  .hero-note { display: none; }
+  .stats { gap: 8px; }
+  .top-actions .pill-btn:first-child { display: none; }
+}
+</style>
 </head>
-<body class="flex flex-col min-h-screen">
+<body>
 
-  <!-- ============================================================== -->
-  <!-- 🌕 MIDNIGHT CURSE ALERT BANNER -->
-  <!-- ============================================================== -->
-  <div id="curseBanner" class="hidden animate-curse bg-gradient-to-r from-red-950 via-red-900 to-red-950 py-2.5 px-4 text-center border-b border-red-500/50 sticky top-0 z-50">
-    <div class="max-w-7xl mx-auto flex items-center justify-between flex-wrap gap-2 text-xs sm:text-sm">
-      <div class="flex items-center gap-2.5 font-bold text-red-100">
-        <i data-lucide="moon" class="w-4 h-4 text-red-300"></i>
-        <span>MIDNIGHT CURSE ACTIVE: Full Moon Festival has tripled (3.0×) demand on Moonflower, Phoenix Feather & Enchanted Mushroom!</span>
-      </div>
-      <button onclick="toggleCurse()" class="px-3 py-1 rounded-full text-xs font-semibold bg-black/40 hover:bg-black/60 text-red-300 border border-red-400/30 transition">
-        Lift Curse
-      </button>
+<div id="app">
+  
+  <!-- Corner Spiderweb Accent -->
+  <svg class="decor" style="top:75px;left:-45px;width:240px" viewBox="0 0 220 160" aria-hidden="true">
+    <path d="M-10 130 Q65 30 130 5 M15 160 Q90 60 175 20" fill="none" stroke="#b7df25" stroke-width="1.5" opacity=".2"/>
+    <path d="M140 15 Q165 45 190 20" fill="none" stroke="#b7df25" opacity=".18"/>
+  </svg>
+
+  <!-- Midnight Curse Active Alert Banner -->
+  <div id="curseBanner">
+    <div style="display:flex;align-items:center;gap:10px;">
+      <i data-lucide="moon" style="width:18px;height:18px;color:#fca5a5;"></i>
+      <strong style="color:#fee2e2;font-size:13px;">MIDNIGHT CURSE ACTIVE: Full Moon Festival has tripled (3.0×) demand for Moonflower, Phoenix Feather & Mushrooms!</strong>
     </div>
+    <button onclick="toggleCurse()" class="pill-btn" style="padding:5px 12px;font-size:11px;background:#450a0a;border-color:#ef4444;color:#fee2e2;">Lift Curse ✕</button>
   </div>
 
-  <!-- ============================================================== -->
-  <!-- APP SHELL: SIDEBAR + MAIN CONTENT -->
-  <!-- ============================================================== -->
-  <div class="flex flex-1 relative">
-
-    <!-- ─────────────────────────────────────────── -->
-    <!-- 1. COLLAPSIBLE SIDEBAR -->
-    <!-- ─────────────────────────────────────────── -->
-    <aside id="sidebar" class="w-64 bg-[#090e1c] border-r border-white/5 flex flex-col shrink-0 transition-all duration-300 z-30 fixed lg:static inset-y-0 left-0 -translate-x-full lg:translate-x-0">
-      
-      <!-- Logo Header -->
-      <div class="h-20 px-5 flex items-center justify-between border-b border-white/5">
-        <div class="flex items-center gap-3">
-          <!-- Custom SVG Ghost Icon -->
-          <div class="w-10 h-10 rounded-xl bg-gradient-to-br from-purple-500/20 to-orange-500/20 border border-purple-500/30 flex items-center justify-center text-purple-400">
-            <svg class="w-6 h-6 animate-ghost" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-              <path d="M9 10h.01M15 10h.01M12 2a8 8 0 0 0-8 8v12l3-3 2.5 2.5L12 19l2.5 2.5L17 19l3 3V10a8 8 0 0 0-8-8z"/>
-            </svg>
-          </div>
-          <div>
-            <div class="font-heading font-extrabold text-base tracking-tight bg-gradient-to-r from-orange-400 via-purple-300 to-cyan-300 bg-clip-text text-transparent">
-              The Skoopy Pantry
-            </div>
-            <div class="text-[10px] text-slate-500 font-medium">Potion Pantry AI v1.2</div>
-          </div>
+  <div class="site-shell">
+    
+    <!-- Header Topbar -->
+    <header class="topbar">
+      <div class="brand">
+        <div class="brand-mark">
+          <svg viewBox="0 0 40 40" width="28" height="28" fill="none" aria-hidden="true">
+            <path d="M20 5c-7 0-12 6-12 14v9c0 3 3 5 6 3l6-4 6 4c3 2 6 0 6-3v-9C32 11 27 5 20 5Z" stroke="#d9f18b" stroke-width="2.2"/>
+            <circle cx="16" cy="17" r="2" fill="#d9f18b"/>
+            <circle cx="24" cy="17" r="2" fill="#d9f18b"/>
+            <path d="M16 23q4 4 8 0" stroke="#f47a35" stroke-width="2" stroke-linecap="round"/>
+          </svg>
         </div>
+        <div>
+          <div class="brand-name">The Skoopy Pantry</div>
+          <div class="brand-sub">MADAM HEXLEY'S HALLOWEEN POTION PANTRY · HEXLEY-001</div>
+        </div>
+      </div>
 
-        <button onclick="toggleSidebar()" class="lg:hidden text-slate-400 hover:text-white p-1">
-          <i data-lucide="x" class="w-5 h-5"></i>
+      <div class="top-actions">
+        <button class="pill-btn orange" id="curseBtn" onclick="toggleCurse()">
+          <i data-lucide="moon" style="width:14px;height:14px;"></i>
+          <span id="curseBtnText">Midnight Curse (3×)</span>
         </button>
-      </div>
-
-      <!-- Navigation Links Container -->
-      <div class="flex-1 overflow-y-auto px-3 py-4 space-y-6">
-        
-        <!-- Group: Main -->
-        <div>
-          <div class="px-3 text-[10px] font-bold uppercase tracking-wider text-slate-500 mb-2 font-mono">
-            Main
-          </div>
-          <div class="space-y-1">
-            <div onclick="navigateTo('overview')" id="nav-overview" class="nav-item active">
-              <i data-lucide="layout-dashboard" class="w-4 h-4"></i>
-              <span>Overview</span>
-            </div>
-            <div onclick="navigateTo('inventory')" id="nav-inventory" class="nav-item">
-              <i data-lucide="package" class="w-4 h-4"></i>
-              <span>Inventory</span>
-            </div>
-            <div onclick="navigateTo('sales')" id="nav-sales" class="nav-item">
-              <i data-lucide="shopping-cart" class="w-4 h-4"></i>
-              <span>Sales</span>
-            </div>
-            <div onclick="navigateTo('forecast')" id="nav-forecast" class="nav-item">
-              <i data-lucide="trending-up" class="w-4 h-4"></i>
-              <span>Demand Forecast</span>
-            </div>
-            <div onclick="navigateTo('restock')" id="nav-restock" class="nav-item">
-              <i data-lucide="sparkles" class="w-4 h-4"></i>
-              <span>Restock Spell</span>
-            </div>
-            <div onclick="navigateTo('anomalies')" id="nav-anomalies" class="nav-item">
-              <i data-lucide="shield-alert" class="w-4 h-4"></i>
-              <span>Anomaly Detection</span>
-            </div>
-            <div onclick="navigateTo('analytics')" id="nav-analytics" class="nav-item">
-              <i data-lucide="bar-chart-3" class="w-4 h-4"></i>
-              <span>Analytics & Reports</span>
-            </div>
-          </div>
-        </div>
-
-        <!-- Group: Management -->
-        <div>
-          <div class="px-3 text-[10px] font-bold uppercase tracking-wider text-slate-500 mb-2 font-mono">
-            Management
-          </div>
-          <div class="space-y-1">
-            <div onclick="navigateTo('categories')" id="nav-categories" class="nav-item">
-              <i data-lucide="tags" class="w-4 h-4"></i>
-              <span>Categories</span>
-            </div>
-            <div onclick="navigateTo('suppliers')" id="nav-suppliers" class="nav-item">
-              <i data-lucide="truck" class="w-4 h-4"></i>
-              <span>Suppliers</span>
-            </div>
-            <div onclick="navigateTo('history')" id="nav-history" class="nav-item">
-              <i data-lucide="history" class="w-4 h-4"></i>
-              <span>Stock History</span>
-            </div>
-          </div>
-        </div>
-
-        <!-- Group: Other -->
-        <div>
-          <div class="px-3 text-[10px] font-bold uppercase tracking-wider text-slate-500 mb-2 font-mono">
-            Other
-          </div>
-          <div class="space-y-1">
-            <div onclick="navigateTo('about')" id="nav-about" class="nav-item">
-              <i data-lucide="book-open" class="w-4 h-4"></i>
-              <span>About & Problem</span>
-            </div>
-            <div onclick="navigateTo('settings')" id="nav-settings" class="nav-item">
-              <i data-lucide="database" class="w-4 h-4"></i>
-              <span>MongoDB Explorer</span>
-            </div>
-          </div>
-        </div>
-
-      </div>
-
-      <!-- Bottom Card: Tour Launcher & Live Status -->
-      <div class="p-4 border-t border-white/5 space-y-3">
-        <button onclick="startInteractiveTour()" class="w-full btn-pumpkin py-2 text-xs flex items-center justify-center gap-2">
-          <i data-lucide="compass" class="w-4 h-4"></i>
+        <button class="pill-btn lime" id="tourBtn" onclick="openTour()">
+          <i data-lucide="compass" style="width:14px;height:14px;"></i>
           <span>Take a Tour</span>
         </button>
-        <div class="flex items-center justify-between text-[11px] text-slate-400 px-1">
-          <div class="flex items-center gap-2">
-            <span class="w-2 h-2 rounded-full bg-emerald-400 animate-pulse"></span>
-            <span>MongoDB Connected</span>
-          </div>
-          <span class="font-mono text-[10px] text-slate-500">Atlas Live</span>
-        </div>
       </div>
+    </header>
 
-    </aside>
-
-    <!-- ─────────────────────────────────────────── -->
-    <!-- 2. MAIN WORKSPACE CONTENT -->
-    <!-- ─────────────────────────────────────────── -->
-    <div class="flex-1 flex flex-col min-w-0">
+    <!-- Layout: Sidebar + Main Content -->
+    <div class="layout">
       
-      <!-- Top Workspace Control Bar -->
-      <header class="h-20 px-6 border-b border-white/5 bg-[#070a13]/80 backdrop-blur-md sticky top-0 z-20 flex items-center justify-between gap-4">
-        
-        <div class="flex items-center gap-3">
-          <button onclick="toggleSidebar()" class="lg:hidden p-2 rounded-lg bg-white/5 text-slate-300">
-            <i data-lucide="menu" class="w-5 h-5"></i>
-          </button>
-          <div>
-            <h2 id="pageTitle" class="font-heading font-bold text-lg text-white">Dashboard Overview</h2>
-            <p id="pageSubtitle" class="text-xs text-slate-400">Real-time potion inventory monitoring & forecasting</p>
-          </div>
-        </div>
+      <!-- Collapsible / Organized Sidebar -->
+      <aside class="sidebar" aria-label="Main navigation">
+        <div class="side-label">Main</div>
+        <button class="nav-item active" onclick="switchPage('overview')" id="nav-overview">
+          <i data-lucide="layout-dashboard"></i>Overview
+        </button>
+        <button class="nav-item" onclick="switchPage('inventory')" id="nav-inventory">
+          <i data-lucide="package"></i>Inventory
+        </button>
+        <button class="nav-item" onclick="switchPage('sales')" id="nav-sales">
+          <i data-lucide="shopping-cart"></i>Sales Ledger
+        </button>
+        <button class="nav-item" onclick="switchPage('forecast')" id="nav-forecast">
+          <i data-lucide="trending-up"></i>Demand Forecast
+        </button>
+        <button class="nav-item" onclick="switchPage('restock')" id="nav-restock">
+          <i data-lucide="sparkles"></i>Restock Spell
+        </button>
+        <button class="nav-item" onclick="switchPage('anomaly')" id="nav-anomaly">
+          <i data-lucide="shield-alert"></i>Anomaly Detection
+        </button>
+        <button class="nav-item" onclick="switchPage('analytics')" id="nav-analytics">
+          <i data-lucide="bar-chart-3"></i>Analytics & Reports
+        </button>
 
-        <!-- Top Right Action Cluster -->
-        <div class="flex items-center gap-3">
-          <!-- Midnight Curse Quick Trigger -->
-          <button id="curseNavBtn" onclick="toggleCurse()" class="px-3.5 py-2 rounded-xl text-xs font-semibold flex items-center gap-2 border transition bg-purple-950/40 border-purple-500/30 hover:border-orange-500/50">
-            <i data-lucide="moon" class="w-4 h-4 text-purple-300"></i>
-            <span id="curseNavText" class="hidden sm:inline">Midnight Curse (3×)</span>
-          </button>
+        <div class="side-label">Management</div>
+        <button class="nav-item" onclick="switchPage('categories')" id="nav-categories">
+          <i data-lucide="tags"></i>Categories
+        </button>
+        <button class="nav-item" onclick="switchPage('suppliers')" id="nav-suppliers">
+          <i data-lucide="truck"></i>Suppliers
+        </button>
+        <button class="nav-item" onclick="switchPage('history')" id="nav-history">
+          <i data-lucide="history"></i>Stock History
+        </button>
 
-          <!-- Quick Sale Trigger Modal -->
-          <button onclick="openRecordSaleModal()" class="btn-primary px-3.5 py-2 text-xs flex items-center gap-2">
-            <i data-lucide="plus-circle" class="w-4 h-4"></i>
-            <span>Record Sale</span>
-          </button>
+        <div class="side-label">Other</div>
+        <button class="nav-item" onclick="switchPage('about')" id="nav-about">
+          <i data-lucide="book-open"></i>About & Problem
+        </button>
+      </aside>
 
-          <!-- Quick Restock Trigger Modal -->
-          <button onclick="openRestockModal()" class="btn-ghost px-3.5 py-2 text-xs flex items-center gap-2">
-            <i data-lucide="truck" class="w-4 h-4"></i>
-            <span class="hidden sm:inline">Restock</span>
-          </button>
-        </div>
-
-      </header>
-
-      <!-- Main Scrollable Body -->
-      <main class="flex-1 p-6 space-y-6 overflow-y-auto">
+      <!-- Main Dynamic Content Container -->
+      <main class="main" id="mainContent">
 
         <!-- ======================================================== -->
-        <!-- PAGE 1: OVERVIEW HOMEPAGE -->
+        <!-- VIEW: OVERVIEW -->
         <!-- ======================================================== -->
-        <div id="page-overview" class="page-view space-y-6">
+        <section id="view-overview" class="view-panel">
           
-          <!-- 4 Main KPI Stat Cards -->
-          <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
-            
-            <div class="saas-card p-5 flex items-center justify-between">
-              <div>
-                <div class="text-xs font-semibold uppercase tracking-wider text-slate-400">Total Products</div>
-                <div id="kpiProducts" class="font-mono text-3xl font-bold text-white mt-1">10</div>
-                <div class="text-[11px] text-slate-400 mt-1">Catalog items tracked</div>
-              </div>
-              <div class="w-12 h-12 rounded-xl bg-purple-500/10 border border-purple-500/20 flex items-center justify-center text-purple-400">
-                <i data-lucide="package" class="w-6 h-6"></i>
-              </div>
+          <div class="page-head">
+            <div>
+              <div class="eyebrow">The apothecary is awake</div>
+              <h1>Good evening, Madam Hexley.</h1>
+              <p>Your smart pantry is live. Keep every potion ingredient ready for the Halloween rush.</p>
             </div>
-
-            <div class="saas-card p-5 flex items-center justify-between">
-              <div>
-                <div class="text-xs font-semibold uppercase tracking-wider text-slate-400">Available Stock</div>
-                <div id="kpiStockUnits" class="font-mono text-3xl font-bold text-cyan-400 mt-1">—</div>
-                <div class="text-[11px] text-slate-400 mt-1">Total units on shelf</div>
-              </div>
-              <div class="w-12 h-12 rounded-xl bg-cyan-500/10 border border-cyan-500/20 flex items-center justify-center text-cyan-400">
-                <i data-lucide="boxes" class="w-6 h-6"></i>
-              </div>
-            </div>
-
-            <div class="saas-card p-5 flex items-center justify-between">
-              <div>
-                <div class="text-xs font-semibold uppercase tracking-wider text-slate-400">Today's Transactions</div>
-                <div id="kpiSalesVolume" class="font-mono text-3xl font-bold text-emerald-400 mt-1">—</div>
-                <div class="text-[11px] text-slate-400 mt-1">Historical logs active</div>
-              </div>
-              <div class="w-12 h-12 rounded-xl bg-emerald-500/10 border border-emerald-500/20 flex items-center justify-center text-emerald-400">
-                <i data-lucide="trending-up" class="w-6 h-6"></i>
-              </div>
-            </div>
-
-            <div class="saas-card p-5 flex items-center justify-between">
-              <div>
-                <div class="text-xs font-semibold uppercase tracking-wider text-slate-400">Critical / Low Stock</div>
-                <div id="kpiCriticalStock" class="font-mono text-3xl font-bold text-red-400 mt-1">0</div>
-                <div class="text-[11px] text-slate-400 mt-1">At or below safety stock</div>
-              </div>
-              <div class="w-12 h-12 rounded-xl bg-red-500/10 border border-red-500/20 flex items-center justify-center text-red-400">
-                <i data-lucide="alert-triangle" class="w-6 h-6"></i>
-              </div>
-            </div>
-
+            <button class="pill-btn lime" onclick="openSaleModal()">＋ Record Sale</button>
           </div>
 
-          <!-- Mid Section: Sales Analytics Chart & Inventory Health -->
-          <div class="grid grid-cols-1 lg:grid-cols-12 gap-6">
-            
-            <!-- Left: Sales Chart with Toggle -->
-            <div class="lg:col-span-8 saas-card p-5 space-y-4">
-              <div class="flex items-center justify-between flex-wrap gap-2">
-                <div>
-                  <h3 class="font-heading font-bold text-sm text-white">Sales & Demand Trajectory</h3>
-                  <p class="text-xs text-slate-400">Daily transaction volume and coven weekend surges</p>
-                </div>
-                <!-- Timeframe Pills -->
-                <div class="flex items-center gap-1 p-1 rounded-xl bg-black/40 border border-white/5 text-xs">
-                  <button onclick="setSalesChartTimeframe('daily')" id="btn-tf-daily" class="px-2.5 py-1 rounded-lg font-medium bg-purple-600 text-white">Daily</button>
-                  <button onclick="setSalesChartTimeframe('weekly')" id="btn-tf-weekly" class="px-2.5 py-1 rounded-lg font-medium text-slate-400 hover:text-white">Weekly DOW</button>
-                  <button onclick="setSalesChartTimeframe('monthly')" id="btn-tf-monthly" class="px-2.5 py-1 rounded-lg font-medium text-slate-400 hover:text-white">180d History</button>
-                </div>
-              </div>
+          <!-- Hero Halloween Artwork (Inspired by Dribbble Reference) -->
+          <section class="hero">
+            <svg class="hero-art" viewBox="0 0 1100 340" preserveAspectRatio="xMidYMid slice" aria-hidden="true">
+              <defs>
+                <linearGradient id="sky" x1="0" y1="0" x2="1" y2="1">
+                  <stop stop-color="#263d25"/>
+                  <stop offset=".58" stop-color="#12231b"/>
+                  <stop offset="1" stop-color="#0b1511"/>
+                </linearGradient>
+                <radialGradient id="moon">
+                  <stop stop-color="#fff7c8" stop-opacity=".95"/>
+                  <stop offset="1" stop-color="#d8e7a0" stop-opacity="0"/>
+                </radialGradient>
+                <linearGradient id="mist">
+                  <stop stop-color="#a6c47a" stop-opacity="0"/>
+                  <stop offset=".5" stop-color="#a6c47a" stop-opacity=".15"/>
+                  <stop offset="1" stop-color="#a6c47a" stop-opacity="0"/>
+                </linearGradient>
+              </defs>
 
-              <div class="h-64">
-                <canvas id="overviewSalesChart"></canvas>
+              <rect width="1100" height="340" fill="url(#sky)"/>
+              <circle cx="850" cy="85" r="105" fill="url(#moon)"/>
+              <circle cx="850" cy="85" r="43" fill="#e9efc8" opacity=".82"/>
+
+              <!-- Mountain & Tree Silhouettes -->
+              <g fill="#0a1710" opacity=".95">
+                <path d="M0 225 60 150l40 60 55-105 70 120 55-76 55 85 60-100 80 100v106H0Z"/>
+                <path d="M500 220 560 130l40 55 45-105 65 135 50-65 70 85 60-110 70 105 65-65 75 100v75H500Z"/>
+              </g>
+
+              <!-- Haunted House -->
+              <g fill="#101d15" stroke="#31472c" stroke-width="3">
+                <path d="M160 236V130l55-43 55 43v106Z"/>
+                <path d="M148 132 215 72l67 60Z"/>
+                <path d="M184 155h18v30h-18zm40 0h18v30h-18z" fill="#d9a34c" opacity=".8"/>
+                <path d="M192 203h46v33h-46Z"/>
+              </g>
+
+              <!-- Spooky Gnarled Trees -->
+              <g fill="none" stroke="#253a21" stroke-width="8" stroke-linecap="round">
+                <path d="M80 270q20-100 0-180m0 90q-42-42-60-38m62 13q35-45 62-48M1020 280q-22-105 0-190m0 75q-45-48-68-45m70 14q35-50 66-55"/>
+              </g>
+
+              <!-- Drifting Fog -->
+              <g class="fog" fill="url(#mist)">
+                <ellipse cx="390" cy="275" rx="370" ry="34"/>
+                <ellipse cx="880" cy="245" rx="330" ry="26"/>
+              </g>
+
+              <!-- Glowing Flickering Jack-o'-Lantern -->
+              <g class="pumpkin" transform="translate(820 210)">
+                <path d="M-7-50q-8-22 10-35q13 15 4 36" fill="#567b2c" stroke="#243e1b" stroke-width="4"/>
+                <path d="M0-48c-44-32-93 4-94 53-1 45 36 70 94 67 58 3 95-22 94-67C93-44 44-80 0-48Z" fill="#e97822" stroke="#9f4519" stroke-width="6"/>
+                <path d="M0-42c-23 4-26 97 0 112 26-15 23-108 0-112Zm-37 8c-22 12-31 76-8 102m82-102c22 12 31 76 8 102" fill="none" stroke="#ffad48" stroke-width="7" opacity=".5"/>
+                <path d="m-51-5 31 9-21 23 2-32m60 0 31-9-12 33-19-24M-17 42q18 20 37 0" fill="#ffdc63" stroke="#ffb52d" stroke-width="4" stroke-linejoin="round"/>
+              </g>
+
+              <!-- Twinkling Starlight -->
+              <g fill="#e8f1c4" opacity=".8">
+                <circle cx="570" cy="70" r="2.5"/>
+                <circle cx="640" cy="125" r="1.5"/>
+                <circle cx="1000" cy="50" r="2"/>
+                <circle cx="420" cy="120" r="1.5"/>
+              </g>
+            </svg>
+
+            <div class="hero-copy">
+              <div class="hero-kicker">
+                <span style="display:inline-block;width:7px;height:7px;border-radius:50%;background:#b7df25;box-shadow:0 0 10px #b7df25"></span>
+                Smart Inventory · AI Demand Prophecy
+              </div>
+              <h2>Never let the <em>magic</em> run out.</h2>
+              <p>
+                Madam Hexley's apothecary runs on rare ingredients and perfect timing. Track shelf depletion, uncover consumption spikes and know what to restock before the cauldron runs dry.
+              </p>
+              <div class="hero-actions">
+                <button class="pill-btn lime" onclick="switchPage('inventory')">Explore inventory →</button>
+                <button class="pill-btn" onclick="switchPage('about')">Discover the story</button>
               </div>
             </div>
+            <div class="hero-note">Atlas Connected · Seasonal Surge Ready</div>
+          </section>
 
-            <!-- Right: Inventory Health Breakdown -->
-            <div class="lg:col-span-4 saas-card p-5 space-y-4">
-              <div class="flex items-center justify-between">
-                <h3 class="font-heading font-bold text-sm text-white">Inventory Health</h3>
-                <span id="healthOverallBadge" class="text-[10px] font-mono font-bold px-2 py-0.5 rounded bg-emerald-500/20 text-emerald-400 border border-emerald-500/30">
-                  HEALTHY
-                </span>
+          <!-- 4 Main KPI Cards -->
+          <section class="stats">
+            <article class="stat">
+              <div class="stat-icon"><i data-lucide="package"></i></div>
+              <small>Tracked Ingredients</small>
+              <strong id="statTotalItems">10</strong>
+              <span>Catalog items monitored</span>
+            </article>
+
+            <article class="stat">
+              <div class="stat-icon"><i data-lucide="boxes"></i></div>
+              <small>Available Stock</small>
+              <strong id="statTotalStock">—</strong>
+              <span>Live units on shelves</span>
+            </article>
+
+            <article class="stat">
+              <div class="stat-icon"><i data-lucide="shopping-cart"></i></div>
+              <small>Sales Recorded</small>
+              <strong id="statSalesLogged">—</strong>
+              <span>Historical purchases</span>
+            </article>
+
+            <article class="stat">
+              <div class="stat-icon" style="color:#f47a35;background:rgba(244,122,53,0.15)">
+                <i data-lucide="alert-triangle"></i>
+              </div>
+              <small>Low / Critical Stock</small>
+              <strong id="statCriticalCount" style="color:#f47a35">—</strong>
+              <span>Below safety thresholds</span>
+            </article>
+          </section>
+
+          <!-- Chart & Health Row -->
+          <section class="content-grid">
+            <article class="panel">
+              <div class="panel-head">
+                <div>
+                  <h3>Sales & Demand Trajectory</h3>
+                  <div class="panel-sub">Volume curves across daily, weekly and 180-day history</div>
+                </div>
+                <div class="chart-tabs">
+                  <button class="active" onclick="setTimeframe('daily', this)">Daily</button>
+                  <button onclick="setTimeframe('weekly', this)">Weekly DOW</button>
+                  <button onclick="setTimeframe('monthly', this)">180d History</button>
+                </div>
+              </div>
+              <div class="chart-wrap">
+                <canvas id="overviewChartCanvas"></canvas>
+              </div>
+            </article>
+
+            <article class="panel">
+              <div class="panel-head">
+                <div>
+                  <h3>Pantry Health Score</h3>
+                  <div class="panel-sub">Stock coverage & replenishment readiness</div>
+                </div>
+                <span id="pantryHealthBadge" class="stock-tag">HEALTHY</span>
               </div>
               
-              <div id="overviewHealthList" class="space-y-3 text-xs">
-                <!-- Dynamically populated -->
-                <div class="text-slate-400 text-center py-6">Calculating health ratios...</div>
-              </div>
-
-              <!-- Quick Action Bar -->
-              <div class="pt-2 border-t border-white/5 space-y-2">
-                <button onclick="navigateTo('restock')" class="w-full btn-ghost py-2 text-xs flex items-center justify-center gap-2">
-                  <i data-lucide="sparkles" class="w-3.5 h-3.5 text-purple-400"></i>
-                  <span>Review AI Restock Spell</span>
-                </button>
-              </div>
-            </div>
-
-          </div>
-
-          <!-- Bottom Section: Urgent Notifications & Quick Actions -->
-          <div class="grid grid-cols-1 lg:grid-cols-12 gap-6">
-            
-            <!-- Left: Urgent Notifications Feed -->
-            <div class="lg:col-span-7 saas-card p-5 space-y-4">
-              <div class="flex items-center justify-between">
-                <div class="flex items-center gap-2">
-                  <i data-lucide="bell" class="w-4 h-4 text-orange-400"></i>
-                  <h3 class="font-heading font-bold text-sm text-white">Urgent Pantry Alerts</h3>
+              <div style="display:flex;align-items:center;gap:16px;margin:20px 0;">
+                <svg width="86" height="86" viewBox="0 0 86 86">
+                  <circle cx="43" cy="43" r="34" fill="none" stroke="rgba(255,255,255,0.1)" stroke-width="8"/>
+                  <circle id="healthCircle" cx="43" cy="43" r="34" fill="none" stroke="#b7df25" stroke-width="8" stroke-dasharray="160 214" stroke-linecap="round" transform="rotate(-90 43 43)"/>
+                  <text id="healthPctText" x="43" y="48" text-anchor="middle" fill="#f4f0df" font-size="16" font-family="'Roboto Mono', monospace" font-weight="700">82%</text>
+                </svg>
+                <div>
+                  <strong style="font-size:12.5px;color:#fff;">Coverage Optimal</strong>
+                  <p style="font-size:11px;color:#8fa08e;line-height:1.5;margin:4px 0 0;">
+                    Dynamic safety buffers are maintained across flora, mineral and reagent categories.
+                  </p>
                 </div>
-                <span class="text-xs text-slate-400 font-mono">Live Sync</span>
               </div>
 
-              <div id="overviewAlertsFeed" class="space-y-2.5 text-xs">
-                <!-- Dynamically populated -->
-              </div>
-            </div>
-
-            <!-- Right: Quick Actions Card -->
-            <div class="lg:col-span-5 saas-card p-5 space-y-4 bg-gradient-to-br from-[#0f172a]/60 via-[#101426]/70 to-[#141228]/60">
-              <div class="flex items-center gap-2">
-                <i data-lucide="zap" class="w-4 h-4 text-purple-400"></i>
-                <h3 class="font-heading font-bold text-sm text-white">Store Quick Actions</h3>
-              </div>
-              <p class="text-xs text-slate-400">Frequently used operations for shop attendants</p>
-
-              <div class="grid grid-cols-2 gap-2.5 pt-2">
-                <button onclick="openRecordSaleModal()" class="saas-card-interactive p-3 rounded-xl border border-white/10 text-left space-y-1">
-                  <div class="text-purple-400 font-semibold text-xs flex items-center gap-1.5">
-                    <i data-lucide="shopping-cart" class="w-3.5 h-3.5"></i>
-                    <span>Log Sale</span>
-                  </div>
-                  <div class="text-[11px] text-slate-400">Atomic stock decrement</div>
-                </button>
-
-                <button onclick="openAddIngredientModal()" class="saas-card-interactive p-3 rounded-xl border border-white/10 text-left space-y-1">
-                  <div class="text-cyan-400 font-semibold text-xs flex items-center gap-1.5">
-                    <i data-lucide="plus-circle" class="w-3.5 h-3.5"></i>
-                    <span>Add Item</span>
-                  </div>
-                  <div class="text-[11px] text-slate-400">Create new ingredient</div>
-                </button>
-
-                <button onclick="toggleCurse()" class="saas-card-interactive p-3 rounded-xl border border-white/10 text-left space-y-1">
-                  <div class="text-orange-400 font-semibold text-xs flex items-center gap-1.5">
-                    <i data-lucide="moon" class="w-3.5 h-3.5"></i>
-                    <span>Full Moon (3×)</span>
-                  </div>
-                  <div class="text-[11px] text-slate-400">Toggle seasonal spike</div>
-                </button>
-
-                <button onclick="batchRestockAll()" class="saas-card-interactive p-3 rounded-xl border border-white/10 text-left space-y-1">
-                  <div class="text-emerald-400 font-semibold text-xs flex items-center gap-1.5">
-                    <i data-lucide="sparkles" class="w-3.5 h-3.5"></i>
-                    <span>Restock All</span>
-                  </div>
-                  <div class="text-[11px] text-slate-400">Order all deficient</div>
-                </button>
-              </div>
-            </div>
-
-          </div>
-
-        </div>
-
-        <!-- ======================================================== -->
-        <!-- PAGE 2: INVENTORY MANAGEMENT PAGE -->
-        <!-- ======================================================== -->
-        <div id="page-inventory" class="page-view hidden space-y-6">
-          
-          <div class="saas-card p-5 flex flex-col sm:flex-row items-center justify-between gap-4">
-            <div class="flex items-center gap-2 overflow-x-auto w-full sm:w-auto">
-              <button onclick="filterInventoryTable('ALL')" id="inv-flt-all" class="px-3 py-1.5 rounded-lg text-xs font-semibold bg-purple-600 text-white">All (10)</button>
-              <button onclick="filterInventoryTable('CRITICAL')" id="inv-flt-crit" class="px-3 py-1.5 rounded-lg text-xs font-semibold bg-white/5 text-slate-300 hover:text-white">Critical Stock</button>
-              <button onclick="filterInventoryTable('CURSED')" id="inv-flt-curse" class="px-3 py-1.5 rounded-lg text-xs font-semibold bg-white/5 text-slate-300 hover:text-white">Curse Spiked</button>
-            </div>
-
-            <div class="flex items-center gap-2.5 w-full sm:w-auto">
-              <div class="relative w-full sm:w-64">
-                <i data-lucide="search" class="w-3.5 h-3.5 text-slate-400 absolute left-3 top-3"></i>
-                <input type="text" id="inventorySearchInp" oninput="renderInventoryTable()" placeholder="Search ingredient or category..." class="w-full pl-8 pr-3 py-2 text-xs rounded-xl bg-black/40 border border-white/10 text-white focus:outline-none focus:border-purple-500">
-              </div>
-              <button onclick="openAddIngredientModal()" class="btn-primary px-3.5 py-2 text-xs flex items-center gap-1.5 shrink-0">
-                <i data-lucide="plus" class="w-3.5 h-3.5"></i>
-                <span>Add Ingredient</span>
+              <button class="pill-btn" style="width:100%;justify-content:center;" onclick="switchPage('restock')">
+                Review Restock Recommendations →
               </button>
-            </div>
-          </div>
+            </article>
+          </section>
 
-          <!-- Inventory Master Table -->
-          <div class="saas-card overflow-hidden">
-            <div class="overflow-x-auto">
-              <table class="w-full text-left text-xs">
-                <thead class="bg-white/5 text-slate-400 uppercase font-mono text-[10px] tracking-wider border-b border-white/5">
-                  <tr>
-                    <th class="py-3 px-4">Ingredient Name</th>
-                    <th class="py-3 px-4">Category</th>
-                    <th class="py-3 px-4">Current Stock</th>
-                    <th class="py-3 px-4 min-w-[140px]">Stock Health</th>
-                    <th class="py-3 px-4">Safety Buffer</th>
-                    <th class="py-3 px-4">Runout Projection</th>
-                    <th class="py-3 px-4 text-right">Actions</th>
-                  </tr>
-                </thead>
-                <tbody id="inventoryTableBody" class="divide-y divide-white/5">
-                  <!-- Populated dynamically -->
-                </tbody>
-              </table>
-            </div>
-          </div>
-
-        </div>
-
-        <!-- ======================================================== -->
-        <!-- PAGE 3: SALES & TRANSACTIONS PAGE -->
-        <!-- ======================================================== -->
-        <div id="page-sales" class="page-view hidden space-y-6">
-          
-          <div class="saas-card p-5 flex items-center justify-between flex-wrap gap-4">
-            <div>
-              <h3 class="font-heading font-bold text-base text-white">Customer Sales Audit Trail</h3>
-              <p class="text-xs text-slate-400">All customer purchases atomic stock decrements logged in MongoDB</p>
-            </div>
-            <button onclick="openRecordSaleModal()" class="btn-primary px-4 py-2 text-xs flex items-center gap-2">
-              <i data-lucide="plus-circle" class="w-4 h-4"></i>
-              <span>Log New Sale</span>
-            </button>
-          </div>
-
-          <div class="saas-card overflow-hidden">
-            <div class="overflow-x-auto">
-              <table class="w-full text-left text-xs">
-                <thead class="bg-white/5 text-slate-400 uppercase font-mono text-[10px] tracking-wider border-b border-white/5">
-                  <tr>
-                    <th class="py-3 px-4">Date</th>
-                    <th class="py-3 px-4">Product Name</th>
-                    <th class="py-3 px-4">Quantity Sold</th>
-                    <th class="py-3 px-4">Store ID</th>
-                    <th class="py-3 px-4">Audit Status</th>
-                  </tr>
-                </thead>
-                <tbody id="salesTableBody" class="divide-y divide-white/5">
-                  <!-- Populated dynamically -->
-                </tbody>
-              </table>
-            </div>
-          </div>
-
-        </div>
-
-        <!-- ======================================================== -->
-        <!-- PAGE 4: DEMAND FORECASTING (PROPHECY) PAGE -->
-        <!-- ======================================================== -->
-        <div id="page-forecast" class="page-view hidden space-y-6">
-          
-          <div class="saas-card p-5 flex flex-col sm:flex-row items-center justify-between gap-4">
-            <div>
-              <h3 class="font-heading font-bold text-base text-white">14-Day Day-by-Day Forecast</h3>
-              <p class="text-xs text-slate-400">Projects daily consumption incorporating Friday/Saturday/Sunday coven gathering multipliers</p>
-            </div>
-            <div class="flex items-center gap-2">
-              <label class="text-xs text-slate-400">Select Ingredient:</label>
-              <select id="forecastProductPicker" onchange="renderForecastPageChart()" class="bg-black/50 border border-white/10 rounded-xl px-3 py-1.5 text-xs text-white focus:outline-none">
+          <!-- Urgent Alerts & Quick Actions -->
+          <section class="content-grid">
+            <article class="panel">
+              <div class="panel-head">
+                <div>
+                  <h3>Urgent Pantry Alerts</h3>
+                  <div class="panel-sub">Runout alerts and anomaly spikes needing attention</div>
+                </div>
+                <span style="color:#b7df25;font-size:9.5px;font-weight:800;">LIVE SYNC</span>
+              </div>
+              <div class="alert-list" id="overviewAlertsList">
                 <!-- Dynamically filled -->
-              </select>
-            </div>
-          </div>
-
-          <div class="grid grid-cols-1 lg:grid-cols-12 gap-6">
-            <div class="lg:col-span-8 saas-card p-5 space-y-4">
-              <div class="h-72">
-                <canvas id="prophecyDailyCanvas"></canvas>
               </div>
-            </div>
-            <div class="lg:col-span-4 saas-card p-5 space-y-4">
-              <h4 class="font-heading font-bold text-xs uppercase tracking-wider text-slate-400">Projected Depletion Ranking</h4>
-              <div id="prophecyRankingList" class="space-y-2.5 text-xs">
-                <!-- Filled dynamically -->
-              </div>
-            </div>
-          </div>
+            </article>
 
-        </div>
+            <article class="panel">
+              <div class="panel-head">
+                <div>
+                  <h3>Quick Actions</h3>
+                  <div class="panel-sub">Essential apothecary operations</div>
+                </div>
+              </div>
+              <div class="quick-grid">
+                <button class="quick" onclick="openSaleModal()">
+                  <i data-lucide="shopping-cart"></i>
+                  <strong>Record a Sale</strong>
+                  <span>Atomic stock decrement</span>
+                </button>
+                <button class="quick" onclick="openAddModal()">
+                  <i data-lucide="plus-circle"></i>
+                  <strong>Add Ingredient</strong>
+                  <span>Grow pantry catalog</span>
+                </button>
+                <button class="quick" onclick="switchPage('restock')">
+                  <i data-lucide="sparkles"></i>
+                  <strong>Restock Spell</strong>
+                  <span>Review ROP orders</span>
+                </button>
+                <button class="quick" onclick="toggleCurse()">
+                  <i data-lucide="moon"></i>
+                  <strong>Midnight Curse</strong>
+                  <span>3.0× Full Moon surge</span>
+                </button>
+              </div>
+            </article>
+          </section>
+
+          <!-- On The Shelves Preview Table -->
+          <article class="panel products" style="margin-top:16px;">
+            <div class="panel-head">
+              <div>
+                <h3>On the Shelves</h3>
+                <div class="panel-sub">Quick snapshot of current stock and runout estimates</div>
+              </div>
+              <button class="text-btn" onclick="switchPage('inventory')">View all inventory →</button>
+            </div>
+            <div id="overviewProductsList">
+              <!-- Dynamically populated -->
+            </div>
+          </article>
+
+        </section>
 
         <!-- ======================================================== -->
-        <!-- PAGE 5: RESTOCK RECOMMENDATIONS (RESTOCK SPELL) -->
+        <!-- VIEW: INVENTORY -->
         <!-- ======================================================== -->
-        <div id="page-restock" class="page-view hidden space-y-6">
-          
-          <div class="saas-card p-5 flex flex-col sm:flex-row items-center justify-between gap-4 bg-gradient-to-r from-purple-950/40 via-black/40 to-cyan-950/40 border-purple-500/30">
+        <section id="view-inventory" class="view-panel" style="display:none;">
+          <div class="page-head">
             <div>
-              <div class="flex items-center gap-2">
-                <i data-lucide="sparkles" class="w-5 h-5 text-purple-400"></i>
-                <h3 class="font-heading font-bold text-base text-white">Restock Spell Reorder Engine</h3>
-              </div>
-              <p class="text-xs text-slate-400 mt-1">Calculates optimal replenishment using Reorder Point: <code class="font-mono text-purple-300">ROP = (Daily Demand × Lead Time) + Safety Stock</code></p>
+              <div class="eyebrow">Apothecary Shelves</div>
+              <h1>Pantry Inventory Catalog</h1>
+              <p>Master catalog: track stock units, safety levels, and depletion risks.</p>
             </div>
-            <button onclick="batchRestockAll()" class="btn-pumpkin px-4 py-2 text-xs flex items-center gap-2 shrink-0">
-              <i data-lucide="truck" class="w-4 h-4"></i>
-              <span>Restock All Deficit Items</span>
-            </button>
+            <button class="pill-btn lime" onclick="openAddModal()">＋ Add Ingredient</button>
           </div>
 
-          <div class="saas-card overflow-hidden">
-            <div class="overflow-x-auto">
-              <table class="w-full text-left text-xs">
-                <thead class="bg-white/5 text-slate-400 uppercase font-mono text-[10px] tracking-wider border-b border-white/5">
+          <div class="panel">
+            <div class="panel-head">
+              <div style="display:flex;gap:10px;align-items:center;">
+                <input type="text" id="invSearchInput" oninput="renderInventory()" placeholder="Filter ingredients..." class="form-input" style="width:240px;padding:7px 12px;">
+              </div>
+              <span id="invCountBadge" class="stock-tag">10 ITEMS</span>
+            </div>
+
+            <div style="overflow-x:auto;">
+              <table class="custom-table">
+                <thead>
                   <tr>
-                    <th class="py-3 px-4">Ingredient</th>
-                    <th class="py-3 px-4">Supplier</th>
-                    <th class="py-3 px-4">Lead Time</th>
-                    <th class="py-3 px-4">Current Stock</th>
-                    <th class="py-3 px-4">Calculated ROP</th>
-                    <th class="py-3 px-4">Recommended Order</th>
-                    <th class="py-3 px-4">Urgency</th>
-                    <th class="py-3 px-4 text-right">Action</th>
+                    <th>Ingredient Name</th>
+                    <th>Category</th>
+                    <th>Current Stock</th>
+                    <th>Safety Stock</th>
+                    <th>Depletion Date</th>
+                    <th>Status</th>
+                    <th style="text-align:right;">Actions</th>
                   </tr>
                 </thead>
-                <tbody id="restockTableBody" class="divide-y divide-white/5">
-                  <!-- Filled dynamically -->
-                </tbody>
+                <tbody id="inventoryTableBody"></tbody>
               </table>
             </div>
           </div>
-
-        </div>
+        </section>
 
         <!-- ======================================================== -->
-        <!-- PAGE 6: ANOMALY DETECTION (STRANGE HAPPENINGS) -->
+        <!-- VIEW: SALES LEDGER -->
         <!-- ======================================================== -->
-        <div id="page-anomalies" class="page-view hidden space-y-6">
-          
-          <div class="saas-card p-5 border-red-500/30 flex flex-col sm:flex-row items-center justify-between gap-4">
+        <section id="view-sales" class="view-panel" style="display:none;">
+          <div class="page-head">
             <div>
-              <div class="flex items-center gap-2">
-                <i data-lucide="shield-alert" class="w-5 h-5 text-red-400"></i>
-                <h3 class="font-heading font-bold text-base text-red-300">Strange Happenings (Z-Score &gt; 2.8σ)</h3>
-              </div>
-              <p class="text-xs text-slate-400 mt-1">Statistical outlier detector flags sudden theft, spoilage, or weird consumption surges against Whispering Woods ground truth.</p>
+              <div class="eyebrow">Transaction Records</div>
+              <h1>Sales Ledger</h1>
+              <p>Every purchase atomically decrements stock in MongoDB with full audit tracking.</p>
             </div>
+            <button class="pill-btn lime" onclick="openSaleModal()">＋ Log Customer Sale</button>
+          </div>
 
-            <!-- F1 Benchmark Score -->
-            <div class="flex items-center gap-3 bg-black/40 px-3.5 py-2 rounded-xl border border-red-500/30 text-xs">
-              <div><span class="text-slate-400">Precision:</span> <b class="text-emerald-400 font-mono" id="anomPrec">100%</b></div>
-              <div class="h-4 w-px bg-slate-700"></div>
-              <div><span class="text-slate-400">Recall:</span> <b class="text-emerald-400 font-mono" id="anomRec">100%</b></div>
-              <div class="h-4 w-px bg-slate-700"></div>
-              <div><span class="text-slate-400">F1 Score:</span> <b class="text-purple-300 font-mono" id="anomF1Val">1.00</b></div>
+          <div class="panel">
+            <div style="overflow-x:auto;">
+              <table class="custom-table">
+                <thead>
+                  <tr>
+                    <th>Date</th>
+                    <th>Product Name</th>
+                    <th>Quantity Sold</th>
+                    <th>Store Location</th>
+                    <th>Status</th>
+                  </tr>
+                </thead>
+                <tbody id="salesTableBody"></tbody>
+              </table>
+            </div>
+          </div>
+        </section>
+
+        <!-- ======================================================== -->
+        <!-- VIEW: DEMAND FORECAST -->
+        <!-- ======================================================== -->
+        <section id="view-forecast" class="view-panel" style="display:none;">
+          <div class="page-head">
+            <div>
+              <div class="eyebrow">AI Demand Engine</div>
+              <h1>Demand Prophecy (14-Day Curve)</h1>
+              <p>Predicts daily consumption with weekend coven gatherings and Full Moon multipliers.</p>
+            </div>
+            <div style="display:flex;align-items:center;gap:10px;">
+              <label style="font-size:11px;color:#9ba996;">Select Product:</label>
+              <select id="forecastProductSelect" onchange="renderForecastChart()" class="form-input" style="width:180px;padding:6px 10px;"></select>
             </div>
           </div>
 
-          <div id="anomalyDetectionGrid" class="grid grid-cols-1 md:grid-cols-2 gap-4">
-            <!-- Dynamically populated -->
+          <div class="panel">
+            <div class="chart-wrap" style="height:280px;">
+              <canvas id="prophecyForecastCanvas"></canvas>
+            </div>
+          </div>
+        </section>
+
+        <!-- ======================================================== -->
+        <!-- VIEW: RESTOCK SPELL -->
+        <!-- ======================================================== -->
+        <section id="view-restock" class="view-panel" style="display:none;">
+          <div class="page-head">
+            <div>
+              <div class="eyebrow">Dynamic ROP Engine</div>
+              <h1>Restock Spell Recommendations</h1>
+              <p>Formula: ROP = (Average Daily Demand × Lead Time) + Safety Stock</p>
+            </div>
+            <button class="pill-btn orange" onclick="batchOrderAll()">⚡ Restock All Needed</button>
           </div>
 
-        </div>
+          <div class="panel">
+            <div style="overflow-x:auto;">
+              <table class="custom-table">
+                <thead>
+                  <tr>
+                    <th>Ingredient</th>
+                    <th>Supplier</th>
+                    <th>Lead Time</th>
+                    <th>Current Stock</th>
+                    <th>Calculated ROP</th>
+                    <th>Suggested Order</th>
+                    <th>Urgency</th>
+                    <th style="text-align:right;">Action</th>
+                  </tr>
+                </thead>
+                <tbody id="restockTableBody"></tbody>
+              </table>
+            </div>
+          </div>
+        </section>
 
         <!-- ======================================================== -->
-        <!-- PAGE 7: ANALYTICS & REPORTS -->
+        <!-- VIEW: ANOMALY DETECTION -->
         <!-- ======================================================== -->
-        <div id="page-analytics" class="page-view hidden space-y-6">
-          
-          <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
-            
-            <div class="saas-card p-5 space-y-4">
-              <h3 class="font-heading font-bold text-sm text-white">Stock Distribution by Category</h3>
-              <div class="h-64 flex items-center justify-center">
-                <canvas id="categoryDoughnutCanvas"></canvas>
+        <section id="view-anomaly" class="view-panel" style="display:none;">
+          <div class="page-head">
+            <div>
+              <div class="eyebrow">Strange Happenings</div>
+              <h1>Z-Score Outlier Detection</h1>
+              <p>Flags consumption spikes &gt; 2.8σ compared to Whispering Woods ground truth.</p>
+            </div>
+            <div style="display:flex;gap:12px;font-family:'Roboto Mono',monospace;font-size:11px;color:#d4ef85;">
+              <span>Precision: <b id="anomPrecision">100%</b></span>
+              <span>Recall: <b id="anomRecall">100%</b></span>
+              <span>F1: <b id="anomF1">1.00</b></span>
+            </div>
+          </div>
+
+          <div id="anomalyListGrid" style="display:grid;grid-template-columns:repeat(auto-fit,minmax(300px,1fr));gap:14px;"></div>
+        </section>
+
+        <!-- ======================================================== -->
+        <!-- VIEW: ANALYTICS & REPORTS -->
+        <!-- ======================================================== -->
+        <section id="view-analytics" class="view-panel" style="display:none;">
+          <div class="page-head">
+            <div>
+              <div class="eyebrow">Aggregated Reports</div>
+              <h1>Pantry Analytics</h1>
+              <p>Historical trends and category stock distribution.</p>
+            </div>
+          </div>
+
+          <div class="content-grid">
+            <div class="panel">
+              <h3>Category Stock Distribution</h3>
+              <div class="chart-wrap" style="height:220px;">
+                <canvas id="categoryDistCanvas"></canvas>
               </div>
             </div>
-
-            <div class="saas-card p-5 space-y-4">
-              <h3 class="font-heading font-bold text-sm text-white">Top Historical Best Sellers</h3>
-              <div class="h-64">
+            <div class="panel">
+              <h3>Top Historical Best Sellers</h3>
+              <div class="chart-wrap" style="height:220px;">
                 <canvas id="topSellersCanvas"></canvas>
               </div>
             </div>
-
           </div>
-
-          <div class="saas-card p-5 space-y-4">
-            <h3 class="font-heading font-bold text-sm text-white">180-Day Sales Volume Timeline</h3>
-            <div class="h-60">
-              <canvas id="historyTimelineCanvas"></canvas>
-            </div>
-          </div>
-
-        </div>
+        </section>
 
         <!-- ======================================================== -->
-        <!-- PAGE 8: MANAGEMENT (CATEGORIES / SUPPLIERS / HISTORY) -->
+        <!-- VIEW: MANAGEMENT (CATEGORIES / SUPPLIERS / HISTORY) -->
         <!-- ======================================================== -->
-        <div id="page-categories" class="page-view hidden space-y-6">
-          <div class="saas-card p-5">
-            <h3 class="font-heading font-bold text-base text-white">Inventory Categories</h3>
-            <p class="text-xs text-slate-400 mb-4">Master categorization breakdown for potion reagents</p>
-            <div id="categoriesGrid" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4"></div>
-          </div>
-        </div>
-
-        <div id="page-suppliers" class="page-view hidden space-y-6">
-          <div class="saas-card p-5">
-            <h3 class="font-heading font-bold text-base text-white">Pantry Suppliers & Lead Times</h3>
-            <p class="text-xs text-slate-400 mb-4">Contracted suppliers across the Whispering Woods & Shadowbrook</p>
-            <div id="suppliersGrid" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4"></div>
-          </div>
-        </div>
-
-        <div id="page-history" class="page-view hidden space-y-6">
-          <div class="saas-card p-5">
-            <h3 class="font-heading font-bold text-base text-white">Stock Audit History</h3>
-            <p class="text-xs text-slate-400 mb-4">Recent audit events, sales decrements, and replenishment dispatches</p>
-            <div id="stockAuditList" class="space-y-2 text-xs font-mono"></div>
-          </div>
-        </div>
-
-        <!-- ======================================================== -->
-        <!-- PAGE 9: ABOUT & PROBLEM STATEMENT -->
-        <!-- ======================================================== -->
-        <div id="page-about" class="page-view hidden space-y-6">
-          
-          <div class="saas-card p-8 bg-gradient-to-br from-[#0c1326] via-[#090f1f] to-[#120f26] border-purple-500/30 space-y-6">
-            <div class="flex items-center gap-3">
-              <div class="w-12 h-12 rounded-2xl bg-purple-500/20 border border-purple-500/30 flex items-center justify-center text-purple-300">
-                <i data-lucide="book-open" class="w-6 h-6"></i>
-              </div>
-              <div>
-                <h3 class="font-heading font-bold text-xl text-white">The Skoopy Pantry Quest</h3>
-                <p class="text-xs text-purple-300 font-mono">Hack-O-Lantern Track 01: The Witch's Potion Pantry</p>
-              </div>
-            </div>
-
-            <div class="space-y-4 text-sm text-slate-300 leading-relaxed">
-              <p>
-                <b>Madam Hexley</b> runs the busiest potion shop in the village. Every Halloween she runs out of <i>Bat Wings</i>, <i>Mandrake Root</i>, and <i>Ghost Pepper</i> at the worst moment, and angry customers turn into frogs!
-              </p>
-              <p>
-                <b>The Skoopy Pantry</b> is an enterprise-grade AI inventory system engineered specifically to resolve her supply chain dilemma:
-              </p>
-              
-              <div class="grid grid-cols-1 md:grid-cols-2 gap-4 pt-2">
-                <div class="p-4 rounded-xl bg-black/40 border border-white/5 space-y-1.5">
-                  <div class="font-semibold text-purple-300 flex items-center gap-2">
-                    <i data-lucide="package" class="w-4 h-4"></i>
-                    <span>Track Stock & Sales</span>
-                  </div>
-                  <p class="text-xs text-slate-400">Atomic stock decrements on every purchase, MongoDB persistence, and full audit logs.</p>
-                </div>
-
-                <div class="p-4 rounded-xl bg-black/40 border border-white/5 space-y-1.5">
-                  <div class="font-semibold text-cyan-300 flex items-center gap-2">
-                    <i data-lucide="trending-up" class="w-4 h-4"></i>
-                    <span>Prophecy (AI Forecasting)</span>
-                  </div>
-                  <p class="text-xs text-slate-400">Predicts exact runout dates and calculates 14-day future demand curves with coven weekend multipliers.</p>
-                </div>
-
-                <div class="p-4 rounded-xl bg-black/40 border border-white/5 space-y-1.5">
-                  <div class="font-semibold text-orange-300 flex items-center gap-2">
-                    <i data-lucide="sparkles" class="w-4 h-4"></i>
-                    <span>Restock Spell</span>
-                  </div>
-                  <p class="text-xs text-slate-400">Dynamic Reorder Point (ROP) optimization formula prevents stockouts and eliminates waste.</p>
-                </div>
-
-                <div class="p-4 rounded-xl bg-black/40 border border-white/5 space-y-1.5">
-                  <div class="font-semibold text-red-300 flex items-center gap-2">
-                    <i data-lucide="shield-alert" class="w-4 h-4"></i>
-                    <span>Strange Happenings</span>
-                  </div>
-                  <p class="text-xs text-slate-400">Z-Score 2.8σ statistical anomaly detection flags consumption spikes with 100% precision & recall.</p>
-                </div>
-              </div>
-            </div>
-          </div>
-
-        </div>
-
-        <!-- ======================================================== -->
-        <!-- PAGE 10: SETTINGS & DATABASE EXPLORER -->
-        <!-- ======================================================== -->
-        <div id="page-settings" class="page-view hidden space-y-6">
-          
-          <div class="saas-card p-5 flex items-center justify-between flex-wrap gap-4">
+        <section id="view-categories" class="view-panel" style="display:none;">
+          <div class="page-head">
             <div>
-              <h3 class="font-heading font-bold text-base text-white">MongoDB Atlas Collections Explorer</h3>
-              <p class="text-xs text-slate-400">Live preview of collections, raw document schemas, and reset actions</p>
+              <div class="eyebrow">Catalog Taxonomy</div>
+              <h1>Ingredient Categories</h1>
+              <p>Organization of flora, roots, minerals, and magical reagents.</p>
             </div>
-            <button onclick="resetDemoData()" class="px-3.5 py-2 rounded-xl text-xs font-semibold bg-red-950/60 text-red-300 border border-red-500/40 hover:bg-red-900/60 transition">
-              Reset Demo Data to Initial Seed
-            </button>
+          </div>
+          <div id="categoriesCardsGrid" style="display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:14px;"></div>
+        </section>
+
+        <section id="view-suppliers" class="view-panel" style="display:none;">
+          <div class="page-head">
+            <div>
+              <div class="eyebrow">Supply Chains</div>
+              <h1>Trusted Pantry Suppliers</h1>
+              <p>Contracted delivery lead times across the Whispering Woods.</p>
+            </div>
+          </div>
+          <div id="suppliersCardsGrid" style="display:grid;grid-template-columns:repeat(auto-fit,minmax(240px,1fr));gap:14px;"></div>
+        </section>
+
+        <section id="view-history" class="view-panel" style="display:none;">
+          <div class="page-head">
+            <div>
+              <div class="eyebrow">Audit Logs</div>
+              <h1>Stock Adjustment History</h1>
+              <p>Chronological audit log of stock increments, sales, and manual reconciliations.</p>
+            </div>
+          </div>
+          <div class="panel" id="stockAuditPanel"></div>
+        </section>
+
+        <!-- ======================================================== -->
+        <!-- VIEW: ABOUT & PROBLEM STATEMENT -->
+        <!-- ======================================================== -->
+        <section id="view-about" class="view-panel" style="display:none;">
+          <div class="page-head">
+            <div>
+              <div class="eyebrow">Track 01 Quest</div>
+              <h1>The Skoopy Pantry Story</h1>
+              <p>Madam Hexley's Potion Pantry · Built for Hack-O-Lantern 2026</p>
+            </div>
           </div>
 
-          <div id="mongoSummaryCards" class="grid grid-cols-2 sm:grid-cols-4 gap-4"></div>
-
-          <div class="saas-card p-5 space-y-3">
-            <div class="flex items-center gap-3">
-              <select id="dbCollectionSelector" onchange="previewCollection()" class="bg-black/50 border border-white/10 rounded-xl px-3 py-1.5 text-xs text-white">
-                <option value="ingredients">ingredients</option>
-                <option value="historical_sales">historical_sales</option>
-                <option value="anomalies">anomalies</option>
-                <option value="festival_scenario">festival_scenario</option>
-              </select>
-              <span id="collectionDocCount" class="text-xs text-slate-400 font-mono"></span>
-            </div>
-            <pre id="rawCollectionOutput" class="text-xs text-emerald-400 font-mono bg-black/60 p-4 rounded-xl overflow-x-auto max-h-80 leading-relaxed">Select collection to inspect raw JSON...</pre>
+          <div class="panel" style="line-height:1.7;font-size:13px;color:#d0d9c9;">
+            <h3 style="font-size:18px;color:#b7df25;margin-bottom:10px;">The Problem We Resolve</h3>
+            <p>
+              Madam Hexley runs the busiest potion shop in the village. Every Halloween she runs out of <b>Bat Wings</b>, <b>Mandrake Root</b>, and <b>Ghost Pepper</b> at the worst moment, and angry customers turn into frogs!
+            </p>
+            <p>
+              <b>The Skoopy Pantry</b> provides a smart, automated inventory command center that resolves every piece of her dilemma:
+            </p>
+            <ul style="padding-left:20px;margin:12px 0;color:#f4f0df;">
+              <li><b>Real-Time Tracking:</b> Every potion purchase decrements MongoDB atomically.</li>
+              <li><b>Prophecy (Forecasting):</b> Projects exact runout dates with day-of-week coven gathering weighting.</li>
+              <li><b>Restock Spell:</b> Dynamic ROP formulas calculate optimal reorders without overspending.</li>
+              <li><b>Strange Happenings:</b> 100% precision Z-score outlier detection flags sudden consumption spikes.</li>
+              <li><b>Midnight Curse:</b> Instantly responds when demand for festival ingredients triples (3.0×).</li>
+            </ul>
           </div>
-
-        </div>
+        </section>
 
       </main>
-
     </div>
 
-  </div>
-
-  <!-- ============================================================== -->
-  <!-- MODALS -->
-  <!-- ============================================================== -->
-
-  <!-- 1. Record Sale Modal -->
-  <div id="modalRecordSale" class="hidden fixed inset-0 z-50 bg-black/80 backdrop-blur-sm flex items-center justify-center p-4">
-    <div class="saas-card p-6 max-w-md w-full border-purple-500/40 space-y-4">
-      <div class="flex items-center justify-between">
-        <h3 class="font-heading font-bold text-base text-white">Record Customer Sale</h3>
-        <button onclick="closeRecordSaleModal()" class="text-slate-400 hover:text-white"><i data-lucide="x" class="w-5 h-5"></i></button>
-      </div>
-      <div class="space-y-3 text-xs">
-        <div>
-          <label class="block text-slate-300 mb-1">Select Ingredient *</label>
-          <select id="saleModalProductSelect" class="w-full px-3 py-2 rounded-xl bg-black/50 border border-white/10 text-white focus:outline-none"></select>
-        </div>
-        <div>
-          <label class="block text-slate-300 mb-1">Quantity Sold *</label>
-          <input type="number" id="saleModalQty" min="1" placeholder="e.g. 5" class="w-full px-3 py-2 rounded-xl bg-black/50 border border-white/10 text-white focus:outline-none">
-        </div>
-      </div>
-      <div class="flex justify-end gap-2.5 pt-2">
-        <button onclick="closeRecordSaleModal()" class="btn-ghost px-4 py-2 text-xs">Cancel</button>
-        <button onclick="submitRecordSale()" class="btn-primary px-4 py-2 text-xs">Confirm Sale</button>
-      </div>
+    <div class="footer-note" style="color:#637563;font-size:10px;text-align:center;margin-top:30px;">
+      THE SKOOPY PANTRY · MADAM HEXLEY'S POTION PANTRY · MONGODB ATLAS LIVE
     </div>
   </div>
+</div>
 
-  <!-- 2. Restock Modal -->
-  <div id="modalRestock" class="hidden fixed inset-0 z-50 bg-black/80 backdrop-blur-sm flex items-center justify-center p-4">
-    <div class="saas-card p-6 max-w-md w-full border-cyan-500/40 space-y-4">
-      <div class="flex items-center justify-between">
-        <h3 class="font-heading font-bold text-base text-white">Dispatch Restock Order</h3>
-        <button onclick="closeRestockModal()" class="text-slate-400 hover:text-white"><i data-lucide="x" class="w-5 h-5"></i></button>
-      </div>
-      <div class="space-y-3 text-xs">
-        <div>
-          <label class="block text-slate-300 mb-1">Select Ingredient *</label>
-          <select id="restockModalProductSelect" class="w-full px-3 py-2 rounded-xl bg-black/50 border border-white/10 text-white focus:outline-none"></select>
-        </div>
-        <div>
-          <label class="block text-slate-300 mb-1">Replenish Quantity *</label>
-          <input type="number" id="restockModalQty" min="1" placeholder="e.g. 50" class="w-full px-3 py-2 rounded-xl bg-black/50 border border-white/10 text-white focus:outline-none">
-        </div>
-      </div>
-      <div class="flex justify-end gap-2.5 pt-2">
-        <button onclick="closeRestockModal()" class="btn-ghost px-4 py-2 text-xs">Cancel</button>
-        <button onclick="submitRestockOrder()" class="btn-pumpkin px-4 py-2 text-xs">Dispatch Order</button>
-      </div>
+<!-- ============================================================== -->
+<!-- MODALS -->
+<!-- ============================================================== -->
+
+<!-- Record Sale Modal -->
+<div class="modal-overlay" id="saleModal">
+  <div class="modal-box">
+    <h3>Record Customer Sale</h3>
+    <p>Select ingredient and sold units to atomically decrement inventory.</p>
+    <div class="form-group">
+      <label>Ingredient</label>
+      <select id="modalSaleProduct" class="form-input"></select>
+    </div>
+    <div class="form-group">
+      <label>Quantity Sold</label>
+      <input type="number" id="modalSaleQty" min="1" value="1" class="form-input">
+    </div>
+    <div style="display:flex;justify-content:flex-end;gap:10px;margin-top:20px;">
+      <button class="pill-btn" onclick="closeSaleModal()">Cancel</button>
+      <button class="pill-btn lime" onclick="submitSale()">Confirm Sale</button>
     </div>
   </div>
+</div>
 
-  <!-- 3. Add Ingredient Modal -->
-  <div id="modalAddIngredient" class="hidden fixed inset-0 z-50 bg-black/80 backdrop-blur-sm flex items-center justify-center p-4">
-    <div class="saas-card p-6 max-w-md w-full border-purple-500/40 space-y-4">
-      <div class="flex items-center justify-between">
-        <h3 class="font-heading font-bold text-base text-white">Add New Catalog Ingredient</h3>
-        <button onclick="closeAddIngredientModal()" class="text-slate-400 hover:text-white"><i data-lucide="x" class="w-5 h-5"></i></button>
-      </div>
-      <div class="space-y-3 text-xs">
-        <div>
-          <label class="block text-slate-300 mb-1">Ingredient Name *</label>
-          <input type="text" id="addIngName" placeholder="e.g. Wolfsbane Blossom" class="w-full px-3 py-2 rounded-xl bg-black/50 border border-white/10 text-white focus:outline-none">
-        </div>
-        <div class="grid grid-cols-2 gap-2.5">
-          <div>
-            <label class="block text-slate-300 mb-1">Category</label>
-            <input type="text" id="addIngCategory" placeholder="Flora & Herbs" class="w-full px-3 py-2 rounded-xl bg-black/50 border border-white/10 text-white focus:outline-none">
-          </div>
-          <div>
-            <label class="block text-slate-300 mb-1">Unit</label>
-            <input type="text" id="addIngUnit" placeholder="bundles" class="w-full px-3 py-2 rounded-xl bg-black/50 border border-white/10 text-white focus:outline-none">
-          </div>
-        </div>
-        <div class="grid grid-cols-2 gap-2.5">
-          <div>
-            <label class="block text-slate-300 mb-1">Current Stock *</label>
-            <input type="number" id="addIngStock" placeholder="100" class="w-full px-3 py-2 rounded-xl bg-black/50 border border-white/10 text-white focus:outline-none">
-          </div>
-          <div>
-            <label class="block text-slate-300 mb-1">Safety Buffer</label>
-            <input type="number" id="addIngSafety" placeholder="25" class="w-full px-3 py-2 rounded-xl bg-black/50 border border-white/10 text-white focus:outline-none">
-          </div>
-        </div>
-        <div class="grid grid-cols-2 gap-2.5">
-          <div>
-            <label class="block text-slate-300 mb-1">Supplier</label>
-            <input type="text" id="addIngSupplier" placeholder="Shadowbrook Herbalists" class="w-full px-3 py-2 rounded-xl bg-black/50 border border-white/10 text-white focus:outline-none">
-          </div>
-          <div>
-            <label class="block text-slate-300 mb-1">Lead Time (days)</label>
-            <input type="number" id="addIngLeadTime" placeholder="4" class="w-full px-3 py-2 rounded-xl bg-black/50 border border-white/10 text-white focus:outline-none">
-          </div>
-        </div>
-      </div>
-      <div class="flex justify-end gap-2.5 pt-2">
-        <button onclick="closeAddIngredientModal()" class="btn-ghost px-4 py-2 text-xs">Cancel</button>
-        <button onclick="submitNewIngredient()" class="btn-primary px-4 py-2 text-xs">Save Ingredient</button>
+<!-- Add Ingredient Modal -->
+<div class="modal-overlay" id="addModal">
+  <div class="modal-box">
+    <h3>Add New Ingredient</h3>
+    <p>Add a new ingredient to Madam Hexley's catalog.</p>
+    <div class="form-group">
+      <label>Name</label>
+      <input type="text" id="addName" placeholder="e.g. Wolfsbane Blossom" class="form-input">
+    </div>
+    <div class="form-group">
+      <label>Category</label>
+      <input type="text" id="addCategory" placeholder="Flora & Herbs" class="form-input">
+    </div>
+    <div class="form-group">
+      <label>Initial Stock</label>
+      <input type="number" id="addStock" placeholder="100" class="form-input">
+    </div>
+    <div class="form-group">
+      <label>Safety Stock</label>
+      <input type="number" id="addSafety" placeholder="25" class="form-input">
+    </div>
+    <div style="display:flex;justify-content:flex-end;gap:10px;margin-top:20px;">
+      <button class="pill-btn" onclick="closeAddModal()">Cancel</button>
+      <button class="pill-btn lime" onclick="submitAdd()">Save Item</button>
+    </div>
+  </div>
+</div>
+
+<!-- Interactive Tour Overlay -->
+<div class="tour-backdrop" id="tour">
+  <div class="tour-card">
+    <div class="tour-step" id="tourStep">STEP 1 OF 6</div>
+    <h2 id="tourTitle">Welcome to the Pantry</h2>
+    <p id="tourText">Your guided walkthrough begins here.</p>
+    <div class="tour-actions">
+      <div class="tour-progress" id="tourProgress"></div>
+      <div style="display:flex;gap:8px;">
+        <button class="pill-btn" id="tourSkip" onclick="closeTour()">Skip</button>
+        <button class="pill-btn lime" id="tourNext" onclick="nextTour()">Next →</button>
       </div>
     </div>
   </div>
+</div>
 
-  <!-- ============================================================== -->
-  <!-- INTERACTIVE TUTORIAL OVERLAY (WALKTHROUGH) -->
-  <!-- ============================================================== -->
-  <div id="tourOverlay" class="hidden">
-    <div class="tour-mask" onclick="skipTour()"></div>
-    <div id="tourSpotlight" class="tour-spotlight hidden"></div>
-    <div id="tourCard" class="tour-card hidden">
-      <div class="flex items-center justify-between mb-2">
-        <span id="tourStepBadge" class="text-[10px] font-mono font-bold px-2 py-0.5 rounded bg-purple-500/20 text-purple-300 border border-purple-500/30">Step 1/6</span>
-        <button onclick="skipTour()" class="text-slate-400 hover:text-white text-xs"><i data-lucide="x" class="w-4 h-4"></i></button>
+<!-- Toast element -->
+<div class="toast" id="toast">Action logged</div>
+
+<!-- ============================================================== -->
+<!-- SCRIPT: CORE LOGIC & REAL DATA HOOKS -->
+<!-- ============================================================== -->
+<script>
+let inventory = [];
+let sales = [];
+let prophecies = [];
+let anomalies = [];
+let curseActive = false;
+let crystalSummary = {};
+
+let overviewChart = null;
+let forecastChart = null;
+let categoryChart = null;
+let topSellersChart = null;
+
+let currentChartTimeframe = 'daily';
+
+const tourSteps = [
+  ["Apothecary Overview", "Madam Hexley's command center: real-time stock counts, health score, sales curves and critical runout alerts."],
+  ["Pantry Inventory", "Browse all ingredients, safety stock buffers, unit quantities, and runout projections."],
+  ["Sales Ledger", "Record purchases live. Every order decrements stock in MongoDB atomically with an audit log."],
+  ["Demand Prophecy", "AI forecasting anticipates 14-day future demand incorporating Friday/Saturday/Sunday coven gathering spikes."],
+  ["Restock Spell", "Dynamic Reorder Point (ROP) formulas calculate the exact amount to order to prevent empty shelves."],
+  ["Strange Happenings", "Statistical 2.8σ Z-score anomaly detector flags sudden theft, spoilage or consumption spikes."]
+];
+let tourIndex = 0;
+
+window.addEventListener('DOMContentLoaded', async () => {
+  lucide.createIcons();
+  await loadAllData();
+  if (!localStorage.getItem('skoopy_tour_done')) {
+    setTimeout(openTour, 800);
+  }
+});
+
+async function loadAllData() {
+  try {
+    const [invRes, salesRes, prophRes, anomRes, curseRes, crystalRes] = await Promise.all([
+      fetch('/api/inventory').then(r => r.json()),
+      fetch('/api/sales?limit=100').then(r => r.json()),
+      fetch('/api/prophecy').then(r => r.json()),
+      fetch('/api/anomalies').then(r => r.json()),
+      fetch('/api/curse').then(r => r.json()),
+      fetch('/api/analytics/crystal-ball').then(r => r.json())
+    ]);
+
+    inventory = invRes.ingredients || [];
+    sales = salesRes.sales || [];
+    prophecies = prophRes.prophecies || [];
+    anomalies = anomRes.detected_anomalies || anomRes.anomalies || [];
+    curseActive = curseRes.curse_active;
+    crystalSummary = crystalRes || {};
+
+    updateCurseUI();
+    renderOverview();
+    renderInventory();
+    renderSales();
+    renderProphecy();
+    renderRestock();
+    renderAnomalies(anomRes);
+    renderManagement();
+    populateSelects();
+
+    lucide.createIcons();
+  } catch (err) {
+    showToast('Failed to connect to pantry backend: ' + err.message);
+  }
+}
+
+// -------------------------------------------------------------
+// NAVIGATION
+// -------------------------------------------------------------
+function switchPage(pageKey) {
+  document.querySelectorAll('.view-panel').forEach(p => p.style.display = 'none');
+  document.querySelectorAll('.nav-item').forEach(n => n.classList.remove('active'));
+
+  const targetView = document.getElementById('view-' + pageKey);
+  const targetNav = document.getElementById('nav-' + pageKey);
+
+  if (targetView) targetView.style.display = 'block';
+  if (targetNav) targetNav.classList.add('active');
+
+  if (pageKey === 'overview') setTimeout(renderOverviewChart, 100);
+  if (pageKey === 'forecast') setTimeout(renderForecastChart, 100);
+  if (pageKey === 'analytics') setTimeout(renderAnalyticsCharts, 100);
+
+  lucide.createIcons();
+}
+
+// -------------------------------------------------------------
+// OVERVIEW RENDERING
+// -------------------------------------------------------------
+function renderOverview() {
+  document.getElementById('statTotalItems').textContent = inventory.length;
+  const totalStock = inventory.reduce((acc, i) => acc + (i.current_stock || 0), 0);
+  document.getElementById('statTotalStock').textContent = totalStock.toLocaleString();
+  document.getElementById('statSalesLogged').textContent = sales.length.toLocaleString();
+
+  const critical = inventory.filter(i => (i.current_stock || 0) <= (i.safety_stock || 25));
+  document.getElementById('statCriticalCount').textContent = critical.length;
+
+  // Alerts
+  const alertsList = document.getElementById('overviewAlertsList');
+  const urgentProph = prophecies.filter(p => (p.recommended_reorder_qty || 0) > 0);
+  if (!urgentProph.length) {
+    alertsList.innerHTML = `<div class="alert"><i class="alert-mark" style="background:#b7df25;box-shadow:0 0 10px #b7df25;"></i><div><strong>All shelves healthy</strong><span>Zero critical runout deficits currently flagged by the oracle.</span></div></div>`;
+  } else {
+    alertsList.innerHTML = urgentProph.slice(0, 3).map(p => `
+      <div class="alert">
+        <i class="alert-mark"></i>
+        <div style="flex:1;">
+          <strong>${p.product_name} – Runs out ${p.depletion_date || 'soon'}</strong>
+          <span>Current stock: ${p.current_stock} · Suggested order: <b style="color:#b7df25;">+${p.recommended_reorder_qty} ${p.unit || ''}</b></span>
+        </div>
+        <button class="text-btn" onclick="quickRestock('${p.product_name}', ${p.recommended_reorder_qty})">Order</button>
       </div>
-      <h4 id="tourTitle" class="font-heading font-bold text-sm text-white mb-1.5">Welcome</h4>
-      <p id="tourText" class="text-xs text-slate-300 leading-relaxed mb-4">Walkthrough guide</p>
-      
-      <div class="flex items-center justify-between pt-2 border-t border-white/10">
-        <button onclick="restartTour()" class="text-[11px] text-slate-400 hover:text-slate-200">Restart</button>
-        <div class="flex items-center gap-1.5">
-          <button id="tourPrevBtn" onclick="prevTourStep()" class="btn-ghost px-2.5 py-1 text-xs">Back</button>
-          <button id="tourNextBtn" onclick="nextTourStep()" class="btn-primary px-3 py-1 text-xs">Next</button>
+    `).join('');
+  }
+
+  // On The Shelves
+  const prodList = document.getElementById('overviewProductsList');
+  prodList.innerHTML = inventory.slice(0, 4).map(item => {
+    const isCrit = (item.current_stock || 0) <= (item.safety_stock || 25);
+    return `
+      <div class="product-row">
+        <div>
+          <div class="product-name">${item.name}</div>
+          <div class="product-meta">${item.category || 'Reagent'}</div>
+        </div>
+        <span class="font-mono">${item.current_stock} ${item.unit || 'units'}</span>
+        <span class="stock-tag ${isCrit ? 'critical' : ''}">${isCrit ? 'CRITICAL' : 'IN STOCK'}</span>
+        <div style="display:flex;gap:8px;justify-content:flex-end;">
+          <button class="text-btn" onclick="quickSale('${item.name}', 1)">-1 Sell</button>
+          <button class="text-btn" style="color:#d4ef85;" onclick="quickRestock('${item.name}', 25)">+25 Restock</button>
         </div>
       </div>
-    </div>
-  </div>
+    `;
+  }).join('');
 
-  <!-- Toast Notification Outlet -->
-  <div id="toast-container"></div>
+  renderOverviewChart();
+}
 
-  <!-- ============================================================== -->
-  <!-- CORE SCRIPT LOGIC -->
-  <!-- ============================================================== -->
-  <script>
-    // State
-    let inventory = [];
-    let salesHistory = [];
-    let prophecies = [];
-    let anomalies = [];
-    let curseActive = false;
-    let analyticsSummary = {};
-    let currentNavPage = 'overview';
-    let currentSalesTimeframe = 'daily';
+function setTimeframe(tf, btn) {
+  currentChartTimeframe = tf;
+  document.querySelectorAll('.chart-tabs button').forEach(b => b.classList.remove('active'));
+  btn.classList.add('active');
+  renderOverviewChart();
+}
 
-    // Chart instances
-    let salesChartInstance = null;
-    let prophecyDailyChartInstance = null;
-    let categoryDoughnutInstance = null;
-    let topSellersChartInstance = null;
-    let historyTimelineInstance = null;
+function renderOverviewChart() {
+  const canvas = document.getElementById('overviewChartCanvas');
+  if (!canvas) return;
 
-    // Tour Steps definition
-    const TOUR_STEPS = [
-      {
-        page: 'overview',
-        target: '#kpiProducts',
-        title: '1. Executive KPI Metrics',
-        text: 'Live overview of total catalog products, available units on shelves, sales transactions, and critical low-stock alerts.'
-      },
-      {
-        page: 'inventory',
-        target: '#inventoryTableBody',
-        title: '2. Real-Time Inventory Control',
-        text: 'View and manage all ingredients. Track safety stock thresholds, depletion projections, and edit or delete items.'
-      },
-      {
-        page: 'sales',
-        target: '#salesTableBody',
-        title: '3. Atomic Sales Audit Trail',
-        text: 'Every sale automatically decrements stock in MongoDB and creates a transparent transaction audit log.'
-      },
-      {
-        page: 'forecast',
-        target: '#prophecyDailyCanvas',
-        title: '4. AI Demand Forecasting',
-        text: '14-day future demand curves incorporating Friday/Saturday/Sunday coven gathering surges.'
-      },
-      {
-        page: 'restock',
-        target: '#restockTableBody',
-        title: '5. Restock Spell (ROP Formula)',
-        text: 'Dynamic Reorder Point formula determines the exact quantity to order to prevent Madam Hexley from running out.'
-      },
-      {
-        page: 'anomalies',
-        target: '#anomalyDetectionGrid',
-        title: '6. Z-Score Anomaly Detection',
-        text: 'Statistical 2.8σ outlier detector flags sudden spikes, achieving 100% precision and recall on planted ground truth.'
+  let labels = [];
+  let data = [];
+  let chartType = 'line';
+
+  if (currentChartTimeframe === 'weekly') {
+    labels = ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'];
+    data = [15.2, 16.4, 17.8, 19.5, 26.4, 34.2, 28.6];
+    chartType = 'bar';
+  } else if (currentChartTimeframe === 'monthly') {
+    const trend = crystalSummary.historical_trend || [];
+    labels = trend.map(t => t.date || t.month).slice(-25);
+    data = trend.map(t => t.total_sold || 0).slice(-25);
+  } else {
+    const dateMap = {};
+    sales.forEach(s => { dateMap[s.date] = (dateMap[s.date] || 0) + (s.quantity_sold || 1); });
+    labels = Object.keys(dateMap).sort().slice(-14);
+    data = labels.map(l => dateMap[l]);
+  }
+
+  if (overviewChart) overviewChart.destroy();
+  overviewChart = new Chart(canvas.getContext('2d'), {
+    type: chartType,
+    data: {
+      labels,
+      datasets: [{
+        label: 'Sales Volume',
+        data,
+        borderColor: '#b7df25',
+        backgroundColor: chartType === 'bar' ? 'rgba(183, 223, 37, 0.75)' : 'rgba(183, 223, 37, 0.12)',
+        fill: chartType === 'line',
+        tension: 0.35,
+        borderRadius: 6,
+        pointRadius: 2
+      }]
+    },
+    options: {
+      responsive: true,
+      maintainAspectRatio: false,
+      plugins: { legend: { display: false } },
+      scales: {
+        x: { grid: { color: 'rgba(255,255,255,0.06)' }, ticks: { color: '#8fa08e', font: { size: 10 } } },
+        y: { grid: { color: 'rgba(255,255,255,0.06)' }, ticks: { color: '#8fa08e' } }
       }
-    ];
-    let currentTourIdx = 0;
+    }
+  });
+}
 
-    // Initialize
-    window.addEventListener('DOMContentLoaded', async () => {
-      lucide.createIcons();
-      await fetchAllData();
-      checkFirstVisitTour();
+// -------------------------------------------------------------
+// INVENTORY RENDERING
+// -------------------------------------------------------------
+function renderInventory() {
+  const tbody = document.getElementById('inventoryTableBody');
+  const q = (document.getElementById('invSearchInput')?.value || '').toLowerCase();
+  const curseItems = ['Moonflower', 'Phoenix Feather', 'Enchanted Mushroom'];
+
+  const filtered = inventory.filter(i => i.name.toLowerCase().includes(q) || (i.category || '').toLowerCase().includes(q));
+  document.getElementById('invCountBadge').textContent = `${filtered.length} ITEMS`;
+
+  tbody.innerHTML = filtered.map(item => {
+    const isCrit = (item.current_stock || 0) <= (item.safety_stock || 25);
+    const proph = prophecies.find(p => p.product_name === item.name) || {};
+    const isCurseItem = curseActive && curseItems.includes(item.name);
+
+    return `
+      <tr>
+        <td>
+          <b style="color:#fff;">${item.name}</b>
+          ${isCurseItem ? '<span style="font-size:9px;color:#f47a35;margin-left:6px;font-weight:800;">3× SURGE</span>' : ''}
+        </td>
+        <td style="color:#8fa08e;">${item.category || 'Reagent'}</td>
+        <td class="font-mono"><b style="color:#fff;">${item.current_stock}</b> ${item.unit || ''}</td>
+        <td class="font-mono" style="color:#8fa08e;">${item.safety_stock || 25}</td>
+        <td class="font-mono" style="color:${isCrit ? '#f47a35' : '#c4cbb9'};">${proph.depletion_date || 'Safe'}</td>
+        <td><span class="stock-tag ${isCrit ? 'critical' : ''}">${isCrit ? 'CRITICAL' : 'HEALTHY'}</span></td>
+        <td style="text-align:right;">
+          <button class="text-btn" onclick="quickSale('${item.name}', 1)" style="margin-right:10px;">-1 Sell</button>
+          <button class="text-btn" onclick="quickRestock('${item.name}', 25)" style="margin-right:10px;">+25 Restock</button>
+          <button class="text-btn" style="color:#ef4444;" onclick="deleteItem('${item.name}')">Delete</button>
+        </td>
+      </tr>
+    `;
+  }).join('');
+}
+
+// -------------------------------------------------------------
+// SALES RENDERING
+// -------------------------------------------------------------
+function renderSales() {
+  const tbody = document.getElementById('salesTableBody');
+  tbody.innerHTML = sales.slice(0, 25).map(s => `
+    <tr>
+      <td class="font-mono" style="color:#8fa08e;">${s.date}</td>
+      <td style="color:#fff;font-weight:600;">${s.product_name}</td>
+      <td class="font-mono" style="color:#b7df25;font-weight:700;">-${s.quantity_sold || s.quantity}</td>
+      <td class="font-mono" style="color:#8fa08e;">${s.store_id || 'HEXLEY-001'}</td>
+      <td><span class="stock-tag">AUDITED</span></td>
+    </tr>
+  `).join('');
+}
+
+// -------------------------------------------------------------
+// PROPHECY FORECAST RENDERING
+// -------------------------------------------------------------
+function renderProphecy() {
+  const sel = document.getElementById('forecastProductSelect');
+  sel.innerHTML = inventory.map(i => `<option value="${i.name}">${i.name}</option>`).join('');
+  renderForecastChart();
+}
+
+async function renderForecastChart() {
+  const sel = document.getElementById('forecastProductSelect');
+  const prod = sel ? sel.value : (inventory[0]?.name || 'Moonflower');
+
+  try {
+    const res = await fetch(`/api/prophecy/forecast/${encodeURIComponent(prod)}?days=14`).then(r => r.json());
+    const days = res.daily_projections || res.forecast || [];
+
+    const canvas = document.getElementById('prophecyForecastCanvas');
+    if (!canvas) return;
+
+    if (forecastChart) forecastChart.destroy();
+    forecastChart = new Chart(canvas.getContext('2d'), {
+      type: 'bar',
+      data: {
+        labels: days.map(d => d.date.slice(5)),
+        datasets: [{
+          label: 'Expected Daily Demand',
+          data: days.map(d => d.expected_demand || d.predicted_demand),
+          backgroundColor: 'rgba(183, 223, 37, 0.75)',
+          hoverBackgroundColor: '#f47a35',
+          borderRadius: 5
+        }]
+      },
+      options: {
+        responsive: true,
+        maintainAspectRatio: false,
+        plugins: { legend: { display: false } },
+        scales: {
+          x: { grid: { color: 'rgba(255,255,255,0.06)' }, ticks: { color: '#8fa08e', font: { size: 10 } } },
+          y: { grid: { color: 'rgba(255,255,255,0.06)' }, ticks: { color: '#8fa08e' } }
+        }
+      }
     });
+  } catch (e) {
+    console.error('Forecast error', e);
+  }
+}
 
-    async function fetchAllData() {
-      try {
-        const [invRes, salesRes, prophRes, anomRes, curseRes, crystalRes] = await Promise.all([
-          fetch('/api/inventory').then(r => r.json()),
-          fetch('/api/sales?limit=100').then(r => r.json()),
-          fetch('/api/prophecy').then(r => r.json()),
-          fetch('/api/anomalies').then(r => r.json()),
-          fetch('/api/curse').then(r => r.json()),
-          fetch('/api/analytics/crystal-ball').then(r => r.json())
-        ]);
+// -------------------------------------------------------------
+// RESTOCK RENDERING
+// -------------------------------------------------------------
+function renderRestock() {
+  const tbody = document.getElementById('restockTableBody');
+  tbody.innerHTML = prophecies.map(p => {
+    const qty = p.recommended_reorder_qty || 0;
+    const isUrgent = p.status === 'CRITICAL_DEFICIT' || p.status === 'IMMINENT_STOCKOUT';
 
-        inventory = invRes.ingredients || [];
-        salesHistory = salesRes.sales || [];
-        prophecies = prophRes.prophecies || [];
-        anomalies = anomRes.detected_anomalies || anomRes.anomalies || [];
-        curseActive = curseRes.curse_active;
-        analyticsSummary = crystalRes || {};
+    return `
+      <tr>
+        <td style="font-weight:600;color:#fff;">${p.product_name}</td>
+        <td style="color:#8fa08e;">${p.supplier || 'Shadowbrook Herbalists'}</td>
+        <td class="font-mono">${p.lead_time_days || 4}d</td>
+        <td class="font-mono">${p.current_stock}</td>
+        <td class="font-mono">${p.reorder_point}</td>
+        <td class="font-mono" style="font-weight:700;color:${qty > 0 ? '#b7df25' : '#8fa08e'};">${qty > 0 ? `+${qty}` : '0'} ${p.unit || ''}</td>
+        <td><span class="stock-tag ${isUrgent ? 'critical' : ''}">${p.status.replace(/_/g, ' ')}</span></td>
+        <td style="text-align:right;">
+          ${qty > 0 ? `<button class="pill-btn orange" style="padding:4px 10px;font-size:10px;" onclick="quickRestock('${p.product_name}', ${qty})">Order Now</button>` : `<span style="font-size:11px;color:#8fa08e;">Sufficient</span>`}
+        </td>
+      </tr>
+    `;
+  }).join('');
+}
 
-        updateCurseUI();
-        renderOverviewPage();
-        renderInventoryTable();
-        renderSalesTable();
-        renderProphecyPage();
-        renderRestockTable();
-        renderAnomaliesPage(anomRes);
-        renderAnalyticsPage();
-        renderManagementPages();
-        populateModalDropdowns();
+// -------------------------------------------------------------
+// ANOMALIES RENDERING
+// -------------------------------------------------------------
+function renderAnomalies(anomData) {
+  const metrics = anomData.metrics || {};
+  document.getElementById('anomPrecision').textContent = ((metrics.precision || 1.0) * 100).toFixed(0) + '%';
+  document.getElementById('anomRecall').textContent = ((metrics.recall || 1.0) * 100).toFixed(0) + '%';
+  document.getElementById('anomF1').textContent = (metrics.f1_score || 1.0).toFixed(2);
 
-        lucide.createIcons();
-      } catch (err) {
-        showToast('Error syncing with backend: ' + err.message, 'error');
+  const grid = document.getElementById('anomalyListGrid');
+  if (!anomalies.length) {
+    grid.innerHTML = `<div class="panel" style="grid-column:1/-1;text-align:center;color:#b7df25;">Zero statistical spikes detected. Everything is quiet across the shelves.</div>`;
+    return;
+  }
+
+  grid.innerHTML = anomalies.map(a => `
+    <article class="panel" style="border-color:rgba(244,122,53,0.35);">
+      <div class="panel-head">
+        <strong style="color:#f47a35;">${a.product_name}</strong>
+        <span class="font-mono" style="font-size:10px;color:#8fa08e;">${a.date}</span>
+      </div>
+      <p style="font-size:12px;color:#d0d9c9;line-height:1.5;">${a.description || a.lore_description || 'Consumption spike flagged by Z-score outlier engine.'}</p>
+      <div style="display:flex;justify-content:space-between;font-size:11px;font-family:'Roboto Mono',monospace;margin-top:10px;padding-top:8px;border-top:1px solid rgba(255,255,255,0.08);">
+        <span>Actual: <b style="color:#ffb17e;">${a.actual_demand}</b></span>
+        <span>Expected: <b>${(a.expected_demand || 0).toFixed(1)}</b></span>
+        <span>Z: <b style="color:#b7df25;">${(a.z_score || 0).toFixed(2)}σ</b></span>
+      </div>
+    </article>
+  `).join('');
+}
+
+// -------------------------------------------------------------
+// ANALYTICS CHARTS RENDERING
+// -------------------------------------------------------------
+function renderAnalyticsCharts() {
+  const catCanvas = document.getElementById('categoryDistCanvas');
+  const catDist = crystalSummary.category_distribution || { 'Flora': 4, 'Reagents': 3, 'Minerals': 3 };
+
+  if (categoryChart) categoryChart.destroy();
+  categoryChart = new Chart(catCanvas.getContext('2d'), {
+    type: 'doughnut',
+    data: {
+      labels: Object.keys(catDist),
+      datasets: [{
+        data: Object.values(catDist),
+        backgroundColor: ['#b7df25', '#f47a35', '#2dd4bf', '#a78bfa'],
+        borderWidth: 0
+      }]
+    },
+    options: {
+      responsive: true,
+      maintainAspectRatio: false,
+      plugins: { legend: { position: 'bottom', labels: { color: '#8fa08e', font: { size: 10 } } } }
+    }
+  });
+
+  const sellersCanvas = document.getElementById('topSellersCanvas');
+  const topSellers = crystalSummary.top_historical_sellers || {};
+
+  if (topSellersChart) topSellersChart.destroy();
+  topSellersChart = new Chart(sellersCanvas.getContext('2d'), {
+    type: 'bar',
+    data: {
+      labels: Object.keys(topSellers),
+      datasets: [{
+        label: 'Historical Units Sold',
+        data: Object.values(topSellers),
+        backgroundColor: 'rgba(244, 122, 53, 0.75)',
+        borderRadius: 5
+      }]
+    },
+    options: {
+      responsive: true,
+      maintainAspectRatio: false,
+      plugins: { legend: { display: false } },
+      scales: {
+        x: { grid: { color: 'rgba(255,255,255,0.06)' }, ticks: { color: '#8fa08e', font: { size: 9 } } },
+        y: { grid: { color: 'rgba(255,255,255,0.06)' }, ticks: { color: '#8fa08e' } }
       }
     }
+  });
+}
 
-    // Navigation Router
-    function navigateTo(pageId) {
-      currentNavPage = pageId;
-      document.querySelectorAll('.page-view').forEach(p => p.classList.add('hidden'));
-      document.querySelectorAll('.nav-item').forEach(n => n.classList.remove('active'));
+// -------------------------------------------------------------
+// MANAGEMENT RENDERING
+// -------------------------------------------------------------
+function renderManagement() {
+  // Categories
+  const catCounts = {};
+  inventory.forEach(i => {
+    const c = i.category || 'General';
+    catCounts[c] = (catCounts[c] || 0) + 1;
+  });
+  document.getElementById('categoriesCardsGrid').innerHTML = Object.entries(catCounts).map(([c, cnt]) => `
+    <article class="panel">
+      <small style="color:#b7df25;font-weight:700;text-transform:uppercase;font-size:10px;">CATEGORY</small>
+      <h3 style="font-size:16px;margin:6px 0 2px;">${c}</h3>
+      <span style="color:#8fa08e;font-size:12px;">${cnt} ingredients in catalog</span>
+    </article>
+  `).join('');
 
-      const targetPage = document.getElementById(`page-${pageId}`);
-      const targetNav = document.getElementById(`nav-${pageId}`);
-      if (targetPage) {
-        targetPage.classList.remove('hidden');
-        targetPage.classList.add('page-fade');
-      }
-      if (targetNav) targetNav.classList.add('active');
+  // Suppliers
+  const supMap = {};
+  inventory.forEach(i => {
+    const s = i.supplier || 'Shadowbrook Herbalists';
+    supMap[s] = i.lead_time_days || 4;
+  });
+  document.getElementById('suppliersCardsGrid').innerHTML = Object.entries(supMap).map(([s, lead]) => `
+    <article class="panel">
+      <small style="color:#f47a35;font-weight:700;text-transform:uppercase;font-size:10px;">SUPPLIER</small>
+      <h3 style="font-size:15px;margin:6px 0 4px;">${s}</h3>
+      <span style="color:#8fa08e;font-size:11px;">Standard Lead Time: <b style="color:#fff;">${lead} days</b></span>
+    </article>
+  `).join('');
 
-      // Update page titles
-      const titles = {
-        overview: ['Dashboard Overview', 'Real-time potion inventory monitoring & forecasting'],
-        inventory: ['Inventory Catalog', 'Master stock levels, safety limits, and status'],
-        sales: ['Sales Transactions', 'Atomic customer order audit history'],
-        forecast: ['Demand Forecasting', '14-day projection incorporating coven weekend multipliers'],
-        restock: ['Restock Spell', 'Dynamic ROP reorder recommendations'],
-        anomalies: ['Anomaly Detection', 'Statistical Z-Score outlier detection (2.8σ threshold)'],
-        analytics: ['Analytics & Reports', 'Aggregated category distribution & sales trends'],
-        categories: ['Ingredient Categories', 'Catalog distribution by magical group'],
-        suppliers: ['Contracted Suppliers', 'Apothecary supply chains & delivery lead times'],
-        history: ['Stock History', 'Historical inventory modifications & audits'],
-        about: ['The Skoopy Pantry Quest', "Problem statement & Madam Hexley's apothecary story"],
-        settings: ['Database Explorer', 'Live MongoDB Atlas collections inspector']
-      };
+  // History audit
+  document.getElementById('stockAuditPanel').innerHTML = sales.slice(0, 15).map(s => `
+    <div style="padding:10px 0;border-bottom:1px solid rgba(255,255,255,0.06);display:flex;justify-content:space-between;font-size:11.5px;font-family:'Roboto Mono',monospace;">
+      <span style="color:#aab89e;">${s.date} — Customer Order: ${s.product_name}</span>
+      <span style="color:#b7df25;font-weight:700;">-${s.quantity_sold || s.quantity} units</span>
+    </div>
+  `).join('');
+}
 
-      const [title, sub] = titles[pageId] || ['Dashboard', 'Potion Pantry Smart Inventory'];
-      document.getElementById('pageTitle').textContent = title;
-      document.getElementById('pageSubtitle').textContent = sub;
+// -------------------------------------------------------------
+// ACTIONS: SALES, RESTOCK, DELETE
+// -------------------------------------------------------------
+async function quickSale(productName, quantity) {
+  try {
+    const res = await fetch('/api/sales', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ product_name: productName, quantity })
+    });
+    if (!res.ok) throw new Error(await res.text());
+    showToast(`Logged sale: ${quantity} × ${productName}`);
+    await loadAllData();
+  } catch (e) {
+    showToast('Sale failed: ' + e.message);
+  }
+}
 
-      // Close mobile sidebar if open
-      const sb = document.getElementById('sidebar');
-      if (sb.classList.contains('translate-x-0')) toggleSidebar();
+async function quickRestock(productName, quantity) {
+  try {
+    const res = await fetch('/api/restock/order', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ product_name: productName, quantity })
+    });
+    if (!res.ok) throw new Error(await res.text());
+    showToast(`Replenished +${quantity} units of ${productName}`);
+    await loadAllData();
+  } catch (e) {
+    showToast('Restock failed: ' + e.message);
+  }
+}
 
-      // Trigger charts resize when viewing analytics or forecast
-      if (pageId === 'overview') setTimeout(renderOverviewSalesChart, 100);
-      if (pageId === 'forecast') setTimeout(renderForecastPageChart, 100);
-      if (pageId === 'analytics') setTimeout(initAnalyticsCharts, 100);
-      if (pageId === 'settings') loadMongoExplorer();
-
-      lucide.createIcons();
-    }
-
-    function toggleSidebar() {
-      const sb = document.getElementById('sidebar');
-      sb.classList.toggle('-translate-x-full');
-      sb.classList.toggle('translate-x-0');
-    }
-
-    // -------------------------------------------------------------
-    // OVERVIEW PAGE RENDERING
-    // -------------------------------------------------------------
-    function renderOverviewPage() {
-      // 1. KPIs
-      document.getElementById('kpiProducts').textContent = inventory.length;
-      const totalUnits = inventory.reduce((sum, item) => sum + (item.current_stock || 0), 0);
-      document.getElementById('kpiStockUnits').textContent = totalUnits.toLocaleString();
-      document.getElementById('kpiSalesVolume').textContent = salesHistory.length.toLocaleString();
-
-      const criticalItems = inventory.filter(i => (i.current_stock || 0) <= (i.safety_stock || 25));
-      document.getElementById('kpiCriticalStock').textContent = criticalItems.length;
-
-      // 2. Inventory Health Breakdown
-      const healthList = document.getElementById('overviewHealthList');
-      healthList.innerHTML = inventory.slice(0, 5).map(item => {
-        const stock = item.current_stock || 0;
-        const safety = item.safety_stock || 25;
-        const maxExpected = Math.max(stock, safety * 3, 150);
-        const pct = Math.min(100, Math.round((stock / maxExpected) * 100));
-        const isCrit = stock <= safety;
-        const barColor = isCrit ? 'bg-red-500' : pct < 45 ? 'bg-amber-400' : 'bg-emerald-400';
-
-        return `
-          <div class="space-y-1">
-            <div class="flex items-center justify-between">
-              <span class="font-medium text-slate-200">${item.name}</span>
-              <span class="font-mono text-slate-400">${stock} ${item.unit || ''}</span>
-            </div>
-            <div class="meter-track">
-              <div class="meter-fill ${barColor}" style="width: ${pct}%;"></div>
-            </div>
-          </div>
-        `;
-      }).join('');
-
-      // 3. Urgent Alerts Feed
-      const alertsFeed = document.getElementById('overviewAlertsFeed');
-      const urgentItems = prophecies.filter(p => (p.recommended_reorder_qty || 0) > 0);
-      if (!urgentItems.length && !anomalies.length) {
-        alertsFeed.innerHTML = `<div class="text-emerald-400 text-center py-4">All shelves healthy. Zero urgent deficit warnings.</div>`;
-      } else {
-        const alertCards = urgentItems.slice(0, 4).map(p => `
-          <div class="p-3 rounded-xl border border-red-500/30 bg-red-950/20 flex items-center justify-between">
-            <div>
-              <div class="font-semibold text-red-200 flex items-center gap-1.5">
-                <i data-lucide="alert-circle" class="w-3.5 h-3.5 text-red-400"></i>
-                <span>${p.product_name} – Runs out ${p.depletion_date || 'soon'}</span>
-              </div>
-              <div class="text-[11px] text-slate-400">Current: ${p.current_stock} | Suggested Order: <b class="text-amber-400">${p.recommended_reorder_qty} ${p.unit || ''}</b></div>
-            </div>
-            <button onclick="dispatchQuickRestock('${p.product_name}', ${p.recommended_reorder_qty})" class="btn-pumpkin px-3 py-1 text-xs">
-              Order
-            </button>
-          </div>
-        `).join('');
-
-        alertsFeed.innerHTML = alertCards;
-      }
-
-      renderOverviewSalesChart();
-    }
-
-    function setSalesChartTimeframe(tf) {
-      currentSalesTimeframe = tf;
-      ['daily', 'weekly', 'monthly'].forEach(t => {
-        const btn = document.getElementById(`btn-tf-${t}`);
-        if (t === tf) {
-          btn.className = "px-2.5 py-1 rounded-lg font-medium bg-purple-600 text-white";
-        } else {
-          btn.className = "px-2.5 py-1 rounded-lg font-medium text-slate-400 hover:text-white";
-        }
-      });
-      renderOverviewSalesChart();
-    }
-
-    function renderOverviewSalesChart() {
-      const ctx = document.getElementById('overviewSalesChart');
-      if (!ctx) return;
-
-      let labels = [];
-      let data = [];
-      let chartType = 'line';
-
-      if (currentSalesTimeframe === 'weekly') {
-        labels = ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'];
-        data = [15.2, 16.4, 17.8, 19.5, 26.4, 34.2, 28.6];
-        chartType = 'bar';
-      } else if (currentSalesTimeframe === 'monthly') {
-        const trend = analyticsSummary.historical_trend || [];
-        labels = trend.map(t => t.date || t.month).slice(-30);
-        data = trend.map(t => t.total_sold || 0).slice(-30);
-      } else {
-        // Daily: last 14 sales dates
-        const dateMap = {};
-        salesHistory.forEach(s => {
-          dateMap[s.date] = (dateMap[s.date] || 0) + (s.quantity_sold || 1);
-        });
-        labels = Object.keys(dateMap).sort().slice(-14);
-        data = labels.map(l => dateMap[l]);
-      }
-
-      if (salesChartInstance) salesChartInstance.destroy();
-      salesChartInstance = new Chart(ctx.getContext('2d'), {
-        type: chartType,
-        data: {
-          labels,
-          datasets: [{
-            label: 'Sales Volume',
-            data,
-            borderColor: '#8b5cf6',
-            backgroundColor: chartType === 'bar' ? 'rgba(139, 92, 246, 0.75)' : 'rgba(139, 92, 246, 0.12)',
-            fill: chartType === 'line',
-            tension: 0.35,
-            borderRadius: 6,
-            pointRadius: 2
-          }]
-        },
-        options: {
-          responsive: true,
-          maintainAspectRatio: false,
-          plugins: { legend: { display: false } },
-          scales: {
-            x: { grid: { color: 'rgba(255,255,255,0.05)' }, ticks: { color: '#94a3b8', font: { size: 10 } } },
-            y: { grid: { color: 'rgba(255,255,255,0.05)' }, ticks: { color: '#94a3b8' } }
-          }
-        }
+async function batchOrderAll() {
+  const urgent = prophecies.filter(p => (p.recommended_reorder_qty || 0) > 0);
+  if (!urgent.length) {
+    showToast('All shelves are currently healthy!');
+    return;
+  }
+  try {
+    for (const item of urgent) {
+      await fetch('/api/restock/order', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ product_name: item.product_name, quantity: item.recommended_reorder_qty })
       });
     }
-
-    // -------------------------------------------------------------
-    // INVENTORY TABLE RENDERING
-    // -------------------------------------------------------------
-    let inventoryFilter = 'ALL';
-    function filterInventoryTable(flt) {
-      inventoryFilter = flt;
-      ['all', 'crit', 'curse'].forEach(f => {
-        const btn = document.getElementById(`inv-flt-${f}`);
-        const active = (f === 'all' && flt === 'ALL') || (f === 'crit' && flt === 'CRITICAL') || (f === 'curse' && flt === 'CURSED');
-        btn.className = active ? "px-3 py-1.5 rounded-lg text-xs font-semibold bg-purple-600 text-white" : "px-3 py-1.5 rounded-lg text-xs font-semibold bg-white/5 text-slate-300 hover:text-white";
-      });
-      renderInventoryTable();
-    }
-
-    function renderInventoryTable() {
-      const tbody = document.getElementById('inventoryTableBody');
-      const search = (document.getElementById('inventorySearchInp')?.value || '').toLowerCase();
-      const curseItems = ['Moonflower', 'Phoenix Feather', 'Enchanted Mushroom'];
-
-      const filtered = inventory.filter(item => {
-        const matchesSearch = item.name.toLowerCase().includes(search) || (item.category || '').toLowerCase().includes(search);
-        if (!matchesSearch) return false;
-        const isCrit = (item.current_stock || 0) <= (item.safety_stock || 25);
-        if (inventoryFilter === 'CRITICAL') return isCrit;
-        if (inventoryFilter === 'CURSED') return curseItems.includes(item.name);
-        return true;
-      });
-
-      if (!filtered.length) {
-        tbody.innerHTML = `<tr><td colspan="7" class="py-8 text-center text-slate-500">No ingredients match search criteria.</td></tr>`;
-        return;
-      }
-
-      tbody.innerHTML = filtered.map(item => {
-        const stock = item.current_stock || 0;
-        const safety = item.safety_stock || 25;
-        const isCrit = stock <= safety;
-        const maxExp = Math.max(stock, safety * 3, 160);
-        const pct = Math.min(100, Math.round((stock / maxExp) * 100));
-        const barColor = isCrit ? 'bg-red-500' : pct < 45 ? 'bg-amber-400' : 'bg-emerald-400';
-
-        const proph = prophecies.find(p => p.product_name === item.name) || {};
-        const daysLeft = proph.days_until_stockout != null ? `${proph.days_until_stockout}d` : 'Safe';
-        const runoutDate = proph.depletion_date || 'Safe';
-
-        const isCurseItem = curseActive && curseItems.includes(item.name);
-
-        return `
-          <tr class="hover:bg-white/[0.02] transition">
-            <td class="py-3.5 px-4 font-semibold text-slate-100 flex items-center gap-2">
-              <span>${item.name}</span>
-              ${isCurseItem ? '<span class="text-[9px] font-bold px-1.5 py-0.5 rounded bg-orange-500/20 text-orange-400 border border-orange-500/30">3× SURGE</span>' : ''}
-            </td>
-            <td class="py-3.5 px-4 text-slate-400">${item.category || 'General Reagent'}</td>
-            <td class="py-3.5 px-4 font-mono font-bold text-slate-200">${stock} <span class="text-[11px] text-slate-500 font-normal">${item.unit || ''}</span></td>
-            <td class="py-3.5 px-4">
-              <div class="meter-track">
-                <div class="meter-fill ${barColor}" style="width: ${pct}%;"></div>
-              </div>
-            </td>
-            <td class="py-3.5 px-4 font-mono text-slate-400">${safety}</td>
-            <td class="py-3.5 px-4">
-              <span class="font-mono ${isCrit ? 'text-red-400 font-bold' : 'text-slate-300'}">${runoutDate}</span>
-              <span class="text-[10px] text-slate-500 ml-1">(${daysLeft})</span>
-            </td>
-            <td class="py-3.5 px-4 text-right space-x-1.5">
-              <button onclick="quickActionSale('${item.name}', 1)" class="btn-ghost px-2 py-1 text-[11px] font-semibold text-orange-400 hover:text-orange-300" title="Sell 1 unit">
-                -1 Sell
-              </button>
-              <button onclick="dispatchQuickRestock('${item.name}', 25)" class="btn-ghost px-2 py-1 text-[11px] font-semibold text-emerald-400 hover:text-emerald-300" title="Restock 25 units">
-                +25 Stock
-              </button>
-              <button onclick="deleteIngredient('${item.name}')" class="p-1 text-slate-500 hover:text-red-400 transition" title="Delete ingredient">
-                <i data-lucide="trash-2" class="w-3.5 h-3.5 inline"></i>
-              </button>
-            </td>
-          </tr>
-        `;
-      }).join('');
-
-      lucide.createIcons();
-    }
-
-    // -------------------------------------------------------------
-    // SALES TABLE RENDERING
-    // -------------------------------------------------------------
-    function renderSalesTable() {
-      const tbody = document.getElementById('salesTableBody');
-      if (!salesHistory.length) {
-        tbody.innerHTML = `<tr><td colspan="5" class="py-8 text-center text-slate-500">No sales transactions logged.</td></tr>`;
-        return;
-      }
-
-      tbody.innerHTML = salesHistory.slice(0, 30).map(s => `
-        <tr class="hover:bg-white/[0.02]">
-          <td class="py-3 px-4 font-mono text-slate-400">${s.date || 'Today'}</td>
-          <td class="py-3 px-4 font-medium text-slate-200">${s.product_name}</td>
-          <td class="py-3 px-4 font-mono font-bold text-purple-300">-${s.quantity_sold || s.quantity}</td>
-          <td class="py-3 px-4 font-mono text-slate-500">${s.store_id || 'HEXLEY-001'}</td>
-          <td class="py-3 px-4">
-            <span class="text-[10px] font-mono font-bold px-2 py-0.5 rounded bg-emerald-500/20 text-emerald-400 border border-emerald-500/30">
-              AUDITED
-            </span>
-          </td>
-        </tr>
-      `).join('');
-    }
-
-    // -------------------------------------------------------------
-    // PROPHECY & DEMAND FORECAST RENDERING
-    // -------------------------------------------------------------
-    function renderProphecyPage() {
-      const picker = document.getElementById('forecastProductPicker');
-      picker.innerHTML = inventory.map(i => `<option value="${i.name}">${i.name}</option>`).join('');
-
-      // Ranking
-      const ranking = document.getElementById('prophecyRankingList');
-      const sorted = [...prophecies].sort((a, b) => (a.days_until_stockout || 999) - (b.days_until_stockout || 999));
-      ranking.innerHTML = sorted.map(p => {
-        const isUrgent = p.status === 'CRITICAL_DEFICIT' || p.status === 'IMMINENT_STOCKOUT';
-        return `
-          <div class="p-2.5 rounded-xl border ${isUrgent ? 'border-red-500/30 bg-red-950/20' : 'border-white/5 bg-black/30'} flex items-center justify-between">
-            <div>
-              <div class="font-semibold text-slate-200">${p.product_name}</div>
-              <div class="text-[10px] text-slate-400">Burn: ${(p.avg_daily_demand || 0).toFixed(1)}/day</div>
-            </div>
-            <div class="text-right">
-              <span class="font-mono text-xs ${isUrgent ? 'text-red-400 font-bold' : 'text-slate-300'}">${p.days_until_stockout != null ? `${p.days_until_stockout} days` : 'Safe'}</span>
-            </div>
-          </div>
-        `;
-      }).join('');
-
-      renderForecastPageChart();
-    }
-
-    async function renderForecastPageChart() {
-      const picker = document.getElementById('forecastProductPicker');
-      const prod = picker ? picker.value : (inventory[0]?.name || 'Moonflower');
-
-      try {
-        const res = await fetch(`/api/prophecy/forecast/${encodeURIComponent(prod)}?days=14`).then(r => r.json());
-        const days = res.daily_projections || res.forecast || [];
-
-        const ctx = document.getElementById('prophecyDailyCanvas');
-        if (!ctx) return;
-
-        if (prophecyDailyChartInstance) prophecyDailyChartInstance.destroy();
-        prophecyDailyChartInstance = new Chart(ctx.getContext('2d'), {
-          type: 'bar',
-          data: {
-            labels: days.map(d => d.date.slice(5)),
-            datasets: [{
-              label: 'Predicted Units',
-              data: days.map(d => d.expected_demand || d.predicted_demand),
-              backgroundColor: 'rgba(139, 92, 246, 0.75)',
-              hoverBackgroundColor: '#ff7700',
-              borderRadius: 6
-            }]
-          },
-          options: {
-            responsive: true,
-            maintainAspectRatio: false,
-            plugins: { legend: { display: false } },
-            scales: {
-              x: { grid: { color: 'rgba(255,255,255,0.05)' }, ticks: { color: '#94a3b8', font: { size: 10 } } },
-              y: { grid: { color: 'rgba(255,255,255,0.05)' }, ticks: { color: '#94a3b8' } }
-            }
-          }
-        });
-      } catch (e) {
-        console.error('Forecast chart error', e);
-      }
-    }
-
-    // -------------------------------------------------------------
-    // RESTOCK TABLE RENDERING
-    // -------------------------------------------------------------
-    function renderRestockTable() {
-      const tbody = document.getElementById('restockTableBody');
-      if (!prophecies.length) {
-        tbody.innerHTML = `<tr><td colspan="8" class="py-8 text-center text-slate-500">Calculating replenishment recommendations...</td></tr>`;
-        return;
-      }
-
-      tbody.innerHTML = prophecies.map(p => {
-        const qty = p.recommended_reorder_qty || 0;
-        const isUrgent = p.status === 'CRITICAL_DEFICIT' || p.status === 'IMMINENT_STOCKOUT';
-
-        return `
-          <tr class="hover:bg-white/[0.02]">
-            <td class="py-3 px-4 font-semibold text-slate-100">${p.product_name}</td>
-            <td class="py-3 px-4 text-slate-400">${p.supplier || 'Shadowbrook Supply'}</td>
-            <td class="py-3 px-4 font-mono text-slate-400">${p.lead_time_days || 4}d</td>
-            <td class="py-3 px-4 font-mono text-slate-300">${p.current_stock}</td>
-            <td class="py-3 px-4 font-mono text-slate-400">${p.reorder_point}</td>
-            <td class="py-3 px-4 font-mono font-bold ${qty > 0 ? 'text-amber-400' : 'text-slate-500'}">
-              ${qty > 0 ? `+${qty}` : '0'} ${p.unit || ''}
-            </td>
-            <td class="py-3 px-4">
-              <span class="text-[10px] font-mono font-bold px-2 py-0.5 rounded ${isUrgent ? 'bg-red-500/20 text-red-400 border border-red-500/30' : 'bg-emerald-500/20 text-emerald-400 border border-emerald-500/30'}">
-                ${p.status.replace(/_/g, ' ')}
-              </span>
-            </td>
-            <td class="py-3 px-4 text-right">
-              ${qty > 0 ? `
-                <button onclick="dispatchQuickRestock('${p.product_name}', ${qty})" class="btn-pumpkin px-3 py-1 text-xs">
-                  Order Now
-                </button>
-              ` : `
-                <span class="text-xs text-slate-500">Sufficient</span>
-              `}
-            </td>
-          </tr>
-        `;
-      }).join('');
-    }
-
-    // -------------------------------------------------------------
-    // ANOMALIES PAGE RENDERING
-    // -------------------------------------------------------------
-    function renderAnomaliesPage(anomData) {
-      const metrics = anomData.metrics || {};
-      document.getElementById('anomPrec').textContent = ((metrics.precision || 1.0) * 100).toFixed(0) + '%';
-      document.getElementById('anomRec').textContent = ((metrics.recall || 1.0) * 100).toFixed(0) + '%';
-      document.getElementById('anomF1Val').textContent = (metrics.f1_score || 1.0).toFixed(2);
-
-      const grid = document.getElementById('anomalyDetectionGrid');
-      if (!anomalies.length) {
-        grid.innerHTML = `<div class="col-span-full py-8 text-center text-emerald-400 text-xs">Zero anomalies detected. All consumption aligns with historical patterns.</div>`;
-        return;
-      }
-
-      grid.innerHTML = anomalies.map(a => `
-        <div class="saas-card p-5 border-red-500/30 space-y-2">
-          <div class="flex items-center justify-between">
-            <div class="flex items-center gap-2">
-              <i data-lucide="alert-triangle" class="w-4 h-4 text-red-400"></i>
-              <h4 class="font-semibold text-sm text-red-200">${a.product_name}</h4>
-            </div>
-            <span class="font-mono text-[10px] text-slate-400 px-2 py-0.5 rounded bg-black/40 border border-red-500/20">${a.date}</span>
-          </div>
-          <p class="text-xs text-slate-300 leading-relaxed">${a.description || a.lore_description || 'Consumption spike flagged by Z-score outlier engine'}</p>
-          <div class="flex items-center gap-4 text-xs font-mono text-slate-400 pt-2 border-t border-white/5">
-            <span>Actual: <b class="text-red-300">${a.actual_demand}</b></span>
-            <span>Expected: <b>${(a.expected_demand || 0).toFixed(1)}</b></span>
-            <span>Z-Score: <b class="text-amber-400">${(a.z_score || 0).toFixed(2)}σ</b></span>
-          </div>
-        </div>
-      `).join('');
-
-      lucide.createIcons();
-    }
-
-    // -------------------------------------------------------------
-    // ANALYTICS PAGE RENDERING
-    // -------------------------------------------------------------
-    function renderAnalyticsPage() {
-      // Lazy-load when navigated
-    }
-
-    function initAnalyticsCharts() {
-      // 1. Category Doughnut
-      const catCtx = document.getElementById('categoryDoughnutCanvas');
-      const catDist = analyticsSummary.category_distribution || { 'Flora & Herbs': 4, 'Reagents & Creatures': 3, 'Crystals': 3 };
-
-      if (categoryDoughnutInstance) categoryDoughnutInstance.destroy();
-      categoryDoughnutInstance = new Chart(catCtx.getContext('2d'), {
-        type: 'doughnut',
-        data: {
-          labels: Object.keys(catDist),
-          datasets: [{
-            data: Object.values(catDist),
-            backgroundColor: ['#8b5cf6', '#ff7700', '#06b6d4', '#10b981'],
-            borderWidth: 0
-          }]
-        },
-        options: {
-          responsive: true,
-          maintainAspectRatio: false,
-          plugins: { legend: { position: 'bottom', labels: { color: '#94a3b8', font: { size: 10 } } } }
-        }
-      });
-
-      // 2. Top Sellers
-      const sellersCtx = document.getElementById('topSellersCanvas');
-      const topSellers = analyticsSummary.top_historical_sellers || {};
-      if (topSellersChartInstance) topSellersChartInstance.destroy();
-      topSellersChartInstance = new Chart(sellersCtx.getContext('2d'), {
-        type: 'bar',
-        data: {
-          labels: Object.keys(topSellers),
-          datasets: [{
-            label: 'Volume Sold',
-            data: Object.values(topSellers),
-            backgroundColor: 'rgba(255, 119, 0, 0.75)',
-            borderRadius: 6
-          }]
-        },
-        options: {
-          responsive: true,
-          maintainAspectRatio: false,
-          plugins: { legend: { display: false } },
-          scales: {
-            x: { grid: { color: 'rgba(255,255,255,0.05)' }, ticks: { color: '#94a3b8', font: { size: 9 } } },
-            y: { grid: { color: 'rgba(255,255,255,0.05)' }, ticks: { color: '#94a3b8' } }
-          }
-        }
-      });
-
-      // 3. 180d History
-      const histCtx = document.getElementById('historyTimelineCanvas');
-      const histData = analyticsSummary.historical_trend || [];
-      if (historyTimelineInstance) historyTimelineInstance.destroy();
-      historyTimelineInstance = new Chart(histCtx.getContext('2d'), {
-        type: 'line',
-        data: {
-          labels: histData.map(h => h.date || h.month),
-          datasets: [{
-            label: 'Total Units Sold',
-            data: histData.map(h => h.total_sold || 0),
-            borderColor: '#06b6d4',
-            backgroundColor: 'rgba(6, 182, 212, 0.1)',
-            fill: true,
-            tension: 0.35,
-            pointRadius: 1
-          }]
-        },
-        options: {
-          responsive: true,
-          maintainAspectRatio: false,
-          plugins: { legend: { display: false } },
-          scales: {
-            x: { grid: { color: 'rgba(255,255,255,0.05)' }, ticks: { color: '#94a3b8', maxTicksLimit: 12 } },
-            y: { grid: { color: 'rgba(255,255,255,0.05)' }, ticks: { color: '#94a3b8' } }
-          }
-        }
-      });
-    }
-
-    // -------------------------------------------------------------
-    // MANAGEMENT PAGES RENDERING (CATEGORIES / SUPPLIERS / AUDIT)
-    // -------------------------------------------------------------
-    function renderManagementPages() {
-      // Categories
-      const catMap = {};
-      inventory.forEach(i => {
-        const cat = i.category || 'General';
-        catMap[cat] = (catMap[cat] || 0) + 1;
-      });
-      document.getElementById('categoriesGrid').innerHTML = Object.entries(catMap).map(([cat, cnt]) => `
-        <div class="saas-card p-4 space-y-1">
-          <div class="text-xs font-semibold text-purple-300 uppercase font-mono">${cat}</div>
-          <div class="text-xl font-bold font-mono text-white">${cnt} ingredients</div>
-        </div>
-      `).join('');
-
-      // Suppliers
-      const supMap = {};
-      inventory.forEach(i => {
-        const sup = i.supplier || 'Local Apothecary';
-        supMap[sup] = i.lead_time_days || 4;
-      });
-      document.getElementById('suppliersGrid').innerHTML = Object.entries(supMap).map(([sup, lead]) => `
-        <div class="saas-card p-4 space-y-1">
-          <div class="text-xs font-semibold text-cyan-300 font-mono">${sup}</div>
-          <div class="text-sm font-medium text-slate-300">Standard Delivery Lead Time: <b class="text-white">${lead} days</b></div>
-        </div>
-      `).join('');
-
-      // Stock History audit
-      document.getElementById('stockAuditList').innerHTML = salesHistory.slice(0, 15).map(s => `
-        <div class="p-2.5 rounded-lg bg-black/40 border border-white/5 flex items-center justify-between">
-          <span class="text-slate-400">${s.date} - Customer purchase: ${s.product_name}</span>
-          <span class="text-purple-300 font-bold">-${s.quantity_sold || s.quantity} units</span>
-        </div>
-      `).join('');
-    }
-
-    // -------------------------------------------------------------
-    // ACTIONS & API DISPATCHES
-    // -------------------------------------------------------------
-    async function quickActionSale(productName, quantity) {
-      try {
-        const res = await fetch('/api/sales', {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ product_name: productName, quantity })
-        });
-        if (!res.ok) throw new Error(await res.text());
-        showToast(`Decremented ${quantity} units of ${productName} (Sale logged).`, 'success');
-        await fetchAllData();
-      } catch (err) {
-        showToast('Sale failed: ' + err.message, 'error');
-      }
-    }
-
-    async function dispatchQuickRestock(productName, quantity) {
-      try {
-        const res = await fetch('/api/restock/order', {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ product_name: productName, quantity })
-        });
-        if (!res.ok) throw new Error(await res.text());
-        showToast(`Dispatched restock order for ${quantity} × ${productName}!`, 'success');
-        await fetchAllData();
-      } catch (err) {
-        showToast('Restock failed: ' + err.message, 'error');
-      }
-    }
-
-    async function batchRestockAll() {
-      const urgent = prophecies.filter(p => (p.recommended_reorder_qty || 0) > 0);
-      if (!urgent.length) {
-        showToast('All ingredients are currently well stocked.', 'info');
-        return;
-      }
-
-      try {
-        for (const item of urgent) {
-          await fetch('/api/restock/order', {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({ product_name: item.product_name, quantity: item.recommended_reorder_qty })
-          });
-        }
-        showToast(`Successfully dispatched batch replenishment for ${urgent.length} ingredients!`, 'success');
-        await fetchAllData();
-      } catch (err) {
-        showToast('Batch restock error: ' + err.message, 'error');
-      }
-    }
-
-    async function deleteIngredient(name) {
-      if (!confirm(`Delete ${name} from Madam Hexley's catalog?`)) return;
-      try {
-        const res = await fetch(`/api/inventory/${encodeURIComponent(name)}`, { method: 'DELETE' });
-        if (!res.ok) throw new Error(await res.text());
-        showToast(`Removed ${name} from inventory.`, 'info');
-        await fetchAllData();
-      } catch (err) {
-        showToast('Delete error: ' + err.message, 'error');
-      }
-    }
-
-    // -------------------------------------------------------------
-    // MIDNIGHT CURSE
-    // -------------------------------------------------------------
-    async function toggleCurse() {
-      try {
-        const res = await fetch('/api/curse/toggle', {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ activate: !curseActive })
-        });
-        const data = await res.json();
-        curseActive = data.curse_active;
-
-        updateCurseUI();
-
-        if (curseActive) {
-          showToast('🌕 Full Moon Festival announced! Demand for 3 ingredients tripled (3.0×)!', 'warning');
-        } else {
-          showToast('🌙 Midnight Curse lifted. Demand normalized.', 'info');
-        }
-
-        await fetchAllData();
-      } catch (err) {
-        showToast('Failed to toggle curse: ' + err.message, 'error');
-      }
-    }
-
-    function updateCurseUI() {
-      const banner = document.getElementById('curseBanner');
-      const navText = document.getElementById('curseNavText');
-      if (curseActive) {
-        banner.classList.remove('hidden');
-        if (navText) navText.textContent = 'Lift Curse';
-      } else {
-        banner.classList.add('hidden');
-        if (navText) navText.textContent = 'Midnight Curse (3×)';
-      }
-    }
-
-    // -------------------------------------------------------------
-    // MODAL HANDLERS
-    // -------------------------------------------------------------
-    function populateModalDropdowns() {
-      const saleSel = document.getElementById('saleModalProductSelect');
-      const restockSel = document.getElementById('restockModalProductSelect');
-      const options = inventory.map(i => `<option value="${i.name}">${i.name} (Stock: ${i.current_stock})</option>`).join('');
-      if (saleSel) saleSel.innerHTML = options;
-      if (restockSel) restockSel.innerHTML = options;
-    }
-
-    function openRecordSaleModal() { document.getElementById('modalRecordSale').classList.remove('hidden'); }
-    function closeRecordSaleModal() { document.getElementById('modalRecordSale').classList.add('hidden'); }
-
-    async function submitRecordSale() {
-      const prod = document.getElementById('saleModalProductSelect').value;
-      const qty = parseInt(document.getElementById('saleModalQty').value) || 1;
-      await quickActionSale(prod, qty);
-      closeRecordSaleModal();
-    }
-
-    function openRestockModal() { document.getElementById('modalRestock').classList.remove('hidden'); }
-    function closeRestockModal() { document.getElementById('modalRestock').classList.add('hidden'); }
-
-    async function submitRestockOrder() {
-      const prod = document.getElementById('restockModalProductSelect').value;
-      const qty = parseInt(document.getElementById('restockModalQty').value) || 25;
-      await dispatchQuickRestock(prod, qty);
-      closeRestockModal();
-    }
-
-    function openAddIngredientModal() { document.getElementById('modalAddIngredient').classList.remove('hidden'); }
-    function closeAddIngredientModal() { document.getElementById('modalAddIngredient').classList.add('hidden'); }
-
-    async function submitNewIngredient() {
-      const name = document.getElementById('addIngName').value.trim();
-      const category = document.getElementById('addIngCategory').value.trim() || 'General Flora';
-      const unit = document.getElementById('addIngUnit').value.trim() || 'bundles';
-      const stock = parseInt(document.getElementById('addIngStock').value) || 0;
-      const safety = parseInt(document.getElementById('addIngSafety').value) || 20;
-      const supplier = document.getElementById('addIngSupplier').value.trim() || 'Local Apothecary';
-      const lead = parseInt(document.getElementById('addIngLeadTime').value) || 4;
-
-      if (!name) {
-        showToast('Please specify ingredient name.', 'error');
-        return;
-      }
-
-      try {
-        const res = await fetch('/api/inventory', {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({
-            name, category, unit, current_stock: stock, safety_stock: safety, supplier, lead_time_days: lead
-          })
-        });
-        if (!res.ok) throw new Error(await res.text());
-        showToast(`Added ${name} to master catalog!`, 'success');
-        closeAddIngredientModal();
-        await fetchAllData();
-      } catch (err) {
-        showToast('Error adding item: ' + err.message, 'error');
-      }
-    }
-
-    // -------------------------------------------------------------
-    // SETTINGS / MONGODB EXPLORER
-    // -------------------------------------------------------------
-    async function loadMongoExplorer() {
-      try {
-        const summary = await fetch('/api/db/summary').then(r => r.json());
-        const cards = document.getElementById('mongoSummaryCards');
-        const cols = summary.collection_counts || summary.collections || {};
-        cards.innerHTML = Object.entries(cols).map(([name, count]) => `
-          <div class="saas-card p-4 space-y-1">
-            <div class="text-[10px] uppercase font-mono text-purple-300">${name}</div>
-            <div class="text-2xl font-bold font-mono text-white">${count} docs</div>
-          </div>
-        `).join('');
-        previewCollection();
-      } catch (e) {
-        console.error('Mongo summary error', e);
-      }
-    }
-
-    async function previewCollection() {
-      const sel = document.getElementById('dbCollectionSelector');
-      const coll = sel ? sel.value : 'ingredients';
-      try {
-        const res = await fetch(`/api/db/collection/${coll}?limit=10`).then(r => r.json());
-        const docs = res.documents || res;
-        document.getElementById('collectionDocCount').textContent = `${Array.isArray(docs) ? docs.length : 0} preview documents returned`;
-        document.getElementById('rawCollectionOutput').textContent = JSON.stringify(docs, null, 2);
-      } catch (e) {
-        document.getElementById('rawCollectionOutput').textContent = 'Error loading preview: ' + e.message;
-      }
-    }
-
-    async function resetDemoData() {
-      if (!confirm('Reset all MongoDB collections back to initial clean seed?')) return;
-      try {
-        await fetch('/api/admin/reset', { method: 'POST' });
-        showToast('Demo data successfully re-seeded from CSVs!', 'success');
-        await fetchAllData();
-        loadMongoExplorer();
-      } catch (err) {
-        showToast('Reset failed: ' + err.message, 'error');
-      }
-    }
-
-    // -------------------------------------------------------------
-    // INTERACTIVE SPOTLIGHT TOUR (WALKTHROUGH)
-    // -------------------------------------------------------------
-    function checkFirstVisitTour() {
-      if (!localStorage.getItem('skoopy_tour_done')) {
-        setTimeout(startInteractiveTour, 600);
-      }
-    }
-
-    function startInteractiveTour() {
-      currentTourIdx = 0;
-      document.getElementById('tourOverlay').classList.add('active');
-      document.getElementById('tourOverlay').classList.remove('hidden');
-      renderTourStep();
-    }
-
-    function renderTourStep() {
-      const step = TOUR_STEPS[currentTourIdx];
-      const total = TOUR_STEPS.length;
-      navigateTo(step.page);
-
-      document.getElementById('tourStepBadge').textContent = `Step ${currentTourIdx + 1} / ${total}`;
-      document.getElementById('tourTitle').textContent = step.title;
-      document.getElementById('tourText').textContent = step.text;
-
-      document.getElementById('tourPrevBtn').classList.toggle('hidden', currentTourIdx === 0);
-      document.getElementById('tourNextBtn').textContent = currentTourIdx === total - 1 ? 'Finish Tour' : 'Next';
-
-      const card = document.getElementById('tourCard');
-      const spot = document.getElementById('tourSpotlight');
-
-      setTimeout(() => {
-        const el = document.querySelector(step.target);
-        if (el) {
-          const rect = el.getBoundingClientRect();
-          spot.classList.remove('hidden');
-          spot.style.top = (rect.top - 6 + window.scrollY) + 'px';
-          spot.style.left = (rect.left - 6) + 'px';
-          spot.style.width = (rect.width + 12) + 'px';
-          spot.style.height = (rect.height + 12) + 'px';
-
-          card.classList.remove('hidden');
-          const cTop = rect.bottom + 16 + window.scrollY;
-          const cLeft = Math.min(rect.left, window.innerWidth - 340);
-          card.style.top = Math.max(20, cTop) + 'px';
-          card.style.left = Math.max(16, cLeft) + 'px';
-
-          el.scrollIntoView({ behavior: 'smooth', block: 'center' });
-        } else {
-          spot.classList.add('hidden');
-          card.classList.remove('hidden');
-          card.style.top = '30%';
-          card.style.left = '50%';
-          card.style.transform = 'translate(-50%, -50%)';
-        }
-      }, 250);
-    }
-
-    function nextTourStep() {
-      if (currentTourIdx >= TOUR_STEPS.length - 1) {
-        skipTour();
-        return;
-      }
-      currentTourIdx++;
-      renderTourStep();
-    }
-
-    function prevTourStep() {
-      if (currentTourIdx <= 0) return;
-      currentTourIdx--;
-      renderTourStep();
-    }
-
-    function restartTour() {
-      currentTourIdx = 0;
-      renderTourStep();
-    }
-
-    function skipTour() {
-      document.getElementById('tourOverlay').classList.remove('active');
-      document.getElementById('tourOverlay').classList.add('hidden');
-      document.getElementById('tourSpotlight').classList.add('hidden');
-      document.getElementById('tourCard').classList.add('hidden');
-      localStorage.setItem('skoopy_tour_done', 'true');
-      navigateTo('overview');
-    }
-
-    // -------------------------------------------------------------
-    // TOAST NOTIFICATIONS
-    // -------------------------------------------------------------
-    function showToast(msg, type = 'info') {
-      const box = document.getElementById('toast-container');
-      const t = document.createElement('div');
-      t.className = 'toast-msg';
-
-      let border = 'border-purple-500/50 text-purple-200';
-      let icon = 'info';
-
-      if (type === 'success') {
-        border = 'border-emerald-500/50 text-emerald-200';
-        icon = 'check-circle';
-      } else if (type === 'error') {
-        border = 'border-red-500/50 text-red-200';
-        icon = 'alert-circle';
-      } else if (type === 'warning') {
-        border = 'border-orange-500/50 text-orange-200';
-        icon = 'moon';
-      }
-
-      t.classList.add(...border.split(' '));
-      t.innerHTML = `<i data-lucide="${icon}" class="w-4 h-4 shrink-0"></i><span>${msg}</span>`;
-      box.appendChild(t);
-      lucide.createIcons();
-
-      setTimeout(() => {
-        t.style.opacity = '0';
-        t.style.transform = 'translateY(10px)';
-        t.style.transition = 'all 0.3s';
-        setTimeout(() => t.remove(), 300);
-      }, 3500);
-    }
-  </script>
+    showToast(`Dispatched replenishment orders for ${urgent.length} ingredients!`);
+    await loadAllData();
+  } catch (e) {
+    showToast('Batch restock error: ' + e.message);
+  }
+}
+
+async function deleteItem(name) {
+  if (!confirm(`Delete ${name} from catalog?`)) return;
+  try {
+    const res = await fetch(`/api/inventory/${encodeURIComponent(name)}`, { method: 'DELETE' });
+    if (!res.ok) throw new Error(await res.text());
+    showToast(`Deleted ${name} from inventory`);
+    await loadAllData();
+  } catch (e) {
+    showToast('Delete failed: ' + e.message);
+  }
+}
+
+// -------------------------------------------------------------
+// MIDNIGHT CURSE TOGGLE
+// -------------------------------------------------------------
+async function toggleCurse() {
+  try {
+    const res = await fetch('/api/curse/toggle', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ activate: !curseActive })
+    });
+    const d = await res.json();
+    curseActive = d.curse_active;
+    updateCurseUI();
+    showToast(curseActive ? '🌕 Full Moon Festival! Demand ×3.0 active!' : '🌙 Midnight Curse lifted.');
+    await loadAllData();
+  } catch (e) {
+    showToast('Curse toggle error: ' + e.message);
+  }
+}
+
+function updateCurseUI() {
+  const banner = document.getElementById('curseBanner');
+  const txt = document.getElementById('curseBtnText');
+  if (curseActive) {
+    banner.classList.add('active');
+    if (txt) txt.textContent = 'Lift Curse (Active)';
+  } else {
+    banner.classList.remove('active');
+    if (txt) txt.textContent = 'Midnight Curse (3×)';
+  }
+}
+
+// -------------------------------------------------------------
+// MODALS
+// -------------------------------------------------------------
+function populateSelects() {
+  const sel = document.getElementById('modalSaleProduct');
+  if (sel) sel.innerHTML = inventory.map(i => `<option value="${i.name}">${i.name} (${i.current_stock} in stock)</option>`).join('');
+}
+function openSaleModal() { populateSelects(); document.getElementById('saleModal').classList.add('open'); }
+function closeSaleModal() { document.getElementById('saleModal').classList.remove('open'); }
+async function submitSale() {
+  const prod = document.getElementById('modalSaleProduct').value;
+  const qty = parseInt(document.getElementById('modalSaleQty').value) || 1;
+  await quickSale(prod, qty);
+  closeSaleModal();
+}
+
+function openAddModal() { document.getElementById('addModal').classList.add('open'); }
+function closeAddModal() { document.getElementById('addModal').classList.remove('open'); }
+async function submitAdd() {
+  const name = document.getElementById('addName').value.trim();
+  const category = document.getElementById('addCategory').value.trim() || 'General Flora';
+  const stock = parseInt(document.getElementById('addStock').value) || 0;
+  const safety = parseInt(document.getElementById('addSafety').value) || 20;
+
+  if (!name) return showToast('Please provide an ingredient name');
+
+  try {
+    const res = await fetch('/api/inventory', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ name, category, current_stock: stock, safety_stock: safety })
+    });
+    if (!res.ok) throw new Error(await res.text());
+    showToast(`Added ${name} to pantry catalog!`);
+    closeAddModal();
+    await loadAllData();
+  } catch (e) {
+    showToast('Add failed: ' + e.message);
+  }
+}
+
+// -------------------------------------------------------------
+// INTERACTIVE TOUR
+// -------------------------------------------------------------
+function openTour() {
+  tourIndex = 0;
+  renderTour();
+  document.getElementById('tour').classList.add('show');
+}
+function renderTour() {
+  const s = tourSteps[tourIndex];
+  document.getElementById('tourStep').textContent = `STEP ${tourIndex + 1} OF ${tourSteps.length}`;
+  document.getElementById('tourTitle').textContent = s[0];
+  document.getElementById('tourText').textContent = s[1];
+  document.getElementById('tourProgress').innerHTML = tourSteps.map((_, i) => `<i class="${i <= tourIndex ? 'on' : ''}"></i>`).join('');
+  document.getElementById('tourNext').textContent = tourIndex === tourSteps.length - 1 ? 'Finish ✓' : 'Next →';
+}
+function nextTour() {
+  if (tourIndex < tourSteps.length - 1) {
+    tourIndex++;
+    renderTour();
+  } else {
+    closeTour();
+  }
+}
+function closeTour() {
+  document.getElementById('tour').classList.remove('show');
+  localStorage.setItem('skoopy_tour_done', '1');
+  showToast('Tour completed. The pantry is yours!');
+}
+
+// -------------------------------------------------------------
+// TOAST NOTIFICATIONS
+// -------------------------------------------------------------
+let toastTimer;
+function showToast(msg) {
+  const t = document.getElementById('toast');
+  t.textContent = msg;
+  t.classList.add('show');
+  clearTimeout(toastTimer);
+  toastTimer = setTimeout(() => t.classList.remove('show'), 2600);
+}
+</script>
 </body>
 </html>
