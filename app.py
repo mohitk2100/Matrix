@@ -44,32 +44,32 @@ st.markdown("""
     .badge-critical {
         background-color: #ef4444;
         color: white;
-        padding: 3px 8px;
+        padding: 4px 10px;
         border-radius: 6px;
-        font-weight: 600;
-        font-size: 0.8rem;
+        font-weight: 700;
+        font-size: 0.85rem;
     }
     .badge-warning {
         background-color: #f59e0b;
         color: black;
-        padding: 3px 8px;
+        padding: 4px 10px;
         border-radius: 6px;
-        font-weight: 600;
-        font-size: 0.8rem;
+        font-weight: 700;
+        font-size: 0.85rem;
     }
     .badge-healthy {
         background-color: #10b981;
         color: white;
-        padding: 3px 8px;
+        padding: 4px 10px;
         border-radius: 6px;
-        font-weight: 600;
-        font-size: 0.8rem;
+        font-weight: 700;
+        font-size: 0.85rem;
     }
     .stTabs [data-baseweb="tab-list"] {
-        gap: 10px;
+        gap: 8px;
     }
     .stTabs [data-baseweb="tab"] {
-        padding: 12px 20px;
+        padding: 10px 18px;
         font-weight: 600;
         border-radius: 8px 8px 0px 0px;
     }
@@ -83,10 +83,10 @@ with col_head1:
     st.markdown('<p class="shop-subtitle">Track 01: Smart Inventory & Demand Prediction • Hack-O-Lantern Hackathon</p>', unsafe_allow_html=True)
 with col_head2:
     db_badge = "🟢 MongoDB Atlas" if not db_instance.is_mock else "⚡ In-Memory MongoDB (mongomock)"
-    st.info(f"**Database:** {db_badge}\n\n**API Backend:** [http://localhost:8000/docs](http://localhost:8000/docs)")
+    st.info(f"**Database:** {db_badge}\n\n**FastAPI Docs:** [http://localhost:8000/docs](http://localhost:8000/docs)")
 
 # Sidebar Controls: The Midnight Curse Toggle
-st.sidebar.image("https://images.unsplash.com/photo-1509198397868-475647b2a1e5?auto=format&fit=crop&w=400&q=80", caption="Midnight over Whispering Woods")
+st.sidebar.image("https://images.unsplash.com/photo-1509198397868-475647b2a1e5?auto=format&fit=crop&w=400&q=80", caption="Whispering Woods at Midnight")
 st.sidebar.markdown("### 🌕 The Midnight Curse")
 st.sidebar.caption("Hack-O-Lantern Slide 16 Challenge Twist")
 curse_active = st.sidebar.toggle("🔥 ACTIVATE FULL MOON FESTIVAL", value=False, help="Triples demand (3x) for Moonflower, Phoenix Feather, and Enchanted Mushroom!")
@@ -97,8 +97,8 @@ else:
     st.sidebar.success("🌙 Normal Synodic Demand Rhythm")
 
 st.sidebar.markdown("---")
-st.sidebar.markdown("### 🏬 Store Profile")
-st.sidebar.text("Store ID: HEXLEY-001\nCoven: Begur Hobli Outpost\nModel: Seasonality + Rolling Z-Score")
+st.sidebar.markdown("### 🏬 Shop Metadata")
+st.sidebar.text("Store ID: HEXLEY-001\nCoven: Begur Hobli Outpost\nBackend: FastAPI + MongoDB")
 
 # Fetch Current Prophecy & Inventory
 prophecies = engine.get_forecast_and_depletion(curse_active=curse_active)
@@ -107,9 +107,9 @@ ingredients = db_instance.get_ingredients()
 ing_df = pd.DataFrame(ingredients)
 
 # High Level Metric Cards
-total_stock = ing_df['current_stock'].sum()
-critical_count = len(prophecy_df[prophecy_df['status'].isin(['CRITICAL_DEFICIT', 'IMMINENT_STOCKOUT'])])
-avg_depletion = prophecy_df['days_until_depletion'].median()
+total_stock = ing_df['current_stock'].sum() if not ing_df.empty else 0
+critical_count = len(prophecy_df[prophecy_df['status'].isin(['CRITICAL_DEFICIT', 'IMMINENT_STOCKOUT'])]) if not prophecy_df.empty else 0
+avg_depletion = prophecy_df['days_until_depletion'].median() if not prophecy_df.empty else 0
 
 m1, m2, m3, m4 = st.columns(4)
 with m1:
@@ -129,65 +129,111 @@ tab_stock, tab_prophecy, tab_restock, tab_strange, tab_analytics, tab_mongo = st
     "✨ 3. Restock Spell",
     "🚨 4. Strange Happenings",
     "🔮 5. Crystal Ball (Charts)",
-    "🍃 6. MongoDB Cloud"
+    "🍃 6. MongoDB Cloud & Admin"
 ])
 
 # ==========================================
-# TAB 1: Track Stock & Real-Time Sales
+# TAB 1: Track Stock (Full CRUD & Sales)
 # ==========================================
 with tab_stock:
     st.subheader("📦 Cauldron & Cupboard Inventory Tracking")
-    st.caption("Add stock, update safety levels, and record customer purchases.")
+    st.caption("Add new ingredients, adjust stock, delete items, and record customer purchases.")
 
     col_t1, col_t2 = st.columns([2, 1])
     
     with col_t1:
-        st.markdown("#### Current Shelf Catalog")
-        display_cols = ['name', 'category', 'current_stock', 'safety_stock', 'unit', 'lead_time_days', 'supplier']
-        st.dataframe(ing_df[display_cols], use_container_width=True, hide_index=True)
+        st.markdown("#### Current Master Catalog")
+        if not ing_df.empty:
+            display_cols = ['name', 'category', 'current_stock', 'safety_stock', 'unit', 'lead_time_days', 'supplier']
+            st.dataframe(ing_df[display_cols], use_container_width=True, hide_index=True)
+        else:
+            st.warning("Catalog is empty. Reset demo data in the MongoDB tab.")
 
     with col_t2:
-        st.markdown("#### ⚡ Record Customer Sale")
+        st.markdown("#### ⚡ Record Customer Purchase")
         with st.form("sale_form"):
-            selected_item = st.selectbox("Ingredient Sold", ing_df['name'].unique())
-            sale_qty = st.number_input("Quantity Sold", min_value=1, max_value=200, value=5)
+            item_names = ing_df['name'].unique() if not ing_df.empty else []
+            selected_item = st.selectbox("Ingredient Sold", item_names)
+            sale_qty = st.number_input("Quantity Sold", min_value=1, max_value=500, value=5)
             record_btn = st.form_submit_button("Record Sale & Deduct Stock")
 
-            if record_btn:
-                res = db_instance.record_sale(selected_item, sale_qty)
-                st.success(f" Recorded sale of {sale_qty} units of {selected_item}! New Stock: {res['new_stock']}")
-                st.rerun()
+            if record_btn and selected_item:
+                try:
+                    res = db_instance.record_sale(selected_item, sale_qty)
+                    st.success(f" Recorded sale of {sale_qty} units of {selected_item}! Remaining stock: {res['remaining_stock']}")
+                    st.rerun()
+                except Exception as e:
+                    st.error(f"Sale failed: {e}")
 
     st.divider()
-    
-    # Quick Stock Adjustment / Manual Update
-    st.markdown("#### 🛠️ Direct Stock Adjustment")
-    adj_col1, adj_col2, adj_col3 = st.columns(3)
-    with adj_col1:
-        adj_item = st.selectbox("Select Item to Adjust", ing_df['name'].unique(), key="adj_item")
-    with adj_col2:
-        curr_val = int(ing_df[ing_df['name'] == adj_item]['current_stock'].values[0])
-        new_val = st.number_input("New Exact Stock Level", min_value=0, max_value=2000, value=curr_val)
-    with adj_col3:
-        st.write("")
-        st.write("")
-        if st.button("Apply Stock Update"):
-            db_instance.update_stock(adj_item, new_val)
-            st.success(f" Updated {adj_item} stock to {new_val} units!")
-            st.rerun()
+
+    # Expandable CRUD Management Section
+    crud_expander = st.expander("🛠️ Advanced Inventory Management (Add, Edit, Delete Ingredients)", expanded=False)
+    with crud_expander:
+        c1, c2, c3 = st.columns(3)
+
+        # 1. Add New Ingredient
+        with c1:
+            st.markdown("##### ➕ Add New Ingredient")
+            with st.form("add_ing_form"):
+                new_name = st.text_input("Ingredient Name", placeholder="e.g. Wolfsbane")
+                new_cat = st.selectbox("Category", ["Flora & Herbs", "Roots & Bark", "Minerals & Gems", "Mythical Fauna", "Essences & Liquids", "Fungi & Spores"])
+                new_stock = st.number_input("Starting Stock", min_value=0, max_value=5000, value=100)
+                new_safety = st.number_input("Safety Stock Threshold", min_value=1, max_value=1000, value=25)
+                new_supplier = st.text_input("Supplier Coven", value="Shadowbrook Herbalists")
+                new_lead = st.number_input("Lead Time (Days)", min_value=1, max_value=30, value=3)
+                new_unit = st.text_input("Unit of Measure", value="bundles")
+                submit_add = st.form_submit_button("Add to Master Catalog")
+
+                if submit_add:
+                    try:
+                        db_instance.add_ingredient({
+                            "name": new_name,
+                            "category": new_cat,
+                            "current_stock": new_stock,
+                            "safety_stock": new_safety,
+                            "supplier": new_supplier,
+                            "lead_time_days": new_lead,
+                            "unit": new_unit
+                        })
+                        st.success(f" Added '{new_name}' to inventory!")
+                        st.rerun()
+                    except Exception as e:
+                        st.error(f"Error: {e}")
+
+        # 2. Direct Stock Adjustment
+        with c2:
+            st.markdown("##### 📝 Adjust Current Stock")
+            if not ing_df.empty:
+                adj_item = st.selectbox("Select Item", ing_df['name'].unique(), key="adj_item_select")
+                curr_val = int(ing_df[ing_df['name'] == adj_item]['current_stock'].values[0])
+                new_val = st.number_input("New Exact Stock Level", min_value=0, max_value=10000, value=curr_val)
+                if st.button("Apply Stock Level", key="apply_stock_btn"):
+                    db_instance.update_stock(adj_item, new_val)
+                    st.success(f" Updated {adj_item} stock to {new_val} units!")
+                    st.rerun()
+
+        # 3. Delete Ingredient
+        with c3:
+            st.markdown("##### 🗑️ Remove Ingredient")
+            if not ing_df.empty:
+                del_item = st.selectbox("Select Item to Delete", ing_df['name'].unique(), key="del_item_select")
+                if st.button("🚨 Permanently Delete", key="del_btn"):
+                    db_instance.delete_ingredient(del_item)
+                    st.warning(f" Removed '{del_item}' from inventory!")
+                    st.rerun()
 
 # ==========================================
 # TAB 2: Prophecy (Runout Predictions)
 # ==========================================
 with tab_prophecy:
-    st.subheader("🔮 Prophecy: Predicting Runout Dates & Days to Depletion")
+    st.subheader("🔮 Prophecy: Predicting Depletion Dates & Runout Timelines")
     st.markdown("""
-    *Madam Hexley's divination model analyzes 180-day consumption trends, weekend market spikes, and the Midnight Curse to foretell exactly when each ingredient will be exhausted.*
+    *Madam Hexley's demand forecasting model analyzes 180-day historical consumption patterns, weekend market spikes, and the Midnight Curse to foretell exactly when each ingredient will be exhausted.*
     """)
 
     prophecy_view = prophecy_df[['product_name', 'category', 'current_stock', 'projected_daily_demand', 'days_until_depletion', 'depletion_date', 'lead_time_days', 'status', 'risk_message']]
     
-    # Color-coded display
     st.dataframe(
         prophecy_view,
         column_config={
@@ -236,13 +282,31 @@ with tab_prophecy:
     )
     st.plotly_chart(fig_dep, use_container_width=True)
 
+    # 14-Day Demand Projection Graph
+    st.divider()
+    st.markdown("#### 📅 14-Day Day-by-Day Future Demand Projection")
+    target_fc_item = st.selectbox("Inspect Multi-Day Demand Curve for Ingredient", ing_df['name'].unique())
+    fc_data = engine.get_multi_day_forecast(target_fc_item, days=14, curse_active=curse_active)
+
+    if fc_data:
+        fc_df = pd.DataFrame(fc_data["daily_projections"])
+        fig_fc = px.bar(
+            fc_df,
+            x='date',
+            y='expected_demand',
+            color='day_of_week',
+            title=f"14-Day Expected Demand for {target_fc_item} (Base: {fc_data['base_demand']} / Multiplier: {fc_data['curse_multiplier']}x)",
+            template="plotly_dark"
+        )
+        st.plotly_chart(fig_fc, use_container_width=True)
+
 # ==========================================
 # TAB 3: Restock Spell (Optimization)
 # ==========================================
 with tab_restock:
     st.subheader("✨ Restock Spell: Intelligent Reorder Recommendations")
     st.markdown("""
-    *Restock calculations use dynamic Reorder Points (ROP) factoring in supplier transit lead times, coven safety stock, and demand surges.*
+    *Calculates dynamic Reorder Points (ROP) factoring in supplier transit lead times, safety stocks, and demand surges.*
     $$\\text{Reorder Point (ROP)} = (\\text{Daily Demand} \\times \\text{Lead Time Days}) + \\text{Safety Stock}$$
     """)
 
@@ -274,7 +338,7 @@ with tab_restock:
 with tab_strange:
     st.subheader("🚨 Strange Happenings: Whispering Woods Anomaly Radar")
     st.markdown("""
-    *Our statistical Z-score detector scans sales patterns to isolate panic buying, rogue resurrection rituals, and regional crises.*
+    *Our statistical Z-score detector scans daily consumption patterns to isolate panic buying, rogue resurrection rituals, and regional crises.*
     """)
 
     z_thresh = st.slider("Anomaly Sensitivity (Z-Score Threshold)", min_value=2.0, max_value=4.5, value=2.8, step=0.1)
@@ -349,7 +413,7 @@ with tab_analytics:
     st.plotly_chart(fig_dow, use_container_width=True)
 
 # ==========================================
-# TAB 6: MongoDB Cloud Connection
+# TAB 6: MongoDB Cloud & Admin Reset
 # ==========================================
 with tab_mongo:
     st.subheader("🍃 MongoDB Database & Storage Inspector")
@@ -368,7 +432,6 @@ with tab_mongo:
         atlas_uri_input = st.text_input("Enter MongoDB Atlas Connection String (`mongodb+srv://...`)", type="password")
         if st.button("Save & Connect to Atlas"):
             if atlas_uri_input:
-                # Update .env
                 with open(".env", "a") as f:
                     f.write(f"\nMONGODB_URI={atlas_uri_input}\n")
                 st.success("Saved MONGODB_URI to .env! Restarting connection...")
@@ -382,6 +445,14 @@ with tab_mongo:
             "anomalies": db_instance.db.anomalies.count_documents({}),
             "festival_scenario": db_instance.db.festival_scenario.count_documents({})
         })
+
+        st.divider()
+        st.markdown("#### 🔄 Reset Demo State")
+        st.caption("Drop changes and re-seed all collections back to the pristine Hack-O-Lantern demo dataset.")
+        if st.button("Reset to Pristine Demo Datasets"):
+            db_instance.reset_demo_data()
+            st.success(" Demo datasets restored to initial state!")
+            st.rerun()
 
 st.markdown("---")
 st.caption("🧙 Madam Hexley's Potion Pantry • Hack-O-Lantern Hackathon Track 01 • Built with Python, MongoDB, FastAPI & Streamlit")

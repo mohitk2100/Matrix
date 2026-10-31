@@ -6,6 +6,14 @@ class ProphecyEngine:
     def __init__(self, db_instance):
         self.db = db_instance
 
+    def _get_curse_multipliers(self):
+        """Official 3x surge multipliers for the Midnight Curse (Slide 16)."""
+        return {
+            "Moonflower": 3.0,
+            "Phoenix Feather": 3.0,
+            "Enchanted Mushroom": 3.0
+        }
+
     def get_forecast_and_depletion(self, curse_active=False):
         """
         Calculates demand prophecy and days-to-depletion for all ingredients.
@@ -13,21 +21,18 @@ class ProphecyEngine:
         """
         ingredients = self.db.get_ingredients()
         sales_data = self.db.get_sales_history()
-        sales_df = pd.DataFrame(sales_data)
+        sales_df = pd.DataFrame(sales_data) if sales_data else pd.DataFrame(columns=['date', 'product_name', 'quantity_sold'])
         
         # Calculate recent daily demand (last 30 days weighted average)
-        sales_df['date'] = pd.to_datetime(sales_df['date'])
-        recent_sales = sales_df[sales_df['date'] >= (sales_df['date'].max() - pd.Timedelta(days=30))]
+        if not sales_df.empty:
+            sales_df['date'] = pd.to_datetime(sales_df['date'])
+            cutoff = sales_df['date'].max() - pd.Timedelta(days=30)
+            recent_sales = sales_df[sales_df['date'] >= cutoff]
+            baseline_demand = recent_sales.groupby('product_name')['quantity_sold'].mean().to_dict()
+        else:
+            baseline_demand = {}
         
-        baseline_demand = recent_sales.groupby('product_name')['quantity_sold'].mean().to_dict()
-        
-        # Curse multipliers (Slide 16)
-        curse_multipliers = {
-            "Moonflower": 3.0,
-            "Phoenix Feather": 3.0,
-            "Enchanted Mushroom": 3.0
-        }
-
+        curse_multipliers = self._get_curse_multipliers()
         prophecy_results = []
         today = datetime.now()
 
@@ -98,6 +103,55 @@ class ProphecyEngine:
 
         return prophecy_results
 
+    def get_multi_day_forecast(self, product_name: str, days: int = 14, curse_active: bool = False):
+        """
+        Projects day-by-day future demand for a product over the next N days,
+        incorporating day-of-week seasonality (Friday/Saturday/Sunday coven spikes).
+        """
+        ing = self.db.get_ingredient(product_name)
+        if not ing:
+            return None
+        
+        # Day of week weight adjustments
+        dow_weights = {
+            "Monday": 0.88,
+            "Tuesday": 0.92,
+            "Wednesday": 1.00,
+            "Thursday": 1.05,
+            "Friday": 1.25,
+            "Saturday": 1.40,
+            "Sunday": 1.20
+        }
+
+        # Recent base
+        sales_data = self.db.get_sales_history(product_name=ing['name'], limit=60)
+        sales_df = pd.DataFrame(sales_data)
+        base_demand = sales_df['quantity_sold'].mean() if not sales_df.empty else 15.0
+
+        multiplier = self._get_curse_multipliers().get(ing['name'], 1.0) if curse_active else 1.0
+        
+        forecast = []
+        today = datetime.now()
+        for i in range(1, days + 1):
+            future_date = today + timedelta(days=i)
+            day_name = future_date.strftime("%A")
+            weight = dow_weights.get(day_name, 1.0)
+            expected_demand = base_demand * weight * multiplier
+            forecast.append({
+                "date": future_date.strftime("%Y-%m-%d"),
+                "day_of_week": day_name,
+                "expected_demand": round(expected_demand, 1),
+                "is_curse_boosted": (multiplier > 1.0)
+            })
+        
+        return {
+            "product_name": ing['name'],
+            "base_demand": round(base_demand, 1),
+            "curse_multiplier": multiplier,
+            "days_forecasted": days,
+            "daily_projections": forecast
+        }
+
     def detect_anomalies(self, z_threshold=2.8):
         """
         Flags unusual consumption spikes using statistical Z-Score and compares against
@@ -105,6 +159,9 @@ class ProphecyEngine:
         """
         sales_data = self.db.get_sales_history()
         sales_df = pd.DataFrame(sales_data)
+        if sales_df.empty:
+            return {"detected_anomalies": [], "metrics": {}}
+
         sales_df['date'] = pd.to_datetime(sales_df['date'])
 
         # Compute rolling baseline and standard deviation per product
@@ -161,4 +218,27 @@ class ProphecyEngine:
                 "recall": round(recall, 3),
                 "f1_score": round(f1, 3)
             }
+        }
+
+    def get_crystal_ball_summary(self):
+        """Aggregate analytics across categories and sales history."""
+        ingredients = self.db.get_ingredients()
+        sales = self.db.get_sales_history()
+        
+        ing_df = pd.DataFrame(ingredients)
+        sales_df = pd.DataFrame(sales)
+
+        cat_counts = ing_df['category'].value_counts().to_dict() if not ing_df.empty else {}
+        stock_by_cat = ing_df.groupby('category')['current_stock'].sum().to_dict() if not ing_df.empty else {}
+        
+        top_sellers = {}
+        if not sales_df.empty:
+            top_sellers = sales_df.groupby('product_name')['quantity_sold'].sum().sort_values(ascending=False).head(5).to_dict()
+
+        return {
+            "total_items": len(ingredients),
+            "total_stock_units": int(ing_df['current_stock'].sum()) if not ing_df.empty else 0,
+            "category_distribution": cat_counts,
+            "stock_by_category": stock_by_cat,
+            "top_historical_sellers": top_sellers
         }
