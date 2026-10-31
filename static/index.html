@@ -3,177 +3,142 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>🧙‍♀️ The Witch's Potion Pantry – Smart Inventory</title>
-  
-  <!-- Tailwind CSS & Fonts -->
-  <script src="https://cdn.tailwindcss.com"></script>
-  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+  <title>🎃 The Skoopy Pantry – Madam Hexley's Potion Pantry</title>
+
+  <!-- Google Fonts: Creepster for Spooky Dripping Titles + Plus Jakarta Sans for clean reading -->
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@600;700;800;900&family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=JetBrains+Mono:wght@500;700&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Creepster&family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=JetBrains+Mono:wght@500;700&display=swap" rel="stylesheet">
+  
+  <!-- Tailwind CSS & Chart.js -->
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 
   <style>
     :root {
-      --bg: #090514;
-      --card-bg: rgba(23, 14, 46, 0.7);
-      --card-border: rgba(168, 85, 247, 0.22);
-      --card-hover-border: rgba(249, 115, 22, 0.6);
+      --bg-dark: #070e10;
+      --card-bg: rgba(10, 24, 27, 0.75);
+      --neon-cyan: #14f1d9;
+      --slime-green: #a3e635;
       --pumpkin: #ff7700;
-      --pumpkin-glow: rgba(255, 119, 0, 0.35);
-      --witch-purple: #9333ea;
-      --neon-green: #10b981;
-      --blood-red: #ef4444;
+      --pumpkin-glow: rgba(255, 119, 0, 0.4);
+      --card-border: rgba(20, 241, 217, 0.25);
     }
 
     * { box-sizing: border-box; }
     body {
       font-family: 'Plus Jakarta Sans', sans-serif;
-      background-color: var(--bg);
+      background-color: var(--bg-dark);
       background-image: 
-        radial-gradient(ellipse at 10% 15%, rgba(147, 51, 234, 0.22) 0%, transparent 45%),
-        radial-gradient(ellipse at 85% 10%, rgba(255, 119, 0, 0.18) 0%, transparent 45%),
-        radial-gradient(ellipse at 50% 90%, rgba(239, 68, 68, 0.12) 0%, transparent 50%),
-        radial-gradient(circle at 50% 50%, rgba(17, 10, 36, 0.9) 0%, #090514 100%);
+        radial-gradient(circle at 50% 0%, rgba(20, 241, 217, 0.12) 0%, transparent 50%),
+        radial-gradient(circle at 90% 20%, rgba(255, 119, 0, 0.12) 0%, transparent 40%),
+        radial-gradient(circle at 10% 80%, rgba(163, 230, 53, 0.08) 0%, transparent 45%),
+        linear-gradient(180deg, #070e10 0%, #050a0b 100%);
       background-attachment: fixed;
       color: #f1f5f9;
       min-height: 100vh;
     }
 
-    .font-cinzel { font-family: 'Cinzel', serif; }
+    /* Spooky Dripping Horror Title font */
+    .font-spooky {
+      font-family: 'Creepster', cursive;
+      letter-spacing: 2px;
+    }
     .font-mono { font-family: 'JetBrains Mono', monospace; }
 
-    /* Glassmorphic cards with Halloween edge glows */
-    .glass-panel {
-      background: var(--card-bg);
-      backdrop-filter: blur(16px);
-      -webkit-backdrop-filter: blur(16px);
-      border: 1px solid var(--card-border);
-      border-radius: 20px;
-      transition: all 0.25s cubic-bezier(0.16, 1, 0.3, 1);
-    }
-    .glass-panel:hover {
-      border-color: rgba(168, 85, 247, 0.4);
+    /* Spiderweb corner accents */
+    .spiderweb-corner-left {
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 140px;
+      height: 140px;
+      background: radial-gradient(circle at 0 0, transparent 40%, rgba(20, 241, 217, 0.08) 41%, transparent 42%),
+                  radial-gradient(circle at 0 0, transparent 60%, rgba(20, 241, 217, 0.08) 61%, transparent 62%),
+                  radial-gradient(circle at 0 0, transparent 80%, rgba(20, 241, 217, 0.08) 81%, transparent 82%);
+      pointer-events: none;
+      z-index: 2;
     }
 
-    .potion-card {
-      background: linear-gradient(145deg, rgba(30, 18, 58, 0.8), rgba(18, 10, 36, 0.9));
-      backdrop-filter: blur(12px);
+    /* Clean Glowing Cards matching reference */
+    .shop-card {
+      background: linear-gradient(180deg, rgba(13, 31, 35, 0.85) 0%, rgba(7, 18, 20, 0.95) 100%);
       border: 1px solid var(--card-border);
       border-radius: 18px;
-      position: relative;
-      overflow: hidden;
-      transition: all 0.25s cubic-bezier(0.16, 1, 0.3, 1);
+      backdrop-filter: blur(14px);
+      transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1);
     }
-    .potion-card:hover {
-      transform: translateY(-3px);
-      border-color: var(--card-hover-border);
-      box-shadow: 0 12px 30px -8px var(--pumpkin-glow);
+    .shop-card:hover {
+      transform: translateY(-4px);
+      border-color: var(--neon-cyan);
+      box-shadow: 0 12px 30px -8px rgba(20, 241, 217, 0.25);
     }
 
-    /* Tactile Glowing Buttons */
-    .btn-halloween {
+    /* Hero featured card glow */
+    .featured-glow {
+      border-color: var(--neon-cyan) !important;
+      box-shadow: 0 0 25px rgba(20, 241, 217, 0.35) !important;
+      background: linear-gradient(180deg, rgba(20, 241, 217, 0.12) 0%, rgba(7, 24, 27, 0.9) 100%) !important;
+    }
+
+    /* Slime green tactile button */
+    .btn-slime {
+      background: linear-gradient(135deg, #a3e635 0%, #84cc16 100%);
+      color: #051403;
+      font-weight: 800;
+      border-radius: 12px;
+      transition: all 0.2s;
+      box-shadow: 0 4px 15px rgba(163, 230, 53, 0.35);
+    }
+    .btn-slime:hover {
+      transform: scale(1.02);
+      box-shadow: 0 6px 22px rgba(163, 230, 53, 0.55);
+      filter: brightness(1.08);
+    }
+
+    /* Pumpkin orange glow button */
+    .btn-pumpkin {
       background: linear-gradient(135deg, #ff7700 0%, #ea580c 100%);
       color: #fff;
-      font-weight: 700;
-      border: 1px solid rgba(255, 255, 255, 0.2);
-      box-shadow: 0 4px 18px var(--pumpkin-glow);
+      font-weight: 800;
+      border-radius: 12px;
       transition: all 0.2s;
+      box-shadow: 0 4px 18px var(--pumpkin-glow);
     }
-    .btn-halloween:hover {
-      transform: translateY(-1px);
-      box-shadow: 0 6px 24px rgba(255, 119, 0, 0.55);
+    .btn-pumpkin:hover {
+      transform: scale(1.02);
+      box-shadow: 0 6px 24px rgba(255, 119, 0, 0.6);
       filter: brightness(1.1);
     }
 
-    .btn-witch {
-      background: linear-gradient(135deg, #9333ea 0%, #7e22ce 100%);
-      color: #fff;
-      font-weight: 700;
-      box-shadow: 0 4px 16px rgba(147, 51, 234, 0.4);
+    .btn-teal {
+      background: linear-gradient(135deg, #14f1d9 0%, #0d9488 100%);
+      color: #03201d;
+      font-weight: 800;
+      border-radius: 12px;
       transition: all 0.2s;
+      box-shadow: 0 4px 15px rgba(20, 241, 217, 0.3);
     }
-    .btn-witch:hover {
-      transform: translateY(-1px);
-      box-shadow: 0 6px 22px rgba(147, 51, 234, 0.6);
-      filter: brightness(1.12);
+    .btn-teal:hover {
+      transform: scale(1.02);
+      box-shadow: 0 6px 20px rgba(20, 241, 217, 0.5);
     }
 
-    .btn-secondary {
-      background: rgba(255, 255, 255, 0.06);
-      border: 1px solid rgba(255, 255, 255, 0.12);
-      color: #cbd5e1;
-      transition: all 0.2s;
-    }
-    .btn-secondary:hover {
-      background: rgba(255, 255, 255, 0.12);
-      color: #fff;
-    }
-
-    /* Vials / Animated Stock Bar */
-    .vial-meter {
+    /* Simple stock progress bar */
+    .stock-meter {
       height: 8px;
       background: rgba(255, 255, 255, 0.08);
       border-radius: 999px;
       overflow: hidden;
-      position: relative;
     }
-    .vial-fill {
+    .stock-bar {
       height: 100%;
       border-radius: 999px;
-      transition: width 0.4s ease-out;
+      transition: width 0.4s ease;
     }
 
-    /* Badges */
-    .badge-pill {
-      font-size: 11px;
-      font-weight: 700;
-      letter-spacing: 0.5px;
-      text-transform: uppercase;
-      padding: 3px 10px;
-      border-radius: 999px;
-      display: inline-flex;
-      align-items: center;
-      gap: 4px;
-    }
-
-    /* Midnight Curse pulsating banner */
-    .curse-pulse {
-      background: linear-gradient(90deg, #7f1d1d, #991b1b, #7f1d1d);
-      box-shadow: 0 0 25px rgba(239, 68, 68, 0.6);
-      animation: pulseGlow 2.5s infinite;
-    }
-    @keyframes pulseGlow {
-      0%, 100% { box-shadow: 0 0 20px rgba(239, 68, 68, 0.4); }
-      50% { box-shadow: 0 0 45px rgba(239, 68, 68, 0.8); }
-    }
-
-    /* Floating particles */
-    .spooky-fog {
-      position: fixed;
-      inset: 0;
-      pointer-events: none;
-      z-index: 1;
-      opacity: 0.5;
-    }
-
-    /* Interactive Quest Step Pill */
-    .quest-step {
-      transition: all 0.25s ease;
-      border: 1px solid rgba(255, 255, 255, 0.1);
-      background: rgba(20, 12, 40, 0.7);
-    }
-    .quest-step.completed {
-      border-color: rgba(16, 185, 129, 0.5);
-      background: rgba(16, 185, 129, 0.12);
-    }
-    .quest-step.active {
-      border-color: rgba(249, 115, 22, 0.8);
-      box-shadow: 0 0 15px rgba(249, 115, 22, 0.35);
-      background: rgba(249, 115, 22, 0.15);
-    }
-
-    /* Custom Toast */
-    #toast-container {
+    /* Toast */
+    #toast-box {
       position: fixed;
       bottom: 24px;
       right: 24px;
@@ -182,7 +147,9 @@
       flex-direction: column;
       gap: 10px;
     }
-    .toast-card {
+    .toast-pill {
+      background: rgba(10, 28, 32, 0.95);
+      border: 1px solid var(--neon-cyan);
       backdrop-filter: blur(12px);
       padding: 12px 18px;
       border-radius: 14px;
@@ -191,502 +158,286 @@
       display: flex;
       align-items: center;
       gap: 10px;
-      box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5);
-      animation: slideToast 0.3s ease-out;
+      box-shadow: 0 10px 30px rgba(0, 0, 0, 0.6);
+      animation: popToast 0.25s ease-out;
     }
-    @keyframes slideToast {
-      from { transform: translateX(100%); opacity: 0; }
-      to { transform: translateX(0); opacity: 1; }
+    @keyframes popToast {
+      from { transform: translateY(20px); opacity: 0; }
+      to { transform: translateY(0); opacity: 1; }
     }
-
-    /* Scrollbar */
-    ::-webkit-scrollbar { width: 6px; height: 6px; }
-    ::-webkit-scrollbar-track { background: #0c0817; }
-    ::-webkit-scrollbar-thumb { background: #2f1d5e; border-radius: 4px; }
-    ::-webkit-scrollbar-thumb:hover { background: #ff7700; }
   </style>
 </head>
-<body class="relative overflow-x-hidden selection:bg-purple-600 selection:text-white">
+<body class="relative">
+
+  <div class="spiderweb-corner-left"></div>
 
   <!-- ============================================================== -->
-  <!-- 🌕 MIDNIGHT CURSE FULL MOON ALERT BAR -->
+  <!-- 🌕 MIDNIGHT CURSE ALERT BANNER -->
   <!-- ============================================================== -->
-  <div id="curseBanner" class="hidden curse-pulse sticky top-0 z-50 py-3 px-4 text-center border-b border-red-500/50">
-    <div class="max-w-7xl mx-auto flex items-center justify-between flex-wrap gap-2 text-sm">
-      <div class="flex items-center gap-3">
-        <span class="text-2xl animate-spin" style="animation-duration: 8s;">🌕</span>
-        <span class="font-extrabold tracking-wide text-red-100">
-          MIDNIGHT CURSE ACTIVE! Full Moon Festival has tripled (3.0×) demand for Moonflower, Phoenix Feather & Enchanted Mushroom!
-        </span>
+  <div id="curseBanner" class="hidden bg-gradient-to-r from-red-950 via-red-900 to-red-950 py-3 px-4 border-b border-red-500/50 text-center sticky top-0 z-50 shadow-lg shadow-red-950/60">
+    <div class="max-w-6xl mx-auto flex items-center justify-between flex-wrap gap-2 text-xs sm:text-sm font-bold text-red-100">
+      <div class="flex items-center gap-2">
+        <span class="text-xl">🌕</span>
+        <span>FULL MOON FESTIVAL ACTIVE! Demand for Moonflower, Phoenix Feather & Enchanted Mushroom has tripled (3.0×)!</span>
       </div>
-      <button onclick="toggleCurse()" class="px-3 py-1 rounded-full text-xs font-bold bg-black/40 hover:bg-black/60 text-red-200 border border-red-400/40 transition">
+      <button onclick="toggleCurse()" class="px-3 py-1 rounded-full bg-black/40 hover:bg-black/60 text-red-300 border border-red-400/40 text-xs">
         Lift Curse ✕
       </button>
     </div>
   </div>
 
   <!-- ============================================================== -->
-  <!-- NAVIGATION & HEADER -->
+  <!-- HEADER / BRANDING -->
   <!-- ============================================================== -->
-  <header class="sticky top-0 z-40 bg-[#0c071bb3] backdrop-blur-xl border-b border-purple-900/30">
-    <div class="max-w-7xl mx-auto px-4 sm:px-6 h-20 flex items-center justify-between gap-4">
+  <header class="border-b border-teal-900/30 bg-[#070e10]/90 backdrop-blur-md sticky top-0 z-40">
+    <div class="max-w-6xl mx-auto px-4 h-20 flex items-center justify-between">
       
-      <!-- Brand & Story -->
+      <!-- Brand with Ghost & Dripping Spooky Font -->
       <div class="flex items-center gap-3">
-        <div class="w-12 h-12 rounded-2xl bg-gradient-to-br from-amber-500/20 via-purple-600/30 to-pink-600/20 border border-purple-500/30 flex items-center justify-center text-2xl shadow-inner shadow-purple-500/20">
-          🧙‍♀️
+        <div class="w-12 h-12 rounded-2xl bg-teal-950/80 border border-teal-400/30 flex items-center justify-center text-3xl shadow-lg shadow-teal-500/10">
+          👻
         </div>
         <div>
-          <div class="flex items-center gap-2">
-            <h1 class="font-cinzel text-xl sm:text-2xl font-black bg-gradient-to-r from-amber-400 via-orange-300 to-purple-400 bg-clip-text text-transparent">
-              THE POTION PANTRY
-            </h1>
-            <span class="text-[10px] uppercase font-bold tracking-wider px-2 py-0.5 rounded-full bg-emerald-500/20 text-emerald-400 border border-emerald-500/30">
-              Atlas Live
-            </span>
-          </div>
-          <p class="text-xs text-slate-400 font-medium">
-            Madam Hexley's Smart Apothecary • Store <span class="font-mono text-purple-300">HEXLEY-001</span>
-          </p>
+          <h1 class="font-spooky text-2xl sm:text-3xl tracking-wider text-transparent bg-clip-text bg-gradient-to-r from-teal-300 via-lime-300 to-orange-400">
+            THE SKOOPY PANTRY
+          </h1>
+          <p class="text-[11px] text-teal-400/80 font-medium">Madam Hexley's Halloween Apothecary • Store <span class="font-mono text-white">HEXLEY-001</span></p>
         </div>
       </div>
 
-      <!-- Center View Toggles (Simple & Focused) -->
-      <div class="hidden md:flex items-center gap-1 p-1.5 rounded-2xl bg-black/40 border border-purple-900/40">
-        <button onclick="switchView('shelves')" id="nav-shelves" class="px-4 py-2 rounded-xl text-xs font-bold transition flex items-center gap-2 bg-gradient-to-r from-purple-900/60 to-purple-800/80 text-white border border-purple-500/40">
-          <span>📦</span> Potion Shelves
-        </button>
-        <button onclick="switchView('oracle')" id="nav-oracle" class="px-4 py-2 rounded-xl text-xs font-bold transition flex items-center gap-2 text-slate-400 hover:text-white">
-          <span>🔮</span> Prophecy & Restock
-        </button>
-        <button onclick="switchView('radar')" id="nav-radar" class="px-4 py-2 rounded-xl text-xs font-bold transition flex items-center gap-2 text-slate-400 hover:text-white">
-          <span>👁️</span> Anomaly Radar
-        </button>
-        <button onclick="switchView('analytics')" id="nav-analytics" class="px-4 py-2 rounded-xl text-xs font-bold transition flex items-center gap-2 text-slate-400 hover:text-white">
-          <span>📊</span> Demand Analytics
-        </button>
-      </div>
-
-      <!-- Action Cluster -->
-      <div class="flex items-center gap-2.5">
+      <!-- Quick Actions in Nav -->
+      <div class="flex items-center gap-3">
         <!-- Midnight Curse Trigger -->
-        <button id="curseToggleBtn" onclick="toggleCurse()" class="relative px-3.5 sm:px-4 py-2 rounded-xl text-xs font-extrabold flex items-center gap-2 border transition duration-300 bg-purple-950/60 border-purple-500/40 hover:border-orange-500/70 hover:shadow-lg hover:shadow-orange-500/20">
-          <span id="curseMoonIcon">🌙</span>
-          <span id="curseBtnText" class="hidden sm:inline">Midnight Curse</span>
-          <span id="curseMultiplierBadge" class="hidden px-1.5 py-0.5 rounded text-[10px] bg-red-600 text-white animate-pulse">3.0×</span>
+        <button id="curseBtn" onclick="toggleCurse()" class="btn-pumpkin px-4 py-2 text-xs flex items-center gap-2">
+          <span id="curseIcon">🌙</span>
+          <span id="curseText">Midnight Curse (3×)</span>
         </button>
 
-        <!-- Quick Add Modal Trigger -->
-        <button onclick="openAddModal()" class="btn-halloween px-3.5 sm:px-4 py-2 rounded-xl text-xs flex items-center gap-1.5">
-          <span>➕</span>
-          <span class="hidden sm:inline">New Ingredient</span>
+        <!-- Guide Help Trigger -->
+        <button onclick="openGuideModal()" class="btn-slime px-3.5 py-2 text-xs flex items-center gap-1.5" title="How to use this app">
+          <span>✨</span>
+          <span>How It Works</span>
         </button>
       </div>
 
-    </div>
-
-    <!-- Mobile Navigation Sub-bar -->
-    <div class="md:hidden flex items-center justify-around border-t border-purple-900/30 px-2 py-1.5 bg-black/60 overflow-x-auto text-xs">
-      <button onclick="switchView('shelves')" id="mob-nav-shelves" class="px-3 py-1.5 rounded-lg font-bold text-amber-400">📦 Shelves</button>
-      <button onclick="switchView('oracle')" id="mob-nav-oracle" class="px-3 py-1.5 rounded-lg font-bold text-slate-400">🔮 Prophecy</button>
-      <button onclick="switchView('radar')" id="mob-nav-radar" class="px-3 py-1.5 rounded-lg font-bold text-slate-400">👁️ Anomalies</button>
-      <button onclick="switchView('analytics')" id="mob-nav-analytics" class="px-3 py-1.5 rounded-lg font-bold text-slate-400">📊 Charts</button>
     </div>
   </header>
 
   <!-- ============================================================== -->
-  <!-- MAIN CONTENT CONTAINER -->
+  <!-- HERO BANNER (INSPIRED BY REFERENCE IMAGE 1 & 2) -->
   <!-- ============================================================== -->
-  <main class="max-w-7xl mx-auto px-4 sm:px-6 py-6 space-y-6">
-
-    <!-- ============================================================ -->
-    <!-- ✨ INTERACTIVE "LEARN BY DOING" TUTORIAL QUEST (WALKTHROUGH) -->
-    <!-- ============================================================ -->
-    <section class="glass-panel p-5 border-amber-500/30 bg-gradient-to-r from-purple-950/60 via-[#180e30]/80 to-amber-950/30 relative overflow-hidden">
-      <!-- Glow ambient -->
-      <div class="absolute -right-12 -top-12 w-48 h-48 bg-amber-500/10 rounded-full blur-3xl pointer-events-none"></div>
-
-      <div class="flex flex-col lg:flex-row items-start lg:items-center justify-between gap-4">
-        <div>
-          <div class="flex items-center gap-2 mb-1">
-            <span class="text-xl">✨</span>
-            <h2 class="font-cinzel text-base sm:text-lg font-bold text-amber-300">
-              Interactive Apprentice Quest: How To Master The Pantry
-            </h2>
-            <span class="text-[10px] px-2 py-0.5 rounded-full bg-amber-500/20 text-amber-300 font-bold border border-amber-500/30">
-              Hands-On
-            </span>
+  <section class="max-w-6xl mx-auto px-4 pt-8 pb-4">
+    <div class="shop-card p-6 sm:p-8 relative overflow-hidden border-teal-500/30 bg-gradient-to-r from-[#0d2226] via-[#09171a] to-[#121c16]">
+      
+      <div class="grid grid-cols-1 md:grid-cols-12 items-center gap-6 relative z-10">
+        
+        <!-- Left Hero Text -->
+        <div class="md:col-span-8 space-y-3">
+          <div class="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-teal-500/10 border border-teal-400/30 text-teal-300 text-xs font-bold">
+            <span>🎃</span> Smart Inventory & AI Demand Forecaster
           </div>
-          <p class="text-xs text-slate-300">
-            Click through these real actions to see the AI forecasting, instant selling, and seasonal curse in action:
+          
+          <h2 class="font-spooky text-3xl sm:text-5xl text-white tracking-wide leading-tight">
+            INVENTORY THAT CASTS A SPELL
+          </h2>
+          
+          <p class="text-sm text-slate-300 max-w-xl leading-relaxed">
+            Never run out of bat wings, mandrake root, or ghost peppers. Powered by automated depletion tracking, Z-score anomaly detection, and instant restock recommendations.
           </p>
+
+          <!-- 3 Step Quick Guide (Learn by doing!) -->
+          <div class="pt-2 flex flex-wrap items-center gap-2 text-xs">
+            <span class="text-teal-400 font-bold">Quick test:</span>
+            <span class="px-2.5 py-1 rounded-lg bg-black/40 text-slate-300 border border-teal-900/40">1. Click <b>[-] Sell 1</b></span>
+            <span class="text-teal-600">➔</span>
+            <span class="px-2.5 py-1 rounded-lg bg-black/40 text-slate-300 border border-teal-900/40">2. Click <b>Midnight Curse</b></span>
+            <span class="text-teal-600">➔</span>
+            <span class="px-2.5 py-1 rounded-lg bg-black/40 text-slate-300 border border-teal-900/40">3. Click <b>Order Now</b></span>
+          </div>
         </div>
-        
+
+        <!-- Right Pumpkin Visual & Quick Stats -->
+        <div class="md:col-span-4 flex flex-col items-center justify-center text-center p-4 rounded-2xl bg-black/30 border border-teal-500/20">
+          <div class="text-6xl mb-2 filter drop-shadow-[0_0_20px_rgba(255,119,0,0.6)]">
+            🎃
+          </div>
+          <div class="font-spooky text-xl text-orange-400 tracking-wider">PANTRY VITALS</div>
+          
+          <div class="grid grid-cols-2 gap-2.5 w-full mt-3 text-left">
+            <div class="p-2.5 rounded-xl bg-teal-950/40 border border-teal-500/20">
+              <div class="text-[10px] text-teal-400/80 uppercase font-bold">Items Monitored</div>
+              <div id="statTotal" class="text-xl font-extrabold text-white">10</div>
+            </div>
+            <div class="p-2.5 rounded-xl bg-teal-950/40 border border-teal-500/20">
+              <div class="text-[10px] text-red-400 uppercase font-bold">Critical Stock</div>
+              <div id="statCritical" class="text-xl font-extrabold text-red-400">0</div>
+            </div>
+          </div>
+        </div>
+
+      </div>
+
+    </div>
+  </section>
+
+  <!-- ============================================================== -->
+  <!-- SECTION: OUR SHOP (CLEAN 3-COLUMN SHOWCASE LIKE REFERENCE IMAGE 3) -->
+  <!-- ============================================================== -->
+  <section class="max-w-6xl mx-auto px-4 py-6">
+    
+    <div class="flex items-center justify-between mb-6 flex-wrap gap-3">
+      <div>
+        <h3 class="font-spooky text-3xl text-teal-300 tracking-wider flex items-center gap-2">
+          <span>🕷️</span> OUR SHOP SHELVES
+        </h3>
+        <p class="text-xs text-slate-400">Click [-] to record a customer sale, or [+] to restock inventory</p>
+      </div>
+
+      <!-- Quick Filter Pills -->
+      <div class="flex items-center gap-1.5 p-1 rounded-xl bg-black/40 border border-teal-900/40 text-xs">
+        <button onclick="setFilter('ALL')" id="flt-all" class="px-3 py-1.5 rounded-lg font-bold bg-teal-400 text-teal-950 transition">All (10)</button>
+        <button onclick="setFilter('LOW')" id="flt-low" class="px-3 py-1.5 rounded-lg font-bold text-slate-300 hover:text-white transition">⚠️ Low Stock</button>
+        <button onclick="setFilter('CURSED')" id="flt-cursed" class="px-3 py-1.5 rounded-lg font-bold text-slate-300 hover:text-white transition">🌕 3× Cursed</button>
+      </div>
+    </div>
+
+    <!-- The Grid of Ingredient Cards (3 Columns like Image 3) -->
+    <div id="cardsGrid" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-5">
+      <!-- Populated dynamically with clean shop cards -->
+      <div class="col-span-full py-16 text-center text-teal-300/60 font-spooky text-2xl">
+        Summoning ingredients from MongoDB...
+      </div>
+    </div>
+
+  </section>
+
+  <!-- ============================================================== -->
+  <!-- SECTION: AI ORACLE & STRANGE HAPPENINGS (SIMPLE 2-COL LAYOUT) -->
+  <!-- ============================================================== -->
+  <section class="max-w-6xl mx-auto px-4 py-6">
+    <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
+
+      <!-- LEFT: AI Restock Recommender -->
+      <div class="shop-card p-6 border-teal-500/30">
+        <div class="flex items-center justify-between mb-4">
+          <div>
+            <h4 class="font-spooky text-2xl text-lime-300 tracking-wider flex items-center gap-2">
+              <span>🧪</span> RESTOCK SPELL (ROP)
+            </h4>
+            <p class="text-xs text-slate-400">Calculates exact reorder quantity before shelves empty</p>
+          </div>
+          <button onclick="restockAllUrgent()" class="btn-slime px-3 py-1.5 text-xs">
+            ⚡ Order All Needed
+          </button>
+        </div>
+
+        <div id="restockList" class="space-y-2.5 max-h-96 overflow-y-auto pr-1">
+          <!-- Rendered dynamically -->
+        </div>
+      </div>
+
+      <!-- RIGHT: Strange Happenings (Z-Score Anomalies) -->
+      <div class="shop-card p-6 border-orange-500/30">
+        <div class="flex items-center justify-between mb-4">
+          <div>
+            <h4 class="font-spooky text-2xl text-orange-400 tracking-wider flex items-center gap-2">
+              <span>👁️</span> STRANGE HAPPENINGS
+            </h4>
+            <p class="text-xs text-slate-400">Consumption spikes flagged by Z-score &gt; 2.8σ</p>
+          </div>
+          <span class="text-xs font-bold font-mono px-2.5 py-1 rounded-full bg-emerald-500/20 text-emerald-400 border border-emerald-500/40">
+            F1 Score: 1.00 (100%)
+          </span>
+        </div>
+
+        <div id="anomaliesList" class="space-y-2.5 max-h-96 overflow-y-auto pr-1">
+          <!-- Rendered dynamically -->
+        </div>
+      </div>
+
+    </div>
+  </section>
+
+  <!-- ============================================================== -->
+  <!-- SECTION: CRYSTAL BALL 14-DAY FORECAST CHART -->
+  <!-- ============================================================== -->
+  <section class="max-w-6xl mx-auto px-4 py-6 mb-12">
+    <div class="shop-card p-6 border-teal-500/30">
+      
+      <div class="flex items-center justify-between mb-5 flex-wrap gap-3">
+        <div>
+          <h4 class="font-spooky text-2xl text-teal-300 tracking-wider flex items-center gap-2">
+            <span>🔮</span> CRYSTAL BALL DEMAND CHART
+          </h4>
+          <p class="text-xs text-slate-400">14-day projected daily demand (including weekend festival surges)</p>
+        </div>
+
+        <!-- Dropdown to pick ingredient -->
         <div class="flex items-center gap-2">
-          <button onclick="resetQuest()" class="text-xs text-slate-400 hover:text-slate-200 underline">
-            Reset Quest
-          </button>
+          <label class="text-xs text-slate-400">Select Potion:</label>
+          <select id="chartSelect" onchange="loadForecastChart()" class="bg-[#071518] border border-teal-500/40 rounded-xl px-3 py-1.5 text-xs text-teal-200 focus:outline-none">
+            <!-- Dynamically filled -->
+          </select>
         </div>
       </div>
 
-      <!-- 4 Interactive Steps Cards -->
-      <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3 mt-4">
-        
-        <!-- Step 1 -->
-        <div id="step-card-1" class="quest-step p-3.5 rounded-xl flex items-start gap-3 cursor-pointer" onclick="highlightAction('step1')">
-          <div id="step-icon-1" class="w-7 h-7 rounded-lg bg-purple-900/60 text-purple-300 border border-purple-500/40 flex items-center justify-center font-bold text-xs shrink-0">
-            1
-          </div>
-          <div>
-            <div class="font-bold text-xs text-slate-200">Inspect Shelves</div>
-            <div class="text-[11px] text-slate-400 mt-0.5">Check current stock levels & red deficit alerts below.</div>
-          </div>
-        </div>
-
-        <!-- Step 2 -->
-        <div id="step-card-2" class="quest-step p-3.5 rounded-xl flex items-start gap-3 cursor-pointer" onclick="highlightAction('step2')">
-          <div id="step-icon-2" class="w-7 h-7 rounded-lg bg-purple-900/60 text-purple-300 border border-purple-500/40 flex items-center justify-center font-bold text-xs shrink-0">
-            2
-          </div>
-          <div>
-            <div class="font-bold text-xs text-slate-200">Record a Quick Sale</div>
-            <div class="text-[11px] text-slate-400 mt-0.5">Click <b class="text-amber-400">[-] Sell 1</b> on any potion card to trigger live MongoDB decrement.</div>
-          </div>
-        </div>
-
-        <!-- Step 3 -->
-        <div id="step-card-3" class="quest-step p-3.5 rounded-xl flex items-start gap-3 cursor-pointer" onclick="highlightAction('step3')">
-          <div id="step-icon-3" class="w-7 h-7 rounded-lg bg-purple-900/60 text-purple-300 border border-purple-500/40 flex items-center justify-center font-bold text-xs shrink-0">
-            3
-          </div>
-          <div>
-            <div class="font-bold text-xs text-slate-200">Trigger Midnight Curse</div>
-            <div class="text-[11px] text-slate-400 mt-0.5">Toggle the curse switch at top right to see demand triple (3.0×)!</div>
-          </div>
-        </div>
-
-        <!-- Step 4 -->
-        <div id="step-card-4" class="quest-step p-3.5 rounded-xl flex items-start gap-3 cursor-pointer" onclick="highlightAction('step4')">
-          <div id="step-icon-4" class="w-7 h-7 rounded-lg bg-purple-900/60 text-purple-300 border border-purple-500/40 flex items-center justify-center font-bold text-xs shrink-0">
-            4
-          </div>
-          <div>
-            <div class="font-bold text-xs text-slate-200">Cast Restock Spell</div>
-            <div class="text-[11px] text-slate-400 mt-0.5">Auto-replenish all urgent ingredients via ROP calculation.</div>
-          </div>
-        </div>
-
-      </div>
-    </section>
-
-    <!-- ============================================================ -->
-    <!-- SUMMARY TILES (LIVE SHOP HEALTH RADAR) -->
-    <!-- ============================================================ -->
-    <section class="grid grid-cols-2 md:grid-cols-4 gap-3.5">
-      
-      <div class="glass-panel p-4 flex items-center gap-3.5">
-        <div class="w-12 h-12 rounded-2xl bg-purple-500/10 border border-purple-500/30 flex items-center justify-center text-2xl shrink-0">
-          🧪
-        </div>
-        <div>
-          <div class="text-[11px] font-bold uppercase tracking-wider text-slate-400">Total Ingredients</div>
-          <div id="kpi-total" class="font-cinzel text-2xl font-black text-purple-300 mt-0.5">10</div>
-          <div class="text-[10px] text-slate-400">Master catalog loaded</div>
-        </div>
-      </div>
-
-      <div class="glass-panel p-4 flex items-center gap-3.5">
-        <div class="w-12 h-12 rounded-2xl bg-red-500/10 border border-red-500/30 flex items-center justify-center text-2xl shrink-0">
-          ⚠️
-        </div>
-        <div>
-          <div class="text-[11px] font-bold uppercase tracking-wider text-slate-400">Critical / Low Stock</div>
-          <div id="kpi-critical" class="font-cinzel text-2xl font-black text-red-400 mt-0.5">0</div>
-          <div class="text-[10px] text-slate-400">At or below safety limit</div>
-        </div>
-      </div>
-
-      <div class="glass-panel p-4 flex items-center gap-3.5">
-        <div class="w-12 h-12 rounded-2xl bg-amber-500/10 border border-amber-500/30 flex items-center justify-center text-2xl shrink-0">
-          👁️
-        </div>
-        <div>
-          <div class="text-[11px] font-bold uppercase tracking-wider text-slate-400">Anomalies Detected</div>
-          <div id="kpi-anomalies" class="font-cinzel text-2xl font-black text-amber-400 mt-0.5">5</div>
-          <div class="text-[10px] text-slate-400">Z-score &gt; 2.8σ spikes</div>
-        </div>
-      </div>
-
-      <div class="glass-panel p-4 flex items-center gap-3.5">
-        <div class="w-12 h-12 rounded-2xl bg-orange-500/10 border border-orange-500/30 flex items-center justify-center text-2xl shrink-0">
-          🌕
-        </div>
-        <div>
-          <div class="text-[11px] font-bold uppercase tracking-wider text-slate-400">Midnight Festival</div>
-          <div id="kpi-curse-state" class="font-cinzel text-xl font-black text-emerald-400 mt-0.5">NORMAL (1×)</div>
-          <div id="kpi-curse-sub" class="text-[10px] text-slate-400">Base consumption rates</div>
-        </div>
-      </div>
-
-    </section>
-
-    <!-- ============================================================ -->
-    <!-- VIEW 1: POTION SHELVES (INTERACTIVE INVENTORY BOARD) -->
-    <!-- ============================================================ -->
-    <div id="view-shelves" class="space-y-4">
-      
-      <!-- Filter Chips & Search Bar -->
-      <div class="glass-panel p-4 flex flex-col sm:flex-row items-center justify-between gap-3">
-        <div class="flex items-center gap-1.5 overflow-x-auto w-full sm:w-auto pb-1 sm:pb-0">
-          <button onclick="filterCategory('ALL')" id="filter-all" class="px-3 py-1.5 rounded-xl text-xs font-bold bg-purple-700 text-white transition">
-            All Items (10)
-          </button>
-          <button onclick="filterCategory('CRITICAL')" id="filter-critical" class="px-3 py-1.5 rounded-xl text-xs font-bold bg-white/5 text-slate-300 hover:bg-white/10 transition">
-            ⚠️ Low Stock Alert
-          </button>
-          <button onclick="filterCategory('CURSED')" id="filter-cursed" class="px-3 py-1.5 rounded-xl text-xs font-bold bg-white/5 text-slate-300 hover:bg-white/10 transition">
-            🌕 Festival 3× Spiked
-          </button>
-        </div>
-
-        <!-- Search input -->
-        <div class="relative w-full sm:w-64">
-          <span class="absolute left-3 top-2.5 text-xs text-slate-400">🔍</span>
-          <input 
-            type="text" 
-            id="ingredientSearch" 
-            placeholder="Search bat wings, ghost pepper..." 
-            oninput="renderShelves()"
-            class="w-full pl-8 pr-3 py-1.5 text-xs rounded-xl bg-black/40 border border-purple-900/50 text-white placeholder-slate-500 focus:outline-none focus:border-amber-500 transition"
-          >
-        </div>
-      </div>
-
-      <!-- Ingredient Cards Grid -->
-      <div id="shelvesGrid" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-        <!-- Rendered dynamically -->
-        <div class="col-span-full text-center py-12 text-slate-400">
-          Brewing potion inventory from MongoDB...
-        </div>
+      <div class="h-64">
+        <canvas id="forecastCanvas"></canvas>
       </div>
 
     </div>
-
-    <!-- ============================================================ -->
-    <!-- VIEW 2: PROPHECY & RESTOCK ORACLE (CO-PILOT) -->
-    <!-- ============================================================ -->
-    <div id="view-oracle" class="hidden space-y-6">
-      
-      <!-- Oracle Banner -->
-      <div class="glass-panel p-5 bg-gradient-to-r from-purple-950/70 to-blue-950/40 border-purple-500/40">
-        <div class="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
-          <div>
-            <div class="flex items-center gap-2">
-              <span class="text-2xl">🔮</span>
-              <h2 class="font-cinzel text-lg font-bold text-purple-200">Madam Hexley's Predictive AI Prophecy</h2>
-            </div>
-            <p class="text-xs text-slate-300 mt-1">
-              Computes daily burn rate, safety buffer, and projected date of stock exhaustion under normal vs. festival curse conditions.
-            </p>
-          </div>
-          <button onclick="restockAllUrgent()" class="btn-halloween px-4 py-2 rounded-xl text-xs flex items-center gap-2 shrink-0">
-            <span>⚡</span> Restock All Deficit Items
-          </button>
-        </div>
-      </div>
-
-      <!-- Ranked Reorder Recommendations -->
-      <div class="glass-panel p-5">
-        <div class="flex items-center justify-between mb-4">
-          <h3 class="font-cinzel text-sm font-bold text-amber-300 uppercase tracking-wider flex items-center gap-2">
-            <span>🧪</span> Restock Spell: AI Reorder Plan
-          </h3>
-          <span class="text-xs text-slate-400 font-mono">Formula: ROP = (Demand × Lead Time) + Safety Stock</span>
-        </div>
-
-        <div id="oracleRecommendations" class="space-y-3">
-          <!-- Filled by JS -->
-          <div class="text-slate-400 text-xs py-4 text-center">Consulting oracle data...</div>
-        </div>
-      </div>
-
-    </div>
-
-    <!-- ============================================================ -->
-    <!-- VIEW 3: STRANGE HAPPENINGS (ANOMALY RADAR) -->
-    <!-- ============================================================ -->
-    <div id="view-radar" class="hidden space-y-6">
-      
-      <div class="glass-panel p-5 border-red-500/30 bg-gradient-to-r from-red-950/40 to-purple-950/40">
-        <div class="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
-          <div>
-            <div class="flex items-center gap-2">
-              <span class="text-2xl">👁️</span>
-              <h2 class="font-cinzel text-lg font-bold text-red-300">Strange Happenings Radar (Z-Score &gt; 2.8σ)</h2>
-            </div>
-            <p class="text-xs text-slate-300 mt-1">
-              Detects sudden theft, spoilage, or weird consumption surges against Whispering Woods historical patterns.
-            </p>
-          </div>
-
-          <!-- Benchmark metrics badge -->
-          <div class="flex items-center gap-3 bg-black/40 px-3.5 py-2 rounded-xl border border-red-500/30 text-xs">
-            <div>
-              <span class="text-slate-400">Precision:</span> <b class="text-emerald-400 font-mono" id="anomPrecision">100%</b>
-            </div>
-            <div class="h-4 w-px bg-slate-700"></div>
-            <div>
-              <span class="text-slate-400">Recall:</span> <b class="text-emerald-400 font-mono" id="anomRecall">100%</b>
-            </div>
-            <div class="h-4 w-px bg-slate-700"></div>
-            <div>
-              <span class="text-slate-400">F1 Score:</span> <b class="text-amber-300 font-mono" id="anomF1">1.00</b>
-            </div>
-          </div>
-        </div>
-      </div>
-
-      <!-- Anomalies List -->
-      <div id="anomaliesFeed" class="grid grid-cols-1 md:grid-cols-2 gap-3.5">
-        <!-- Rendered by JS -->
-      </div>
-
-    </div>
-
-    <!-- ============================================================ -->
-    <!-- VIEW 4: DEMAND ANALYTICS (CRYSTAL BALL CHARTS) -->
-    <!-- ============================================================ -->
-    <div id="view-analytics" class="hidden space-y-6">
-      
-      <div class="grid grid-cols-1 lg:grid-cols-2 gap-5">
-        
-        <!-- 14-day forecast with selector -->
-        <div class="glass-panel p-5">
-          <div class="flex items-center justify-between mb-4">
-            <div>
-              <h3 class="font-cinzel text-sm font-bold text-amber-300">14-Day Demand Forecast</h3>
-              <p class="text-[11px] text-slate-400">Projected day-by-day sales including weekend gathering surge</p>
-            </div>
-            <select id="forecastIngredientSelect" onchange="renderForecastChart()" class="bg-black/50 border border-purple-500/40 rounded-xl px-2.5 py-1.5 text-xs text-white focus:outline-none">
-              <!-- Options filled dynamically -->
-            </select>
-          </div>
-          <div class="h-64">
-            <canvas id="forecastChartCanvas"></canvas>
-          </div>
-        </div>
-
-        <!-- Day of week seasonality -->
-        <div class="glass-panel p-5">
-          <div class="flex items-center justify-between mb-4">
-            <div>
-              <h3 class="font-cinzel text-sm font-bold text-purple-300">Day-of-Week Gathering Pattern</h3>
-              <p class="text-[11px] text-slate-400">Historical demand weightings across shop days</p>
-            </div>
-            <span class="badge-pill bg-purple-500/20 text-purple-300 border border-purple-500/30">Weekend Surge</span>
-          </div>
-          <div class="h-64">
-            <canvas id="dowChartCanvas"></canvas>
-          </div>
-        </div>
-
-      </div>
-
-      <!-- 180-Day Trend -->
-      <div class="glass-panel p-5">
-        <div class="flex items-center justify-between mb-4">
-          <div>
-            <h3 class="font-cinzel text-sm font-bold text-emerald-300">180-Day Historical Sales Trend</h3>
-            <p class="text-[11px] text-slate-400">Full apothecary sales volume timeline</p>
-          </div>
-        </div>
-        <div class="h-56">
-          <canvas id="trendChartCanvas"></canvas>
-        </div>
-      </div>
-
-    </div>
-
-  </main>
+  </section>
 
   <!-- ============================================================== -->
-  <!-- MODALS -->
+  <!-- MODAL: HOW TO USE / GUIDE (SUPER SIMPLE!) -->
   <!-- ============================================================== -->
-
-  <!-- Add Ingredient Modal -->
-  <div id="addModal" class="hidden fixed inset-0 z-50 bg-black/80 backdrop-blur-sm flex items-center justify-center p-4">
-    <div class="glass-panel p-6 max-w-md w-full border-purple-500/40 relative">
+  <div id="guideModal" class="hidden fixed inset-0 z-50 bg-black/80 backdrop-blur-sm flex items-center justify-center p-4">
+    <div class="shop-card p-6 max-w-md w-full border-teal-400/50">
+      
       <div class="flex items-center justify-between mb-4">
-        <h3 class="font-cinzel text-lg font-bold text-amber-300">➕ Add New Potion Ingredient</h3>
-        <button onclick="closeAddModal()" class="text-slate-400 hover:text-white text-lg">✕</button>
+        <h3 class="font-spooky text-2xl text-lime-300 tracking-wider">✨ HOW TO USE THE PANTRY</h3>
+        <button onclick="closeGuideModal()" class="text-slate-400 hover:text-white text-xl">✕</button>
       </div>
 
-      <div class="space-y-3 text-xs">
-        <div>
-          <label class="block text-slate-300 mb-1">Ingredient Name *</label>
-          <input type="text" id="addName" placeholder="e.g. Wolfsbane Blossom" class="w-full px-3 py-2 rounded-xl bg-black/50 border border-purple-900 text-white focus:outline-none focus:border-amber-500">
+      <div class="space-y-3.5 text-xs text-slate-300">
+        <div class="p-3 rounded-xl bg-black/40 border border-teal-900/50">
+          <b class="text-teal-300 text-sm">1. Sell Potion Ingredients:</b>
+          <p class="mt-1">Click the <span class="text-orange-400 font-bold">[-] Sell 1</span> button on any card. Stock decrements immediately in MongoDB and updates the depletion date.</p>
         </div>
-        <div class="grid grid-cols-2 gap-2.5">
-          <div>
-            <label class="block text-slate-300 mb-1">Category</label>
-            <input type="text" id="addCategory" placeholder="Flora & Herbs" class="w-full px-3 py-2 rounded-xl bg-black/50 border border-purple-900 text-white focus:outline-none focus:border-amber-500">
-          </div>
-          <div>
-            <label class="block text-slate-300 mb-1">Unit</label>
-            <input type="text" id="addUnit" placeholder="bundles" class="w-full px-3 py-2 rounded-xl bg-black/50 border border-purple-900 text-white focus:outline-none focus:border-amber-500">
-          </div>
+
+        <div class="p-3 rounded-xl bg-black/40 border border-teal-900/50">
+          <b class="text-orange-400 text-sm">2. Test The Midnight Curse:</b>
+          <p class="mt-1">Click <span class="text-orange-400 font-bold">Midnight Curse (3×)</span> at top right. Demand for Moonflower, Phoenix Feather & Mushrooms instantly triples.</p>
         </div>
-        <div class="grid grid-cols-2 gap-2.5">
-          <div>
-            <label class="block text-slate-300 mb-1">Current Stock *</label>
-            <input type="number" id="addStock" placeholder="100" class="w-full px-3 py-2 rounded-xl bg-black/50 border border-purple-900 text-white focus:outline-none focus:border-amber-500">
-          </div>
-          <div>
-            <label class="block text-slate-300 mb-1">Safety Stock</label>
-            <input type="number" id="addSafety" placeholder="25" class="w-full px-3 py-2 rounded-xl bg-black/50 border border-purple-900 text-white focus:outline-none focus:border-amber-500">
-          </div>
-        </div>
-        <div class="grid grid-cols-2 gap-2.5">
-          <div>
-            <label class="block text-slate-300 mb-1">Supplier</label>
-            <input type="text" id="addSupplier" placeholder="Shadowbrook Herbalists" class="w-full px-3 py-2 rounded-xl bg-black/50 border border-purple-900 text-white focus:outline-none focus:border-amber-500">
-          </div>
-          <div>
-            <label class="block text-slate-300 mb-1">Lead Time (days)</label>
-            <input type="number" id="addLeadTime" placeholder="4" class="w-full px-3 py-2 rounded-xl bg-black/50 border border-purple-900 text-white focus:outline-none focus:border-amber-500">
-          </div>
+
+        <div class="p-3 rounded-xl bg-black/40 border border-teal-900/50">
+          <b class="text-lime-300 text-sm">3. Order Recommended Stock:</b>
+          <p class="mt-1">Click <span class="text-lime-300 font-bold">Order Now</span> or <span class="text-lime-300 font-bold">⚡ Order All Needed</span> to replenish depleted items.</p>
         </div>
       </div>
 
-      <div class="flex justify-end gap-2.5 mt-6">
-        <button onclick="closeAddModal()" class="btn-secondary px-4 py-2 rounded-xl text-xs font-bold">Cancel</button>
-        <button onclick="submitNewIngredient()" class="btn-halloween px-4 py-2 rounded-xl text-xs font-bold">Save Ingredient</button>
-      </div>
+      <button onclick="closeGuideModal()" class="btn-slime w-full py-2.5 text-xs mt-5">
+        Got It, Let's Cast Spells! 🎃
+      </button>
+
     </div>
   </div>
 
-  <!-- Toast Container -->
-  <div id="toast-container"></div>
+  <!-- Toast notification outlet -->
+  <div id="toast-box"></div>
 
   <!-- ============================================================== -->
-  <!-- JAVASCRIPT LOGIC & API HOOKS -->
+  <!-- JAVASCRIPT LOGIC -->
   <!-- ============================================================== -->
   <script>
-    // Global State
-    let catalog = [];
+    let inventory = [];
     let prophecies = [];
     let anomalies = [];
     let curseActive = false;
-    let currentFilter = 'ALL';
-    let questState = { step1: false, step2: false, step3: false, step4: false };
+    let activeFilter = 'ALL';
+    let chartInstance = null;
 
-    // Charts
-    let forecastChart = null;
-    let dowChart = null;
-    let trendChart = null;
-
-    // Category Emoji Map
-    const emojiMap = {
+    const emojiIcons = {
       'Moonflower': '🌸',
       'Phoenix Feather': '🪶',
       'Enchanted Mushroom': '🍄',
@@ -699,16 +450,11 @@
       'Nightshade Berries': '🫐'
     };
 
-    // -------------------------------------------------------------
-    // INIT
-    // -------------------------------------------------------------
     window.addEventListener('DOMContentLoaded', async () => {
-      await refreshAllData();
-      checkCurseStatus();
-      updateQuestUI();
+      await loadPantryData();
     });
 
-    async function refreshAllData() {
+    async function loadPantryData() {
       try {
         const [invRes, prophRes, anomRes, curseRes] = await Promise.all([
           fetch('/api/inventory').then(r => r.json()),
@@ -717,254 +463,167 @@
           fetch('/api/curse').then(r => r.json())
         ]);
 
-        catalog = invRes.ingredients || [];
+        inventory = invRes.ingredients || [];
         prophecies = prophRes.prophecies || [];
         anomalies = anomRes.anomalies || [];
         curseActive = curseRes.curse_active;
 
-        renderShelves();
-        renderKPIs();
-        renderOracle();
-        renderAnomalies(anomRes);
-        populateForecastDropdown();
-        updateCurseUI();
+        updateCurseDisplay();
+        renderShopCards();
+        renderRestockSpell();
+        renderStrangeHappenings();
+        populateChartOptions();
+        loadForecastChart();
+        updateVitals();
       } catch (err) {
-        showToast('Error syncing with potion engine: ' + err.message, 'error');
+        showToast('Error syncing with backend: ' + err.message, 'error');
       }
     }
 
     // -------------------------------------------------------------
-    // VIEW SWITCHER
+    // RENDER SHOP CARDS (MATCHING REFERENCE IMAGE 3)
     // -------------------------------------------------------------
-    function switchView(viewName) {
-      const views = ['shelves', 'oracle', 'radar', 'analytics'];
-      views.forEach(v => {
-        const el = document.getElementById(`view-${v}`);
-        const nav = document.getElementById(`nav-${v}`);
-        const mobNav = document.getElementById(`mob-nav-${v}`);
-
-        if (v === viewName) {
-          el.classList.remove('hidden');
-          if (nav) {
-            nav.className = "px-4 py-2 rounded-xl text-xs font-bold transition flex items-center gap-2 bg-gradient-to-r from-purple-900/60 to-purple-800/80 text-white border border-purple-500/40";
-          }
-          if (mobNav) mobNav.className = "px-3 py-1.5 rounded-lg font-bold text-amber-400";
+    function setFilter(filterType) {
+      activeFilter = filterType;
+      ['all', 'low', 'cursed'].forEach(f => {
+        const btn = document.getElementById(`flt-${f}`);
+        if (f.toUpperCase() === filterType) {
+          btn.className = "px-3 py-1.5 rounded-lg font-bold bg-teal-400 text-teal-950 transition";
         } else {
-          el.classList.add('hidden');
-          if (nav) {
-            nav.className = "px-4 py-2 rounded-xl text-xs font-bold transition flex items-center gap-2 text-slate-400 hover:text-white";
-          }
-          if (mobNav) mobNav.className = "px-3 py-1.5 rounded-lg font-bold text-slate-400";
+          btn.className = "px-3 py-1.5 rounded-lg font-bold text-slate-300 hover:text-white transition";
         }
       });
-
-      if (viewName === 'analytics') {
-        setTimeout(initCharts, 150);
-      }
+      renderShopCards();
     }
 
-    // -------------------------------------------------------------
-    // RENDER SHELVES (INTERACTIVE POTION CARDS)
-    // -------------------------------------------------------------
-    function filterCategory(cat) {
-      currentFilter = cat;
-      ['all', 'critical', 'cursed'].forEach(c => {
-        const btn = document.getElementById(`filter-${c}`);
-        if (c.toUpperCase() === cat) {
-          btn.className = "px-3 py-1.5 rounded-xl text-xs font-bold bg-purple-700 text-white transition";
-        } else {
-          btn.className = "px-3 py-1.5 rounded-xl text-xs font-bold bg-white/5 text-slate-300 hover:bg-white/10 transition";
-        }
-      });
-      renderShelves();
-    }
+    function renderShopCards() {
+      const grid = document.getElementById('cardsGrid');
+      const curseProducts = ['Moonflower', 'Phoenix Feather', 'Enchanted Mushroom'];
 
-    function renderShelves() {
-      const grid = document.getElementById('shelvesGrid');
-      const searchQuery = (document.getElementById('ingredientSearch')?.value || '').toLowerCase().trim();
-
-      const curseItems = ['Moonflower', 'Phoenix Feather', 'Enchanted Mushroom'];
-
-      const filtered = catalog.filter(item => {
-        const matchesSearch = item.name.toLowerCase().includes(searchQuery) || (item.category || '').toLowerCase().includes(searchQuery);
-        if (!matchesSearch) return false;
-
+      const filtered = inventory.filter(item => {
         const isCritical = (item.current_stock || 0) <= (item.safety_stock || 25);
-        const isCursed = curseItems.includes(item.name);
+        const isCursed = curseProducts.includes(item.name);
 
-        if (currentFilter === 'CRITICAL') return isCritical;
-        if (currentFilter === 'CURSED') return isCursed;
+        if (activeFilter === 'LOW') return isCritical;
+        if (activeFilter === 'CURSED') return isCursed;
         return true;
       });
 
       if (!filtered.length) {
-        grid.innerHTML = `
-          <div class="col-span-full text-center py-12 text-slate-400">
-            No ingredients found matching your search.
-          </div>
-        `;
+        grid.innerHTML = `<div class="col-span-full py-12 text-center text-slate-400">No ingredients match this filter.</div>`;
         return;
       }
 
-      grid.innerHTML = filtered.map(item => {
-        const emoji = emojiMap[item.name] || '🧪';
+      grid.innerHTML = filtered.map((item, index) => {
+        const emoji = emojiIcons[item.name] || '🧪';
         const stock = item.current_stock || 0;
         const safety = item.safety_stock || 25;
-        const maxExpected = Math.max(stock, safety * 4, 150);
-        const percent = Math.min(100, Math.round((stock / maxExpected) * 100));
-
         const isCritical = stock <= safety;
-        const isLow = !isCritical && stock <= safety * 1.5;
-        const isFestivalSpike = curseActive && curseItems.includes(item.name);
+        const isCursed = curseActive && curseProducts.includes(item.name);
 
-        // Find prophecy details
+        // Find depletion info from prophecy
         const proph = prophecies.find(p => p.product_name === item.name) || {};
+        const runoutDate = proph.depletion_date || 'Safe';
         const daysLeft = proph.days_until_stockout != null ? proph.days_until_stockout : '—';
-        const depletionDate = proph.depletion_date || 'Safe';
 
-        let badgeHtml = '';
-        if (isCritical) {
-          badgeHtml = `<span class="badge-pill bg-red-500/20 text-red-400 border border-red-500/40">⚠️ Critical Stock</span>`;
-        } else if (isLow) {
-          badgeHtml = `<span class="badge-pill bg-amber-500/20 text-amber-300 border border-amber-500/40">🔔 Low Buffer</span>`;
-        } else {
-          badgeHtml = `<span class="badge-pill bg-emerald-500/20 text-emerald-400 border border-emerald-500/40">✓ In Stock</span>`;
-        }
+        // Percentage for bar
+        const maxVal = Math.max(stock, safety * 4, 160);
+        const barPct = Math.min(100, Math.round((stock / maxVal) * 100));
+        const barColor = isCritical ? 'bg-red-500' : barPct < 40 ? 'bg-amber-400' : 'bg-teal-400';
 
-        if (isFestivalSpike) {
-          badgeHtml += `<span class="badge-pill bg-orange-500/25 text-orange-300 border border-orange-500/50">🌕 3× Surge</span>`;
-        }
-
-        const barColor = isCritical ? 'bg-red-500' : isLow ? 'bg-amber-400' : 'bg-emerald-400';
+        // Highlight center or critical card
+        const isFeatured = index === 1 || isCritical;
 
         return `
-          <div class="potion-card p-4 flex flex-col justify-between">
+          <div class="shop-card p-5 flex flex-col justify-between ${isFeatured ? 'featured-glow' : ''}">
+            
             <div>
-              <div class="flex items-start justify-between gap-2">
-                <div class="flex items-center gap-2.5">
-                  <span class="text-3xl">${emoji}</span>
+              <!-- Top Row: Icon + Badges -->
+              <div class="flex items-start justify-between gap-2 mb-3">
+                <div class="flex items-center gap-3">
+                  <span class="text-4xl filter drop-shadow-[0_0_10px_rgba(20,241,217,0.3)]">${emoji}</span>
                   <div>
-                    <h3 class="font-bold text-sm text-slate-100">${item.name}</h3>
-                    <div class="text-[11px] text-slate-400">${item.category || 'Potion Ingredient'}</div>
+                    <h4 class="font-spooky text-xl text-white tracking-wide">${item.name}</h4>
+                    <span class="text-[11px] text-teal-400/80">${item.category || 'Reagent'}</span>
                   </div>
                 </div>
+
                 <div class="flex flex-col items-end gap-1">
-                  ${badgeHtml}
+                  ${isCritical ? '<span class="text-[10px] font-bold px-2 py-0.5 rounded-full bg-red-500/20 text-red-300 border border-red-500/40">⚠️ CRITICAL</span>' : '<span class="text-[10px] font-bold px-2 py-0.5 rounded-full bg-teal-500/20 text-teal-300 border border-teal-500/40">IN STOCK</span>'}
+                  ${isCursed ? '<span class="text-[10px] font-bold px-2 py-0.5 rounded-full bg-orange-500/25 text-orange-300 border border-orange-500/50">🌕 3× SURGE</span>' : ''}
                 </div>
               </div>
 
-              <!-- Stock Meter & Numbers -->
-              <div class="mt-4 p-3 rounded-xl bg-black/40 border border-purple-900/40">
-                <div class="flex items-center justify-between text-xs mb-1.5 font-mono">
-                  <span class="text-slate-400">Current Stock:</span>
-                  <span class="font-bold text-slate-100 text-sm">${stock} <span class="text-[11px] font-normal text-slate-400">${item.unit || 'units'}</span></span>
+              <!-- Stock Visual Meter -->
+              <div class="p-3 rounded-xl bg-black/40 border border-teal-900/40 space-y-1.5 my-3">
+                <div class="flex items-center justify-between text-xs font-mono">
+                  <span class="text-slate-400">Available:</span>
+                  <span class="font-bold text-white text-sm">${stock} <span class="text-slate-400 font-normal text-xs">${item.unit || 'units'}</span></span>
                 </div>
-                <div class="vial-meter">
-                  <div class="vial-fill ${barColor}" style="width: ${percent}%;"></div>
+                <div class="stock-meter">
+                  <div class="stock-bar ${barColor}" style="width: ${barPct}%;"></div>
                 </div>
-                <div class="flex items-center justify-between text-[10px] text-slate-400 mt-1.5">
+                <div class="flex items-center justify-between text-[10px] text-slate-400 pt-1">
                   <span>Safety: ${safety}</span>
-                  <span class="text-purple-300 font-semibold">Runs out: <b class="text-amber-300">${depletionDate}</b> (${daysLeft}d left)</span>
+                  <span class="text-teal-300">Runs out: <b class="text-orange-400">${runoutDate}</b> (${daysLeft}d)</span>
                 </div>
               </div>
             </div>
 
-            <!-- Instant Functional Actions (Sell 1, Restock 10) -->
-            <div class="mt-4 pt-3 border-t border-purple-900/30 flex items-center justify-between gap-2">
+            <!-- Simple Direct Buttons ([-] Sell 1 and [+] Restock) -->
+            <div class="pt-3 border-t border-teal-900/30 flex items-center justify-between gap-2 mt-2">
               <div class="flex items-center gap-1.5">
-                <button onclick="quickSell('${item.name}', 1)" class="btn-halloween px-2.5 py-1.5 rounded-lg text-xs font-bold" title="Sell 1 unit live">
+                <button onclick="recordQuickSale('${item.name}', 1)" class="btn-pumpkin px-3 py-1.5 text-xs font-bold" title="Sell 1 to customer">
                   [-] Sell 1
                 </button>
-                <button onclick="quickSell('${item.name}', 5)" class="btn-secondary px-2 py-1.5 rounded-lg text-[11px] font-bold" title="Sell 5 units">
+                <button onclick="recordQuickSale('${item.name}', 5)" class="px-2 py-1.5 rounded-lg bg-black/40 hover:bg-black/60 text-slate-300 border border-teal-900/40 text-xs font-bold" title="Sell 5">
                   -5
                 </button>
               </div>
 
-              <div class="flex items-center gap-1.5">
-                <button onclick="quickRestock('${item.name}', 25)" class="btn-witch px-2.5 py-1.5 rounded-lg text-xs font-bold" title="Replenish +25 units">
-                  [+] Restock +25
-                </button>
-                <button onclick="deleteIngredient('${item.name}')" class="p-1.5 text-slate-500 hover:text-red-400 text-xs transition" title="Delete ingredient">
-                  🗑️
-                </button>
-              </div>
+              <button onclick="orderQuickRestock('${item.name}', 25)" class="btn-teal px-3 py-1.5 text-xs font-bold" title="Replenish stock">
+                [+] Restock +25
+              </button>
             </div>
+
           </div>
         `;
       }).join('');
     }
 
     // -------------------------------------------------------------
-    // RENDER KPIS
+    // RENDER RESTOCK SPELL
     // -------------------------------------------------------------
-    function renderKPIs() {
-      const total = catalog.length;
-      const criticalCount = catalog.filter(i => (i.current_stock || 0) <= (i.safety_stock || 25)).length;
-      const anomCount = anomalies.length;
-
-      document.getElementById('kpi-total').textContent = total;
-      document.getElementById('kpi-critical').textContent = criticalCount;
-      document.getElementById('kpi-anomalies').textContent = anomCount;
-
-      const curseLabel = document.getElementById('kpi-curse-state');
-      const curseSub = document.getElementById('kpi-curse-sub');
-      if (curseActive) {
-        curseLabel.textContent = 'ACTIVE (3.0×)';
-        curseLabel.className = 'font-cinzel text-xl font-black text-red-400 mt-0.5';
-        curseSub.textContent = 'Full Moon Festival surge active';
-      } else {
-        curseLabel.textContent = 'NORMAL (1×)';
-        curseLabel.className = 'font-cinzel text-xl font-black text-emerald-400 mt-0.5';
-        curseSub.textContent = 'Base consumption rates';
-      }
-    }
-
-    // -------------------------------------------------------------
-    // RENDER ORACLE (PROPHECY & RESTOCK RECOMMENDATIONS)
-    // -------------------------------------------------------------
-    function renderOracle() {
-      const container = document.getElementById('oracleRecommendations');
+    function renderRestockSpell() {
+      const container = document.getElementById('restockList');
       if (!prophecies.length) {
-        container.innerHTML = `<div class="text-slate-400 text-xs text-center py-4">No prophecy data available.</div>`;
+        container.innerHTML = `<div class="text-slate-400 text-xs py-4 text-center">Consulting oracle...</div>`;
         return;
       }
 
-      // Sort by urgency: CRITICAL_DEFICIT first
-      const sorted = [...prophecies].sort((a, b) => (b.recommended_reorder_qty || 0) - (a.recommended_reorder_qty || 0));
-
-      container.innerHTML = sorted.map(p => {
-        const emoji = emojiMap[p.product_name] || '🧪';
+      container.innerHTML = prophecies.map(p => {
+        const emoji = emojiIcons[p.product_name] || '🧪';
+        const qty = p.recommended_reorder_qty || 0;
         const isUrgent = p.status === 'CRITICAL_DEFICIT' || p.status === 'IMMINENT_STOCKOUT';
-        const qtyToOrder = p.recommended_reorder_qty || 0;
 
         return `
-          <div class="p-3.5 rounded-xl border ${isUrgent ? 'border-red-500/40 bg-red-950/20' : 'border-purple-900/40 bg-black/30'} flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3">
-            <div class="flex items-center gap-3">
-              <span class="text-2xl">${emoji}</span>
+          <div class="p-3 rounded-xl border ${isUrgent ? 'border-red-500/40 bg-red-950/20' : 'border-teal-900/40 bg-black/30'} flex items-center justify-between gap-2 text-xs">
+            <div class="flex items-center gap-2.5">
+              <span class="text-xl">${emoji}</span>
               <div>
-                <div class="flex items-center gap-2">
-                  <h4 class="font-bold text-sm text-slate-100">${p.product_name}</h4>
-                  <span class="badge-pill ${isUrgent ? 'bg-red-500/20 text-red-400' : 'bg-emerald-500/20 text-emerald-400'} text-[10px]">
-                    ${p.status.replace(/_/g, ' ')}
-                  </span>
-                </div>
-                <div class="text-[11px] text-slate-400 mt-0.5">
-                  Supplier: <b class="text-slate-300">${p.supplier || 'Pantry Supply'}</b> • Lead time: <b>${p.lead_time_days || 4} days</b> • Daily burn: <b>${(p.avg_daily_demand || 0).toFixed(1)}/day</b>
-                </div>
+                <b class="text-slate-200">${p.product_name}</b>
+                <div class="text-[10px] text-slate-400">Stock: ${p.current_stock} • Lead: ${p.lead_time_days}d</div>
               </div>
             </div>
 
-            <div class="flex items-center gap-3 self-end sm:self-center shrink-0">
-              <div class="text-right">
-                <div class="text-[10px] text-slate-400 uppercase font-mono">Suggested Reorder</div>
-                <div class="font-bold text-sm ${qtyToOrder > 0 ? 'text-amber-400' : 'text-slate-400'}">${qtyToOrder} ${p.unit || 'units'}</div>
-              </div>
-              ${qtyToOrder > 0 ? `
-                <button onclick="quickRestock('${p.product_name}', ${qtyToOrder})" class="btn-halloween px-3 py-1.5 rounded-xl text-xs font-bold">
-                  Order ${qtyToOrder}
+            <div class="flex items-center gap-2">
+              <span class="font-mono ${qty > 0 ? 'text-amber-400 font-bold' : 'text-slate-500'}">${qty > 0 ? `+${qty}` : '0'} ${p.unit || ''}</span>
+              ${qty > 0 ? `
+                <button onclick="orderQuickRestock('${p.product_name}', ${qty})" class="btn-slime px-2.5 py-1 text-[11px]">
+                  Order Now
                 </button>
               ` : `
-                <span class="text-xs text-emerald-400 font-semibold px-2 py-1">✓ Stocked</span>
+                <span class="text-teal-400 text-[11px] font-semibold px-2">✓ Good</span>
               `}
             </div>
           </div>
@@ -973,39 +632,30 @@
     }
 
     // -------------------------------------------------------------
-    // RENDER ANOMALIES
+    // RENDER STRANGE HAPPENINGS (ANOMALIES)
     // -------------------------------------------------------------
-    function renderAnomalies(anomData) {
-      const feed = document.getElementById('anomaliesFeed');
-      const anoms = anomData.anomalies || [];
-      const metrics = anomData.metrics || {};
-
-      document.getElementById('anomPrecision').textContent = ((metrics.precision || 1.0) * 100).toFixed(0) + '%';
-      document.getElementById('anomRecall').textContent = ((metrics.recall || 1.0) * 100).toFixed(0) + '%';
-      document.getElementById('anomF1').textContent = (metrics.f1_score || 1.0).toFixed(2);
-
-      if (!anoms.length) {
-        feed.innerHTML = `<div class="col-span-full text-center py-8 text-emerald-400 text-xs">✅ No strange happenings detected across shelves.</div>`;
+    function renderStrangeHappenings() {
+      const container = document.getElementById('anomaliesList');
+      if (!anomalies.length) {
+        container.innerHTML = `<div class="text-teal-400 text-xs py-4 text-center">✅ All consumption rates normal.</div>`;
         return;
       }
 
-      feed.innerHTML = anoms.map(a => {
+      container.innerHTML = anomalies.map(a => {
         return `
-          <div class="p-4 rounded-xl border border-red-500/30 bg-red-950/20 backdrop-blur-md flex items-start justify-between gap-3">
+          <div class="p-3 rounded-xl border border-orange-500/30 bg-orange-950/20 flex items-start justify-between gap-2 text-xs">
             <div>
               <div class="flex items-center gap-2">
-                <span class="text-lg">⚠️</span>
-                <h4 class="font-bold text-sm text-red-200">${a.product_name}</h4>
-                <span class="badge-pill bg-red-500/30 text-red-300 font-mono text-[10px]">${a.date}</span>
+                <span class="text-sm">⚠️</span>
+                <b class="text-orange-300">${a.product_name}</b>
+                <span class="text-[10px] text-slate-400 font-mono">${a.date}</span>
               </div>
-              <p class="text-xs text-slate-300 mt-1">${a.description || 'Unusual consumption spike detected'}</p>
-              <div class="flex items-center gap-3 text-[11px] text-slate-400 mt-2 font-mono">
-                <span>Actual: <b class="text-red-300">${a.actual_demand}</b></span>
-                <span>Expected: <b>${(a.expected_demand || 0).toFixed(1)}</b></span>
-                <span>Z-Score: <b class="text-amber-400">${(a.z_score || 0).toFixed(2)}σ</b></span>
+              <p class="text-[11px] text-slate-300 mt-0.5">${a.description}</p>
+              <div class="text-[10px] text-slate-400 font-mono mt-1">
+                Actual: <b class="text-orange-300">${a.actual_demand}</b> | Expected: <b>${(a.expected_demand || 0).toFixed(1)}</b> | Z: <b>${(a.z_score || 0).toFixed(2)}σ</b>
               </div>
             </div>
-            <span class="badge-pill bg-red-500/20 text-red-400 border border-red-500/40 text-[10px] shrink-0">
+            <span class="text-[10px] font-bold px-2 py-0.5 rounded bg-orange-500/20 text-orange-400 border border-orange-500/40 shrink-0">
               Spike
             </span>
           </div>
@@ -1014,9 +664,9 @@
     }
 
     // -------------------------------------------------------------
-    // QUICK FUNCTIONAL ACTIONS (SELL / RESTOCK / DELETE)
+    // ACTIONS: SELL & RESTOCK
     // -------------------------------------------------------------
-    async function quickSell(productName, quantity) {
+    async function recordQuickSale(productName, quantity) {
       try {
         const res = await fetch('/api/sales', {
           method: 'POST',
@@ -1024,19 +674,15 @@
           body: JSON.stringify({ product_name: productName, quantity: quantity })
         });
         if (!res.ok) throw new Error(await res.text());
-        
-        showToast(`Sold ${quantity} × ${productName}! Stock updated in MongoDB.`, 'success');
-        
-        // Mark quest step 2 done!
-        completeQuestStep('step2');
 
-        await refreshAllData();
+        showToast(`Sold ${quantity} × ${productName}! Stock reduced in MongoDB.`, 'success');
+        await loadPantryData();
       } catch (err) {
         showToast('Sale failed: ' + err.message, 'error');
       }
     }
 
-    async function quickRestock(productName, quantity) {
+    async function orderQuickRestock(productName, quantity) {
       try {
         const res = await fetch('/api/restock/order', {
           method: 'POST',
@@ -1046,11 +692,7 @@
         if (!res.ok) throw new Error(await res.text());
 
         showToast(`Restocked ${quantity} × ${productName}! Shelves replenished.`, 'success');
-
-        // Mark quest step 4 done!
-        completeQuestStep('step4');
-
-        await refreshAllData();
+        await loadPantryData();
       } catch (err) {
         showToast('Restock failed: ' + err.message, 'error');
       }
@@ -1059,7 +701,7 @@
     async function restockAllUrgent() {
       const urgent = prophecies.filter(p => (p.recommended_reorder_qty || 0) > 0);
       if (!urgent.length) {
-        showToast('All ingredients are currently healthy!', 'info');
+        showToast('All ingredients are currently well stocked!', 'info');
         return;
       }
 
@@ -1071,23 +713,10 @@
             body: JSON.stringify({ product_name: item.product_name, quantity: item.recommended_reorder_qty })
           });
         }
-        showToast(`Successfully replenished all ${urgent.length} deficient ingredients!`, 'success');
-        completeQuestStep('step4');
-        await refreshAllData();
+        showToast(`Ordered all ${urgent.length} needed ingredients!`, 'success');
+        await loadPantryData();
       } catch (err) {
-        showToast('Bulk restock error: ' + err.message, 'error');
-      }
-    }
-
-    async function deleteIngredient(name) {
-      if (!confirm(`Delete ${name} from Madam Hexley's pantry?`)) return;
-      try {
-        const res = await fetch(`/api/inventory/${encodeURIComponent(name)}`, { method: 'DELETE' });
-        if (!res.ok) throw new Error(await res.text());
-        showToast(`Removed ${name} from catalog.`, 'info');
-        await refreshAllData();
-      } catch (err) {
-        showToast('Delete failed: ' + err.message, 'error');
+        showToast('Restock error: ' + err.message, 'error');
       }
     }
 
@@ -1104,194 +733,70 @@
         const data = await res.json();
         curseActive = data.curse_active;
 
-        updateCurseUI();
+        updateCurseDisplay();
 
         if (curseActive) {
-          showToast('🌕 Full Moon Festival announced! Demand for 3 ingredients tripled!', 'warning');
-          completeQuestStep('step3');
+          showToast('🌕 Full Moon Festival announced! Demand for 3 ingredients tripled (3.0×)!', 'warning');
         } else {
-          showToast('🌙 Midnight Curse lifted. Demand normalized.', 'info');
+          showToast('🌙 Midnight Curse lifted. Demand returned to normal.', 'info');
         }
 
-        await refreshAllData();
+        await loadPantryData();
       } catch (err) {
         showToast('Failed to toggle curse: ' + err.message, 'error');
       }
     }
 
-    function checkCurseStatus() {
-      fetch('/api/curse')
-        .then(r => r.json())
-        .then(d => {
-          curseActive = d.curse_active;
-          updateCurseUI();
-        })
-        .catch(() => {});
-    }
-
-    function updateCurseUI() {
+    function updateCurseDisplay() {
       const banner = document.getElementById('curseBanner');
-      const badge = document.getElementById('curseMultiplierBadge');
-      const moonIcon = document.getElementById('curseMoonIcon');
-      const btnText = document.getElementById('curseBtnText');
+      const text = document.getElementById('curseText');
+      const icon = document.getElementById('curseIcon');
 
       if (curseActive) {
         banner.classList.remove('hidden');
-        badge.classList.remove('hidden');
-        moonIcon.textContent = '🌕';
-        btnText.textContent = 'Lift Curse';
+        text.textContent = 'Lift Curse';
+        icon.textContent = '🌕';
       } else {
         banner.classList.add('hidden');
-        badge.classList.add('hidden');
-        moonIcon.textContent = '🌙';
-        btnText.textContent = 'Midnight Curse';
+        text.textContent = 'Midnight Curse (3×)';
+        icon.textContent = '🌙';
       }
     }
 
-    // -------------------------------------------------------------
-    // QUEST / WALKTHROUGH LOGIC (LEARN BY DOING)
-    // -------------------------------------------------------------
-    function highlightAction(stepKey) {
-      if (stepKey === 'step1') {
-        switchView('shelves');
-        filterCategory('CRITICAL');
-        completeQuestStep('step1');
-        showToast('Step 1 complete: Viewing critical stock items.', 'info');
-      } else if (stepKey === 'step2') {
-        switchView('shelves');
-        const firstBtn = document.querySelector('button[title="Sell 1 unit live"]');
-        if (firstBtn) {
-          firstBtn.classList.add('ring-4', 'ring-orange-500', 'animate-pulse');
-          setTimeout(() => firstBtn.classList.remove('ring-4', 'ring-orange-500', 'animate-pulse'), 3000);
-        }
-        showToast('Step 2: Click [-] Sell 1 on any ingredient card!', 'info');
-      } else if (stepKey === 'step3') {
-        toggleCurse();
-      } else if (stepKey === 'step4') {
-        switchView('oracle');
-        completeQuestStep('step4');
-        showToast('Step 4: Check recommended order quantities or click "Restock All"!', 'info');
-      }
-    }
-
-    function completeQuestStep(stepKey) {
-      questState[stepKey] = true;
-      updateQuestUI();
-    }
-
-    function resetQuest() {
-      questState = { step1: false, step2: false, step3: false, step4: false };
-      updateQuestUI();
-      showToast('Apprentice quest reset! Ready to learn again.', 'info');
-    }
-
-    function updateQuestUI() {
-      ['1', '2', '3', '4'].forEach(num => {
-        const key = 'step' + num;
-        const card = document.getElementById(`step-card-${num}`);
-        const icon = document.getElementById(`step-icon-${num}`);
-        if (questState[key]) {
-          card.classList.add('completed');
-          icon.innerHTML = '✓';
-          icon.className = 'w-7 h-7 rounded-lg bg-emerald-600 text-white font-bold text-xs flex items-center justify-center shrink-0';
-        } else {
-          card.classList.remove('completed');
-          icon.innerHTML = num;
-          icon.className = 'w-7 h-7 rounded-lg bg-purple-900/60 text-purple-300 border border-purple-500/40 flex items-center justify-center font-bold text-xs shrink-0';
-        }
-      });
+    function updateVitals() {
+      document.getElementById('statTotal').textContent = inventory.length;
+      const criticalCount = inventory.filter(i => (i.current_stock || 0) <= (i.safety_stock || 25)).length;
+      document.getElementById('statCritical').textContent = criticalCount;
     }
 
     // -------------------------------------------------------------
-    // CHARTS (CRYSTAL BALL DEMAND ANALYTICS)
+    // CHART
     // -------------------------------------------------------------
-    function populateForecastDropdown() {
-      const select = document.getElementById('forecastIngredientSelect');
-      if (!select) return;
-      select.innerHTML = catalog.map(i => `<option value="${i.name}">${i.name}</option>`).join('');
+    function populateChartOptions() {
+      const sel = document.getElementById('chartSelect');
+      if (!sel) return;
+      sel.innerHTML = inventory.map(i => `<option value="${i.name}">${i.name}</option>`).join('');
     }
 
-    async function initCharts() {
-      // 1. DOW seasonality
-      const dowRes = await fetch('/api/analytics/crystal-ball').then(r => r.json());
-      const dowPattern = dowRes.summary?.dow_pattern || { 'Mon': 15, 'Tue': 16, 'Wed': 17, 'Thu': 19, 'Fri': 25, 'Sat': 32, 'Sun': 28 };
-
-      const dowCtx = document.getElementById('dowChartCanvas').getContext('2d');
-      if (dowChart) dowChart.destroy();
-      dowChart = new Chart(dowCtx, {
-        type: 'bar',
-        data: {
-          labels: Object.keys(dowPattern),
-          datasets: [{
-            label: 'Avg Demand Weight',
-            data: Object.values(dowPattern),
-            backgroundColor: ['#9333ea', '#9333ea', '#9333ea', '#a855f7', '#ff7700', '#ff7700', '#ea580c'],
-            borderRadius: 6
-          }]
-        },
-        options: {
-          responsive: true,
-          maintainAspectRatio: false,
-          plugins: { legend: { display: false } },
-          scales: {
-            x: { grid: { color: 'rgba(255,255,255,0.05)' }, ticks: { color: '#94a3b8' } },
-            y: { grid: { color: 'rgba(255,255,255,0.05)' }, ticks: { color: '#94a3b8' } }
-          }
-        }
-      });
-
-      // 2. Trend Chart
-      const trendCtx = document.getElementById('trendChartCanvas').getContext('2d');
-      const trendData = dowRes.summary?.historical_trend || [];
-      if (trendChart) trendChart.destroy();
-      trendChart = new Chart(trendCtx, {
-        type: 'line',
-        data: {
-          labels: trendData.map(d => d.date),
-          datasets: [{
-            label: 'Total Potion Volume',
-            data: trendData.map(d => d.total_sold),
-            borderColor: '#ff7700',
-            backgroundColor: 'rgba(255, 119, 0, 0.1)',
-            fill: true,
-            tension: 0.35,
-            pointRadius: 1
-          }]
-        },
-        options: {
-          responsive: true,
-          maintainAspectRatio: false,
-          plugins: { legend: { display: false } },
-          scales: {
-            x: { grid: { color: 'rgba(255,255,255,0.04)' }, ticks: { color: '#64748b', maxTicksLimit: 12 } },
-            y: { grid: { color: 'rgba(255,255,255,0.04)' }, ticks: { color: '#64748b' } }
-          }
-        }
-      });
-
-      // 3. 14-day item forecast
-      renderForecastChart();
-    }
-
-    async function renderForecastChart() {
-      const select = document.getElementById('forecastIngredientSelect');
-      const itemName = select ? select.value : (catalog[0]?.name || 'Moonflower');
+    async function loadForecastChart() {
+      const sel = document.getElementById('chartSelect');
+      const itemName = sel ? sel.value : (inventory[0]?.name || 'Moonflower');
 
       try {
         const res = await fetch(`/api/prophecy/forecast/${encodeURIComponent(itemName)}?days=14`).then(r => r.json());
         const days = res.forecast || [];
 
-        const ctx = document.getElementById('forecastChartCanvas').getContext('2d');
-        if (forecastChart) forecastChart.destroy();
+        const ctx = document.getElementById('forecastCanvas').getContext('2d');
+        if (chartInstance) chartInstance.destroy();
 
-        forecastChart = new Chart(ctx, {
+        chartInstance = new Chart(ctx, {
           type: 'bar',
           data: {
             labels: days.map(d => d.date.slice(5)), // MM-DD
             datasets: [{
-              label: 'Predicted Units',
+              label: 'Predicted Units Needed',
               data: days.map(d => d.predicted_demand),
-              backgroundColor: 'rgba(168, 85, 247, 0.75)',
+              backgroundColor: 'rgba(20, 241, 217, 0.75)',
               hoverBackgroundColor: '#ff7700',
               borderRadius: 6
             }]
@@ -1307,90 +812,35 @@
           }
         });
       } catch (err) {
-        console.error('Forecast chart error', err);
+        console.error('Chart load error', err);
       }
     }
 
     // -------------------------------------------------------------
-    // ADD INGREDIENT MODAL
+    // GUIDE MODAL
     // -------------------------------------------------------------
-    function openAddModal() {
-      document.getElementById('addModal').classList.remove('hidden');
+    function openGuideModal() {
+      document.getElementById('guideModal').classList.remove('hidden');
     }
-
-    function closeAddModal() {
-      document.getElementById('addModal').classList.add('hidden');
-    }
-
-    async function submitNewIngredient() {
-      const name = document.getElementById('addName').value.trim();
-      const category = document.getElementById('addCategory').value.trim() || 'General Flora';
-      const unit = document.getElementById('addUnit').value.trim() || 'bundles';
-      const stock = parseInt(document.getElementById('addStock').value) || 0;
-      const safety = parseInt(document.getElementById('addSafety').value) || 20;
-      const supplier = document.getElementById('addSupplier').value.trim() || 'Local Apothecary';
-      const leadTime = parseInt(document.getElementById('addLeadTime').value) || 4;
-
-      if (!name) {
-        showToast('Please specify an ingredient name.', 'error');
-        return;
-      }
-
-      try {
-        const res = await fetch('/api/inventory', {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({
-            name,
-            category,
-            unit,
-            current_stock: stock,
-            safety_stock: safety,
-            supplier,
-            lead_time_days: leadTime
-          })
-        });
-
-        if (!res.ok) throw new Error(await res.text());
-
-        showToast(`Added ${name} to Madam Hexley's pantry!`, 'success');
-        closeAddModal();
-        await refreshAllData();
-      } catch (err) {
-        showToast('Failed to add ingredient: ' + err.message, 'error');
-      }
+    function closeGuideModal() {
+      document.getElementById('guideModal').classList.add('hidden');
     }
 
     // -------------------------------------------------------------
-    // TOAST NOTIFICATIONS
+    // TOAST
     // -------------------------------------------------------------
-    function showToast(message, type = 'info') {
-      const container = document.getElementById('toast-container');
-      const toast = document.createElement('div');
-
-      let bg = 'bg-purple-950/90 text-purple-200 border border-purple-500/50';
-      let icon = 'ℹ️';
-
-      if (type === 'success') {
-        bg = 'bg-emerald-950/90 text-emerald-200 border border-emerald-500/50';
-        icon = '✅';
-      } else if (type === 'error') {
-        bg = 'bg-red-950/90 text-red-200 border border-red-500/50';
-        icon = '❌';
-      } else if (type === 'warning') {
-        bg = 'bg-orange-950/90 text-orange-200 border border-orange-500/50';
-        icon = '🌕';
-      }
-
-      toast.className = `toast-card ${bg}`;
-      toast.innerHTML = `<span>${icon}</span><span>${message}</span>`;
-      container.appendChild(toast);
-
+    function showToast(msg, type = 'info') {
+      const box = document.getElementById('toast-box');
+      const t = document.createElement('div');
+      t.className = 'toast-pill';
+      const icon = type === 'success' ? '✅' : type === 'warning' ? '🌕' : type === 'error' ? '❌' : 'ℹ️';
+      t.innerHTML = `<span>${icon}</span><span>${msg}</span>`;
+      box.appendChild(t);
       setTimeout(() => {
-        toast.style.transition = 'all 0.3s ease';
-        toast.style.opacity = '0';
-        toast.style.transform = 'translateY(10px)';
-        setTimeout(() => toast.remove(), 300);
+        t.style.opacity = '0';
+        t.style.transform = 'translateY(10px)';
+        t.style.transition = 'all 0.3s';
+        setTimeout(() => t.remove(), 300);
       }, 3500);
     }
   </script>
