@@ -1,931 +1,1398 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>🧙‍♀️ Potion Pantry – Madam Hexley's Smart Shop</title>
-<script src="https://cdn.tailwindcss.com"></script>
-<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Cinzel:wght@700;900&display=swap" rel="stylesheet">
-<style>
-* { box-sizing: border-box; margin: 0; padding: 0; }
-body {
-  font-family: 'Inter', sans-serif;
-  background: #0f0a1e;
-  background-image:
-    radial-gradient(ellipse at 15% 15%, rgba(147,51,234,.18) 0, transparent 55%),
-    radial-gradient(ellipse at 85% 5%,  rgba(245,158,11,.12) 0, transparent 45%),
-    radial-gradient(ellipse at 50% 95%, rgba(239,68,68,.10) 0, transparent 50%);
-  background-attachment: fixed;
-  color: #e2e8f0;
-  min-height: 100vh;
-}
-::-webkit-scrollbar { width: 5px; height: 5px; }
-::-webkit-scrollbar-track { background: #1a1030; }
-::-webkit-scrollbar-thumb { background: #2d1f5e; border-radius: 4px; }
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>🧙‍♀️ The Witch's Potion Pantry – Smart Inventory</title>
+  
+  <!-- Tailwind CSS & Fonts -->
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@600;700;800;900&family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=JetBrains+Mono:wght@500;700&display=swap" rel="stylesheet">
 
-/* NAV */
-.nav { background: rgba(26,16,48,.93); backdrop-filter: blur(16px); border-bottom: 1px solid #2d1f5e; position: sticky; top: 0; z-index: 50; }
-.nav-inner { max-width: 1280px; margin: 0 auto; padding: 0 16px; height: 60px; display: flex; align-items: center; gap: 12px; }
-.logo { display: flex; align-items: center; gap: 10px; flex-shrink: 0; }
-.logo-text { font-family: 'Cinzel', serif; font-size: 16px; font-weight: 900; background: linear-gradient(90deg,#c084fc,#fbbf24,#f472b6); -webkit-background-clip: text; -webkit-text-fill-color: transparent; line-height: 1.2; }
-.logo-sub { font-size: 10px; color: #64748b; }
+  <style>
+    :root {
+      --bg: #090514;
+      --card-bg: rgba(23, 14, 46, 0.7);
+      --card-border: rgba(168, 85, 247, 0.22);
+      --card-hover-border: rgba(249, 115, 22, 0.6);
+      --pumpkin: #ff7700;
+      --pumpkin-glow: rgba(255, 119, 0, 0.35);
+      --witch-purple: #9333ea;
+      --neon-green: #10b981;
+      --blood-red: #ef4444;
+    }
 
-.tabs { display: flex; align-items: center; gap: 2px; overflow-x: auto; flex: 1; justify-content: center; }
-.tabs::-webkit-scrollbar { display: none; }
-.tab-btn { padding: 7px 14px; border-radius: 8px; font-size: 12px; font-weight: 600; cursor: pointer; border: none; background: transparent; color: #94a3b8; white-space: nowrap; display: flex; align-items: center; gap: 5px; transition: all .2s; }
-.tab-btn:hover { background: rgba(147,51,234,.15); color: #c4b5fd; }
-.tab-btn.active { background: linear-gradient(135deg,rgba(147,51,234,.3),rgba(245,158,11,.15)); color: #e2e8f0; border: 1px solid rgba(147,51,234,.4); }
+    * { box-sizing: border-box; }
+    body {
+      font-family: 'Plus Jakarta Sans', sans-serif;
+      background-color: var(--bg);
+      background-image: 
+        radial-gradient(ellipse at 10% 15%, rgba(147, 51, 234, 0.22) 0%, transparent 45%),
+        radial-gradient(ellipse at 85% 10%, rgba(255, 119, 0, 0.18) 0%, transparent 45%),
+        radial-gradient(ellipse at 50% 90%, rgba(239, 68, 68, 0.12) 0%, transparent 50%),
+        radial-gradient(circle at 50% 50%, rgba(17, 10, 36, 0.9) 0%, #090514 100%);
+      background-attachment: fixed;
+      color: #f1f5f9;
+      min-height: 100vh;
+    }
 
-.nav-right { display: flex; align-items: center; gap: 8px; flex-shrink: 0; }
-.live-dot { display: flex; align-items: center; gap: 6px; padding: 5px 10px; border-radius: 8px; background: rgba(16,185,129,.1); border: 1px solid rgba(16,185,129,.3); font-size: 11px; color: #34d399; font-weight: 600; }
-.live-ping { width: 7px; height: 7px; border-radius: 50%; background: #34d399; animation: ping 1.5s ease-in-out infinite; display: inline-block; }
-@keyframes ping { 0%,100%{opacity:1;transform:scale(1)} 50%{opacity:.5;transform:scale(1.3)} }
+    .font-cinzel { font-family: 'Cinzel', serif; }
+    .font-mono { font-family: 'JetBrains Mono', monospace; }
 
-/* CURSE BANNER */
-#curseBanner { display: none; background: linear-gradient(90deg,#7f1d1d,#450a0a,#7f1d1d); border-bottom: 2px solid #ef4444; padding: 9px 20px; text-align: center; }
-#curseBanner.on { display: block; animation: curseGlow 2s ease-in-out infinite; }
-@keyframes curseGlow { 0%,100%{box-shadow:0 0 20px rgba(239,68,68,.3)} 50%{box-shadow:0 0 50px rgba(239,68,68,.7)} }
+    /* Glassmorphic cards with Halloween edge glows */
+    .glass-panel {
+      background: var(--card-bg);
+      backdrop-filter: blur(16px);
+      -webkit-backdrop-filter: blur(16px);
+      border: 1px solid var(--card-border);
+      border-radius: 20px;
+      transition: all 0.25s cubic-bezier(0.16, 1, 0.3, 1);
+    }
+    .glass-panel:hover {
+      border-color: rgba(168, 85, 247, 0.4);
+    }
 
-/* MAIN */
-.main { max-width: 1280px; margin: 0 auto; padding: 24px 16px; }
+    .potion-card {
+      background: linear-gradient(145deg, rgba(30, 18, 58, 0.8), rgba(18, 10, 36, 0.9));
+      backdrop-filter: blur(12px);
+      border: 1px solid var(--card-border);
+      border-radius: 18px;
+      position: relative;
+      overflow: hidden;
+      transition: all 0.25s cubic-bezier(0.16, 1, 0.3, 1);
+    }
+    .potion-card:hover {
+      transform: translateY(-3px);
+      border-color: var(--card-hover-border);
+      box-shadow: 0 12px 30px -8px var(--pumpkin-glow);
+    }
 
-/* CARDS */
-.card { background: #1a1030; border: 1px solid #2d1f5e; border-radius: 16px; padding: 20px; }
-.card-sm { background: #1a1030; border: 1px solid #2d1f5e; border-radius: 12px; padding: 14px 18px; }
+    /* Tactile Glowing Buttons */
+    .btn-halloween {
+      background: linear-gradient(135deg, #ff7700 0%, #ea580c 100%);
+      color: #fff;
+      font-weight: 700;
+      border: 1px solid rgba(255, 255, 255, 0.2);
+      box-shadow: 0 4px 18px var(--pumpkin-glow);
+      transition: all 0.2s;
+    }
+    .btn-halloween:hover {
+      transform: translateY(-1px);
+      box-shadow: 0 6px 24px rgba(255, 119, 0, 0.55);
+      filter: brightness(1.1);
+    }
 
-/* STAT CARD */
-.stat-card { background: #1a1030; border: 1px solid #2d1f5e; border-radius: 14px; padding: 18px 20px; }
-.stat-val { font-size: 30px; font-weight: 700; line-height: 1; }
-.stat-lbl { font-size: 11px; color: #64748b; font-weight: 600; text-transform: uppercase; letter-spacing: .5px; margin-top: 6px; }
+    .btn-witch {
+      background: linear-gradient(135deg, #9333ea 0%, #7e22ce 100%);
+      color: #fff;
+      font-weight: 700;
+      box-shadow: 0 4px 16px rgba(147, 51, 234, 0.4);
+      transition: all 0.2s;
+    }
+    .btn-witch:hover {
+      transform: translateY(-1px);
+      box-shadow: 0 6px 22px rgba(147, 51, 234, 0.6);
+      filter: brightness(1.12);
+    }
 
-/* BUTTONS */
-.btn { display: inline-flex; align-items: center; gap: 6px; padding: 8px 16px; border-radius: 10px; font-size: 13px; font-weight: 600; cursor: pointer; border: none; transition: all .18s; }
-.btn-primary { background: linear-gradient(135deg,#9333ea,#7c3aed); color: #fff; }
-.btn-primary:hover { filter: brightness(1.15); transform: translateY(-1px); box-shadow: 0 4px 14px rgba(147,51,234,.45); }
-.btn-success { background: linear-gradient(135deg,#10b981,#059669); color: #fff; }
-.btn-success:hover { filter: brightness(1.1); transform: translateY(-1px); box-shadow: 0 4px 14px rgba(16,185,129,.4); }
-.btn-danger  { background: linear-gradient(135deg,#ef4444,#dc2626); color: #fff; }
-.btn-danger:hover  { filter: brightness(1.1); transform: translateY(-1px); box-shadow: 0 4px 14px rgba(239,68,68,.4); }
-.btn-ghost  { background: rgba(255,255,255,.06); color: #cbd5e1; border: 1px solid #2d1f5e; }
-.btn-ghost:hover  { background: rgba(255,255,255,.11); }
-.btn-amber  { background: linear-gradient(135deg,#f59e0b,#d97706); color: #fff; }
-.btn-amber:hover  { filter: brightness(1.1); transform: translateY(-1px); }
-.btn-sm { padding: 5px 11px; font-size: 12px; }
+    .btn-secondary {
+      background: rgba(255, 255, 255, 0.06);
+      border: 1px solid rgba(255, 255, 255, 0.12);
+      color: #cbd5e1;
+      transition: all 0.2s;
+    }
+    .btn-secondary:hover {
+      background: rgba(255, 255, 255, 0.12);
+      color: #fff;
+    }
 
-/* BADGES */
-.badge { padding: 3px 9px; border-radius: 20px; font-size: 10px; font-weight: 700; text-transform: uppercase; letter-spacing: .4px; }
-.b-red    { background: rgba(239,68,68,.18);   color: #fca5a5; border: 1px solid rgba(239,68,68,.4); }
-.b-amber  { background: rgba(245,158,11,.18);  color: #fde68a; border: 1px solid rgba(245,158,11,.4); }
-.b-green  { background: rgba(16,185,129,.18);  color: #6ee7b7; border: 1px solid rgba(16,185,129,.4); }
-.b-purple { background: rgba(147,51,234,.18);  color: #c4b5fd; border: 1px solid rgba(147,51,234,.4); }
-.b-blue   { background: rgba(59,130,246,.18);  color: #93c5fd; border: 1px solid rgba(59,130,246,.4); }
+    /* Vials / Animated Stock Bar */
+    .vial-meter {
+      height: 8px;
+      background: rgba(255, 255, 255, 0.08);
+      border-radius: 999px;
+      overflow: hidden;
+      position: relative;
+    }
+    .vial-fill {
+      height: 100%;
+      border-radius: 999px;
+      transition: width 0.4s ease-out;
+    }
 
-/* INPUTS */
-.inp { width: 100%; padding: 9px 12px; border-radius: 8px; background: rgba(255,255,255,.05); border: 1px solid #2d1f5e; color: #e2e8f0; font-size: 13px; outline: none; transition: border .15s; }
-.inp:focus { border-color: #9333ea; box-shadow: 0 0 0 2px rgba(147,51,234,.2); }
-.inp option { background: #1a1030; }
-label { font-size: 12px; color: #94a3b8; font-weight: 500; display: block; margin-bottom: 4px; }
+    /* Badges */
+    .badge-pill {
+      font-size: 11px;
+      font-weight: 700;
+      letter-spacing: 0.5px;
+      text-transform: uppercase;
+      padding: 3px 10px;
+      border-radius: 999px;
+      display: inline-flex;
+      align-items: center;
+      gap: 4px;
+    }
 
-/* TABLE */
-.tbl { width: 100%; border-collapse: collapse; font-size: 13px; }
-.tbl th { padding: 10px 12px; text-align: left; font-size: 10px; text-transform: uppercase; letter-spacing: .6px; color: #475569; border-bottom: 1px solid #2d1f5e; font-weight: 600; }
-.tbl td { padding: 12px; border-bottom: 1px solid rgba(45,31,94,.35); vertical-align: middle; }
-.tbl tr:hover td { background: rgba(147,51,234,.04); }
-.tbl tr:last-child td { border-bottom: none; }
+    /* Midnight Curse pulsating banner */
+    .curse-pulse {
+      background: linear-gradient(90deg, #7f1d1d, #991b1b, #7f1d1d);
+      box-shadow: 0 0 25px rgba(239, 68, 68, 0.6);
+      animation: pulseGlow 2.5s infinite;
+    }
+    @keyframes pulseGlow {
+      0%, 100% { box-shadow: 0 0 20px rgba(239, 68, 68, 0.4); }
+      50% { box-shadow: 0 0 45px rgba(239, 68, 68, 0.8); }
+    }
 
-/* PROGRESS */
-.prog-track { background: rgba(255,255,255,.07); border-radius: 4px; height: 5px; overflow: hidden; }
-.prog-fill  { height: 100%; border-radius: 4px; transition: width .5s; }
+    /* Floating particles */
+    .spooky-fog {
+      position: fixed;
+      inset: 0;
+      pointer-events: none;
+      z-index: 1;
+      opacity: 0.5;
+    }
 
-/* MODAL */
-.modal-bg { position: fixed; inset: 0; background: rgba(0,0,0,.75); z-index: 300; display: flex; align-items: center; justify-content: center; backdrop-filter: blur(6px); }
-.modal-box { background: #1a1030; border: 1px solid #2d1f5e; border-radius: 20px; padding: 28px; width: 90%; max-width: 460px; }
-.modal-title { font-family: 'Cinzel', serif; font-size: 16px; color: #c4b5fd; margin-bottom: 4px; }
-.modal-sub { font-size: 12px; color: #64748b; margin-bottom: 20px; }
+    /* Interactive Quest Step Pill */
+    .quest-step {
+      transition: all 0.25s ease;
+      border: 1px solid rgba(255, 255, 255, 0.1);
+      background: rgba(20, 12, 40, 0.7);
+    }
+    .quest-step.completed {
+      border-color: rgba(16, 185, 129, 0.5);
+      background: rgba(16, 185, 129, 0.12);
+    }
+    .quest-step.active {
+      border-color: rgba(249, 115, 22, 0.8);
+      box-shadow: 0 0 15px rgba(249, 115, 22, 0.35);
+      background: rgba(249, 115, 22, 0.15);
+    }
 
-/* TOAST */
-#toast { position: fixed; bottom: 20px; right: 20px; z-index: 1000; display: flex; flex-direction: column; gap: 8px; pointer-events: none; }
-.t-msg { padding: 11px 16px; border-radius: 12px; font-size: 13px; font-weight: 500; display: flex; align-items: center; gap: 8px; animation: slideIn .3s ease; backdrop-filter: blur(8px); }
-.t-ok  { background: rgba(16,185,129,.9);  color: #fff; }
-.t-err { background: rgba(239,68,68,.9);   color: #fff; }
-.t-inf { background: rgba(147,51,234,.9);  color: #fff; }
-@keyframes slideIn { from{transform:translateX(120%);opacity:0} to{transform:translateX(0);opacity:1} }
+    /* Custom Toast */
+    #toast-container {
+      position: fixed;
+      bottom: 24px;
+      right: 24px;
+      z-index: 9999;
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+    }
+    .toast-card {
+      backdrop-filter: blur(12px);
+      padding: 12px 18px;
+      border-radius: 14px;
+      font-size: 13px;
+      font-weight: 600;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5);
+      animation: slideToast 0.3s ease-out;
+    }
+    @keyframes slideToast {
+      from { transform: translateX(100%); opacity: 0; }
+      to { transform: translateX(0); opacity: 1; }
+    }
 
-/* TAB PANES */
-.pane { display: none; animation: fadeUp .25s ease; }
-.pane.on { display: block; }
-@keyframes fadeUp { from{opacity:0;transform:translateY(8px)} to{opacity:1;transform:translateY(0)} }
-
-/* GRID HELPERS */
-.grid-4 { display: grid; grid-template-columns: repeat(4,1fr); gap: 14px; }
-.grid-3 { display: grid; grid-template-columns: repeat(3,1fr); gap: 14px; }
-.grid-2 { display: grid; grid-template-columns: repeat(2,1fr); gap: 14px; }
-@media(max-width:900px) { .grid-4 { grid-template-columns: repeat(2,1fr); } .grid-3 { grid-template-columns: repeat(2,1fr); } }
-@media(max-width:580px) { .grid-4,.grid-3,.grid-2 { grid-template-columns: 1fr; } }
-
-/* PAGE HEADER */
-.ph { display: flex; align-items: flex-start; justify-content: space-between; gap: 12px; margin-bottom: 20px; flex-wrap: wrap; }
-.ph h2 { font-family: 'Cinzel', serif; font-size: 20px; font-weight: 700; color: #c4b5fd; }
-.ph p  { font-size: 13px; color: #64748b; margin-top: 2px; }
-
-/* SECTION LABEL */
-.sec-lbl { font-size: 11px; font-weight: 700; text-transform: uppercase; letter-spacing: .6px; color: #475569; margin-bottom: 12px; }
-
-/* HELP BUTTON */
-#helpBtn { position: fixed; bottom: 20px; left: 20px; z-index: 500; width: 46px; height: 46px; border-radius: 50%; background: linear-gradient(135deg,#9333ea,#7c3aed); border: none; cursor: pointer; font-size: 20px; display: flex; align-items: center; justify-content: center; box-shadow: 0 4px 20px rgba(147,51,234,.5); transition: transform .2s; }
-#helpBtn:hover { transform: scale(1.1); }
-
-/* ───────────── TUTORIAL ───────────── */
-#tutOverlay { position: fixed; inset: 0; z-index: 9000; pointer-events: none; }
-#tutOverlay.on { pointer-events: all; }
-#tutDrop { position: absolute; inset: 0; background: rgba(0,0,0,.75); display: none; }
-#tutSpot { position: absolute; border-radius: 14px; box-shadow: 0 0 0 4000px rgba(0,0,0,.72); transition: all .4s ease; border: 2px solid rgba(147,51,234,.85); display: none; pointer-events: none; }
-#tutCard { position: absolute; background: linear-gradient(135deg,#1e1040,#130d24); border: 1px solid rgba(147,51,234,.55); border-radius: 18px; padding: 22px 24px; width: 310px; box-shadow: 0 20px 60px rgba(0,0,0,.85); display: none; }
-#tutCard h3 { font-family: 'Cinzel', serif; font-size: 15px; color: #c4b5fd; margin-bottom: 8px; }
-#tutCard p  { font-size: 13px; color: #cbd5e1; line-height: 1.65; }
-.tut-badge { display: inline-block; background: rgba(147,51,234,.25); border: 1px solid #9333ea; color: #c4b5fd; font-size: 10px; font-weight: 700; padding: 2px 8px; border-radius: 20px; margin-bottom: 10px; }
-.tut-dots { display: flex; gap: 5px; margin-bottom: 10px; }
-.tut-dot { width: 6px; height: 6px; border-radius: 50%; background: rgba(147,51,234,.25); transition: background .3s; }
-.tut-dot.done { background: #9333ea; }
-.tut-btns { display: flex; gap: 8px; margin-top: 16px; justify-content: flex-end; }
-
-/* HIDDEN */
-.off { display: none !important; }
-</style>
+    /* Scrollbar */
+    ::-webkit-scrollbar { width: 6px; height: 6px; }
+    ::-webkit-scrollbar-track { background: #0c0817; }
+    ::-webkit-scrollbar-thumb { background: #2f1d5e; border-radius: 4px; }
+    ::-webkit-scrollbar-thumb:hover { background: #ff7700; }
+  </style>
 </head>
-<body>
+<body class="relative overflow-x-hidden selection:bg-purple-600 selection:text-white">
 
-<!-- ════════════════════ CURSE BANNER ════════════════════ -->
-<div id="curseBanner">
-  <span style="font-size:13px;font-weight:700;color:#fca5a5">🌕 MIDNIGHT CURSE ACTIVE — Full Moon Festival! Demand ×3.0 on selected ingredients ⚠️</span>
-  <button onclick="toggleCurse()" style="margin-left:14px;font-size:12px;color:#fda4af;text-decoration:underline;background:none;border:none;cursor:pointer">Lift Curse</button>
-</div>
-
-<!-- ════════════════════ NAVBAR ════════════════════ -->
-<nav class="nav">
-  <div class="nav-inner">
-    <div class="logo">
-      <span style="font-size:24px">🧙‍♀️</span>
-      <div>
-        <div class="logo-text">POTION PANTRY</div>
-        <div class="logo-sub">Madam Hexley's Smart Apothecary</div>
+  <!-- ============================================================== -->
+  <!-- 🌕 MIDNIGHT CURSE FULL MOON ALERT BAR -->
+  <!-- ============================================================== -->
+  <div id="curseBanner" class="hidden curse-pulse sticky top-0 z-50 py-3 px-4 text-center border-b border-red-500/50">
+    <div class="max-w-7xl mx-auto flex items-center justify-between flex-wrap gap-2 text-sm">
+      <div class="flex items-center gap-3">
+        <span class="text-2xl animate-spin" style="animation-duration: 8s;">🌕</span>
+        <span class="font-extrabold tracking-wide text-red-100">
+          MIDNIGHT CURSE ACTIVE! Full Moon Festival has tripled (3.0×) demand for Moonflower, Phoenix Feather & Enchanted Mushroom!
+        </span>
       </div>
-    </div>
-
-    <div class="tabs">
-      <button class="tab-btn active" id="tb-overview"  onclick="go('overview')">🏠 <span>Overview</span></button>
-      <button class="tab-btn"       id="tb-stock"      onclick="go('stock')">📦 <span>Stock</span></button>
-      <button class="tab-btn"       id="tb-prophecy"   onclick="go('prophecy')">🔮 <span>Prophecy</span></button>
-      <button class="tab-btn"       id="tb-restock"    onclick="go('restock')">🧪 <span>Restock</span></button>
-      <button class="tab-btn"       id="tb-anomalies"  onclick="go('anomalies')">👁️ <span>Anomalies</span></button>
-      <button class="tab-btn"       id="tb-crystal"    onclick="go('crystal')">📊 <span>Charts</span></button>
-      <button class="tab-btn"       id="tb-db"         onclick="go('db')">🗄️ <span>Database</span></button>
-    </div>
-
-    <div class="nav-right">
-      <button id="curseNavBtn" onclick="toggleCurse()" class="btn btn-ghost btn-sm">🌙 <span id="curseBtnTxt">Midnight Curse</span></button>
-      <div class="live-dot"><span class="live-ping"></span>Live</div>
-    </div>
-  </div>
-</nav>
-
-<!-- ════════════════════ MAIN ════════════════════ -->
-<div class="main">
-
-  <!-- ── OVERVIEW ── -->
-  <div id="pane-overview" class="pane on">
-    <div class="ph">
-      <div>
-        <h2>Welcome to the Pantry ✨</h2>
-        <p>Real-time AI-powered inventory for Madam Hexley's potion shop</p>
-      </div>
-      <button onclick="startTut()" class="btn btn-primary">✨ Start Tutorial</button>
-    </div>
-
-    <!-- Stats -->
-    <div class="grid-4" style="margin-bottom:18px">
-      <div class="stat-card"><div class="stat-val" id="ov-items" style="color:#c084fc">—</div><div class="stat-lbl">Total Ingredients</div></div>
-      <div class="stat-card"><div class="stat-val" id="ov-crit"  style="color:#f87171">—</div><div class="stat-lbl">Critical / Low Stock</div></div>
-      <div class="stat-card"><div class="stat-val" id="ov-anom"  style="color:#fbbf24">—</div><div class="stat-lbl">Anomalies Detected</div></div>
-      <div class="stat-card"><div class="stat-val" id="ov-curse" style="color:#34d399">OFF</div><div class="stat-lbl">Midnight Curse</div></div>
-    </div>
-
-    <!-- Quick Actions -->
-    <div class="card" style="margin-bottom:18px">
-      <div class="sec-lbl">⚡ Quick Actions</div>
-      <div style="display:flex;flex-wrap:wrap;gap:10px">
-        <button onclick="openSale()"           class="btn btn-success">💰 Record Sale</button>
-        <button onclick="openAdd()"            class="btn btn-primary">➕ Add Ingredient</button>
-        <button onclick="go('prophecy')"       class="btn btn-ghost">🔮 View Prophecy</button>
-        <button onclick="go('anomalies')"      class="btn btn-ghost">👁️ Check Anomalies</button>
-        <button id="ovCurseBtn" onclick="toggleCurse()" class="btn btn-amber">🌙 Activate Curse</button>
-      </div>
-    </div>
-
-    <!-- Ingredient bar chart -->
-    <div class="card">
-      <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:14px">
-        <div class="sec-lbl" style="margin:0">📦 Live Stock Levels</div>
-        <button onclick="go('stock')" style="font-size:12px;color:#a78bfa;background:none;border:none;cursor:pointer">View full table →</button>
-      </div>
-      <div id="ovBars" style="display:flex;flex-direction:column;gap:8px"><div style="color:#64748b;font-size:13px">Loading…</div></div>
+      <button onclick="toggleCurse()" class="px-3 py-1 rounded-full text-xs font-bold bg-black/40 hover:bg-black/60 text-red-200 border border-red-400/40 transition">
+        Lift Curse ✕
+      </button>
     </div>
   </div>
 
-  <!-- ── STOCK ── -->
-  <div id="pane-stock" class="pane">
-    <div class="ph">
-      <div><h2>📦 Stock Management</h2><p>View, add, update and sell ingredients</p></div>
-      <div style="display:flex;gap:8px">
-        <button onclick="openSale()" class="btn btn-success btn-sm">💰 Record Sale</button>
-        <button onclick="openAdd()"  class="btn btn-primary btn-sm">➕ Add Ingredient</button>
-      </div>
-    </div>
-    <div class="card" style="overflow-x:auto">
-      <table class="tbl">
-        <thead>
-          <tr>
-            <th>Ingredient</th><th>Category</th><th>Stock</th>
-            <th style="min-width:110px">Level</th><th>Safety Stock</th><th>Status</th><th>Actions</th>
-          </tr>
-        </thead>
-        <tbody id="stockBody"><tr><td colspan="7" style="text-align:center;color:#64748b;padding:30px">Loading…</td></tr></tbody>
-      </table>
-    </div>
-  </div>
-
-  <!-- ── PROPHECY ── -->
-  <div id="pane-prophecy" class="pane">
-    <div class="ph">
-      <div><h2>🔮 Prophecy</h2><p>Predicts which ingredients will run out and when</p></div>
-      <button onclick="loadProphecy()" class="btn btn-ghost btn-sm">🔄 Refresh</button>
-    </div>
-    <div id="prophecyGrid" class="grid-3"><div class="card" style="color:#64748b;font-size:13px">Loading…</div></div>
-  </div>
-
-  <!-- ── RESTOCK ── -->
-  <div id="pane-restock" class="pane">
-    <div class="ph">
-      <div><h2>🧪 Restock Spell</h2><p>AI reorder recommendations using ROP formula</p></div>
-      <button onclick="loadRestock()" class="btn btn-ghost btn-sm">🔄 Refresh</button>
-    </div>
-    <div id="restockList" style="display:flex;flex-direction:column;gap:10px"><div class="card" style="color:#64748b;font-size:13px">Loading…</div></div>
-  </div>
-
-  <!-- ── ANOMALIES ── -->
-  <div id="pane-anomalies" class="pane">
-    <div class="ph">
-      <div><h2>👁️ Strange Happenings</h2><p>Z-score anomaly detection on consumption spikes</p></div>
-      <button onclick="loadAnomalies()" class="btn btn-ghost btn-sm">🔄 Scan</button>
-    </div>
-    <div id="anomScore" class="grid-3" style="margin-bottom:16px"></div>
-    <div id="anomList" style="display:flex;flex-direction:column;gap:10px"><div class="card" style="color:#64748b;font-size:13px">Scanning…</div></div>
-  </div>
-
-  <!-- ── CRYSTAL BALL ── -->
-  <div id="pane-crystal" class="pane">
-    <div class="ph"><div><h2>📊 Crystal Ball</h2><p>Demand charts and 14-day forecasts per ingredient</p></div></div>
-    <div class="grid-2" style="margin-bottom:16px">
-      <div class="card">
-        <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:12px">
-          <div class="sec-lbl" style="margin:0">14-Day Forecast</div>
-          <select id="fcSel" class="inp" style="width:180px;font-size:12px" onchange="loadForecast()">
-            <option value="">Select ingredient…</option>
-          </select>
+  <!-- ============================================================== -->
+  <!-- NAVIGATION & HEADER -->
+  <!-- ============================================================== -->
+  <header class="sticky top-0 z-40 bg-[#0c071bb3] backdrop-blur-xl border-b border-purple-900/30">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 h-20 flex items-center justify-between gap-4">
+      
+      <!-- Brand & Story -->
+      <div class="flex items-center gap-3">
+        <div class="w-12 h-12 rounded-2xl bg-gradient-to-br from-amber-500/20 via-purple-600/30 to-pink-600/20 border border-purple-500/30 flex items-center justify-center text-2xl shadow-inner shadow-purple-500/20">
+          🧙‍♀️
         </div>
-        <canvas id="fcChart" height="210"></canvas>
-      </div>
-      <div class="card">
-        <div class="sec-lbl">Day-of-Week Pattern</div>
-        <canvas id="dowChart" height="210"></canvas>
-      </div>
-    </div>
-    <div class="card">
-      <div class="sec-lbl">180-Day Historical Demand</div>
-      <canvas id="histChart" height="150"></canvas>
-    </div>
-  </div>
-
-  <!-- ── DATABASE ── -->
-  <div id="pane-db" class="pane">
-    <div class="ph">
-      <div><h2>🗄️ Database Explorer</h2><p>Browse raw MongoDB Atlas collections</p></div>
-      <button onclick="loadDb()" class="btn btn-ghost btn-sm">🔄 Refresh</button>
-    </div>
-    <div id="dbStats" class="grid-4" style="margin-bottom:16px"></div>
-    <div class="card" style="margin-bottom:12px">
-      <div style="display:flex;align-items:center;gap:10px;margin-bottom:12px">
-        <select id="dbCollSel" class="inp" style="width:220px;font-size:13px" onchange="loadColl()">
-          <option value="">Choose collection…</option>
-          <option value="ingredients">ingredients</option>
-          <option value="historical_sales">historical_sales</option>
-          <option value="anomalies">anomalies</option>
-          <option value="festival_scenario">festival_scenario</option>
-        </select>
-        <span id="dbDocCount" style="font-size:12px;color:#64748b"></span>
-      </div>
-      <pre id="dbOut" style="font-size:12px;color:#6ee7b7;background:rgba(0,0,0,.4);border-radius:10px;padding:16px;overflow:auto;max-height:380px;font-family:monospace;line-height:1.6">Select a collection to preview…</pre>
-    </div>
-    <div style="display:flex;justify-content:flex-end">
-      <button onclick="doReset()" class="btn btn-danger btn-sm">⚠️ Reset Demo Data</button>
-    </div>
-  </div>
-
-</div><!-- /main -->
-
-<!-- ════════════════════ MODALS ════════════════════ -->
-
-<!-- Sale Modal -->
-<div id="saleModal" class="modal-bg off">
-  <div class="modal-box">
-    <div class="modal-title">💰 Record Customer Sale</div>
-    <div class="modal-sub">Stock auto-decrements when saved</div>
-    <div style="display:flex;flex-direction:column;gap:12px">
-      <div><label>Ingredient *</label><select id="saleProd" class="inp"><option value="">Select…</option></select></div>
-      <div><label>Quantity sold *</label><input id="saleQty" type="number" min="1" class="inp" placeholder="e.g. 5"></div>
-    </div>
-    <div style="display:flex;gap:8px;margin-top:20px;justify-content:flex-end">
-      <button onclick="closeSale()"  class="btn btn-ghost btn-sm">Cancel</button>
-      <button onclick="submitSale()" class="btn btn-success btn-sm">✅ Record Sale</button>
-    </div>
-  </div>
-</div>
-
-<!-- Add Ingredient Modal -->
-<div id="addModal" class="modal-bg off">
-  <div class="modal-box">
-    <div class="modal-title">➕ Add New Ingredient</div>
-    <div class="modal-sub">All starred fields are required</div>
-    <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px">
-      <div style="grid-column:1/-1"><label>Name *</label><input id="nName" class="inp" placeholder="e.g. Wolfsbane Blossom"></div>
-      <div><label>Category</label><input id="nCat" class="inp" placeholder="Flora & Herbs"></div>
-      <div><label>Unit</label><input id="nUnit" class="inp" placeholder="bundles"></div>
-      <div><label>Current Stock *</label><input id="nQty" type="number" min="0" class="inp" placeholder="100"></div>
-      <div><label>Safety Stock</label><input id="nSafe" type="number" min="0" class="inp" placeholder="25"></div>
-      <div><label>Supplier</label><input id="nSupplier" class="inp" placeholder="Shadowbrook Herbalists"></div>
-      <div><label>Lead Time (days)</label><input id="nLead" type="number" min="1" class="inp" placeholder="4"></div>
-    </div>
-    <div style="display:flex;gap:8px;margin-top:20px;justify-content:flex-end">
-      <button onclick="closeAdd()"  class="btn btn-ghost btn-sm">Cancel</button>
-      <button onclick="submitAdd()" class="btn btn-primary btn-sm">✅ Add Ingredient</button>
-    </div>
-  </div>
-</div>
-
-<!-- Edit Modal -->
-<div id="editModal" class="modal-bg off">
-  <div class="modal-box">
-    <div class="modal-title">✏️ Edit Ingredient</div>
-    <div id="editSubLbl" class="modal-sub"></div>
-    <input type="hidden" id="editName">
-    <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px">
-      <div><label>Current Stock</label><input id="eQty"  type="number" min="0" class="inp"></div>
-      <div><label>Safety Stock</label><input id="eSafe" type="number" min="0" class="inp"></div>
-      <div><label>Supplier</label><input id="eSupplier" class="inp"></div>
-      <div><label>Lead Time (days)</label><input id="eLead" type="number" min="1" class="inp"></div>
-    </div>
-    <div style="display:flex;gap:8px;margin-top:20px;justify-content:flex-end">
-      <button onclick="closeEdit()"  class="btn btn-ghost btn-sm">Cancel</button>
-      <button onclick="submitEdit()" class="btn btn-primary btn-sm">✅ Update</button>
-    </div>
-  </div>
-</div>
-
-<!-- ════════════════════ TOAST ════════════════════ -->
-<div id="toast"></div>
-
-<!-- ════════════════════ HELP BUTTON ════════════════════ -->
-<button id="helpBtn" onclick="startTut()" title="Start tutorial">✨</button>
-
-<!-- ════════════════════ TUTORIAL OVERLAY ════════════════════ -->
-<div id="tutOverlay">
-  <div id="tutDrop" onclick="endTut()"></div>
-  <div id="tutSpot"></div>
-  <div id="tutCard">
-    <div class="tut-dots" id="tutDots"></div>
-    <div class="tut-badge" id="tutBadge">Step 1/9</div>
-    <h3 id="tutH"></h3>
-    <p  id="tutP"></p>
-    <div class="tut-btns">
-      <button onclick="endTut()"     class="btn btn-ghost btn-sm">Skip</button>
-      <button onclick="prevTut()" id="tutPrev" class="btn btn-ghost btn-sm off">← Back</button>
-      <button onclick="nextTut()" id="tutNext" class="btn btn-primary btn-sm">Next →</button>
-    </div>
-  </div>
-</div>
-
-<!-- ════════════════════ SCRIPT ════════════════════ -->
-<script>
-/* ─── State ─── */
-let curseActive = false;
-let allIngs = [];
-let fcChart = null, dowChart = null, histChart = null;
-let tutIdx = 0;
-
-/* ─── Tab Router ─── */
-function go(name) {
-  document.querySelectorAll('.pane').forEach(p => p.classList.remove('on'));
-  document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
-  document.getElementById('pane-' + name).classList.add('on');
-  document.getElementById('tb-' + name).classList.add('active');
-  const loaders = { stock: loadStock, prophecy: loadProphecy, restock: loadRestock, anomalies: loadAnomalies, crystal: loadCrystal, db: loadDb, overview: loadOverview };
-  if (loaders[name]) loaders[name]();
-}
-
-/* ─── API ─── */
-async function api(path, opts = {}) {
-  const r = await fetch(path, { headers: { 'Content-Type': 'application/json' }, ...opts });
-  if (!r.ok) throw new Error(await r.text());
-  return r.json();
-}
-
-/* ─── Toast ─── */
-function toast(msg, type = 'ok') {
-  const el = document.createElement('div');
-  el.className = 't-msg t-' + type;
-  el.innerHTML = (type === 'ok' ? '✅' : type === 'err' ? '❌' : 'ℹ️') + ' ' + msg;
-  document.getElementById('toast').appendChild(el);
-  setTimeout(() => el.remove(), 3500);
-}
-
-/* ─── OVERVIEW ─── */
-async function loadOverview() {
-  try {
-    const [inv, anom] = await Promise.all([api('/api/inventory'), api('/api/anomalies')]);
-    allIngs = inv.ingredients || [];
-    const crit = allIngs.filter(i => (i.current_stock || 0) <= (i.safety_stock || 25)).length;
-    document.getElementById('ov-items').textContent = allIngs.length;
-    document.getElementById('ov-crit').textContent  = crit;
-    document.getElementById('ov-anom').textContent  = (anom.anomalies || []).length;
-    document.getElementById('ov-curse').textContent = curseActive ? 'ACTIVE 🌕' : 'OFF';
-    document.getElementById('ov-curse').style.color = curseActive ? '#f87171' : '#34d399';
-    document.getElementById('ovCurseBtn').textContent = (curseActive ? '🌙 Lift Curse' : '🌙 Activate Curse');
-    populateSaleSelect(allIngs);
-    populateFcSelect(allIngs);
-
-    // Progress bars
-    const bars = document.getElementById('ovBars');
-    bars.innerHTML = allIngs.slice(0, 10).map(i => {
-      const max = Math.max(i.current_stock || 0, i.safety_stock * 4 || 200, 200);
-      const pct = Math.min(100, Math.round(((i.current_stock || 0) / max) * 100));
-      const c = (i.current_stock || 0) <= (i.safety_stock || 25) ? '#f87171'
-              : pct < 40 ? '#fbbf24' : '#34d399';
-      return `<div style="display:flex;align-items:center;gap:10px">
-        <span style="font-size:13px;min-width:180px;color:#e2e8f0;white-space:nowrap;overflow:hidden;text-overflow:ellipsis">🌿 ${i.name}</span>
-        <div class="prog-track" style="flex:1"><div class="prog-fill" style="width:${pct}%;background:${c}"></div></div>
-        <span style="font-size:12px;font-family:monospace;min-width:60px;text-align:right;color:#94a3b8">${i.current_stock||0} ${i.unit||''}</span>
-      </div>`;
-    }).join('');
-  } catch(e) { toast('Overview load failed: ' + e.message, 'err'); }
-}
-
-/* ─── STOCK ─── */
-async function loadStock() {
-  try {
-    const inv = await api('/api/inventory');
-    allIngs = inv.ingredients || [];
-    populateSaleSelect(allIngs);
-    populateFcSelect(allIngs);
-    const tb = document.getElementById('stockBody');
-    if (!allIngs.length) { tb.innerHTML = '<tr><td colspan="7" style="text-align:center;color:#64748b;padding:30px">No ingredients found</td></tr>'; return; }
-    tb.innerHTML = allIngs.map(i => {
-      const stock = i.current_stock || 0;
-      const safe  = i.safety_stock  || 25;
-      const max   = Math.max(stock, safe * 4, 200);
-      const pct   = Math.min(100, Math.round((stock / max) * 100));
-      const crit  = stock <= safe;
-      const warn  = !crit && pct < 40;
-      const c     = crit ? '#f87171' : warn ? '#fbbf24' : '#34d399';
-      const badge = crit ? '<span class="badge b-red">Critical</span>'
-                  : warn ? '<span class="badge b-amber">Low</span>'
-                  :        '<span class="badge b-green">Healthy</span>';
-      return `<tr>
-        <td style="font-weight:600;color:#f1f5f9">🌿 ${i.name}</td>
-        <td style="color:#94a3b8">${i.category||'—'}</td>
-        <td style="font-family:monospace;color:#e2e8f0">${stock} <span style="color:#64748b">${i.unit||''}</span></td>
-        <td><div class="prog-track"><div class="prog-fill" style="width:${pct}%;background:${c}"></div></div>
-            <div style="font-size:10px;color:#475569;margin-top:2px">${pct}%</div></td>
-        <td style="color:#94a3b8">${safe}</td>
-        <td>${badge}</td>
-        <td style="display:flex;gap:6px">
-          <button onclick="openEdit('${i.name}',${stock},${safe},'${i.supplier||''}',${i.lead_time_days||4})" class="btn btn-ghost btn-sm">✏️</button>
-          <button onclick="delIng('${i.name}')" class="btn btn-danger btn-sm">🗑️</button>
-        </td>
-      </tr>`;
-    }).join('');
-  } catch(e) { toast('Stock load failed: ' + e.message, 'err'); }
-}
-
-/* ─── PROPHECY ─── */
-async function loadProphecy() {
-  try {
-    const data = await api('/api/prophecy');
-    const items = data.prophecies || [];
-    const grid = document.getElementById('prophecyGrid');
-    if (!items.length) { grid.innerHTML = '<div class="card" style="color:#64748b">No data</div>'; return; }
-    const smap = {
-      CRITICAL_DEFICIT:    { bc: 'b-red',   ic: '💀' },
-      IMMINENT_STOCKOUT:   { bc: 'b-red',   ic: '⚠️' },
-      REORDER_RECOMMENDED: { bc: 'b-amber', ic: '🔔' },
-      HEALTHY:             { bc: 'b-green', ic: '✅' }
-    };
-    grid.innerHTML = items.map(f => {
-      const s = smap[f.status] || { bc: 'b-blue', ic: 'ℹ️' };
-      const deplRow = f.depletion_date
-        ? `<div>Runs out: <b style="color:#fbbf24">${f.depletion_date}</b></div>` : '';
-      const daysRow = f.days_until_stockout != null
-        ? `<div>Days left: <b style="color:#fbbf24;font-size:18px">${f.days_until_stockout}</b></div>` : '';
-      return `<div class="card">
-        <div style="display:flex;align-items:flex-start;justify-content:space-between;margin-bottom:10px">
-          <div style="font-weight:600;font-size:14px;color:#f1f5f9">🌿 ${f.product_name}</div>
-          <span class="badge ${s.bc}">${s.ic} ${f.status.replace(/_/g,' ')}</span>
-        </div>
-        <div style="font-size:12px;color:#94a3b8;display:flex;flex-direction:column;gap:5px">
-          <div>Current stock: <b style="color:#e2e8f0;font-family:monospace">${f.current_stock} ${f.unit||''}</b></div>
-          <div>Avg daily demand: <b style="color:#e2e8f0;font-family:monospace">${(f.avg_daily_demand||0).toFixed(1)}</b></div>
-          ${deplRow}${daysRow}
-        </div>
-      </div>`;
-    }).join('');
-  } catch(e) { toast('Prophecy failed: ' + e.message, 'err'); }
-}
-
-/* ─── RESTOCK ─── */
-async function loadRestock() {
-  try {
-    const data = await api('/api/restock/recommendations');
-    const items = data.recommendations || [];
-    const c = document.getElementById('restockList');
-    if (!items.length) { c.innerHTML = '<div class="card" style="color:#34d399">✅ All ingredients well stocked!</div>'; return; }
-    c.innerHTML = items.map(r => {
-      const urg = r.urgency === 'CRITICAL_DEFICIT' || r.urgency === 'IMMINENT_STOCKOUT';
-      const qty = r.recommended_order_quantity || 0;
-      return `<div class="card-sm" style="display:flex;align-items:center;gap:14px;flex-wrap:wrap;border-left:3px solid ${urg?'#ef4444':'#f59e0b'}">
-        <div style="flex:1;min-width:160px">
-          <div style="font-weight:600;font-size:14px;color:#f1f5f9">🌿 ${r.product_name}</div>
-          <div style="font-size:12px;color:#94a3b8;margin-top:4px">Stock: <b style="color:#e2e8f0">${r.current_stock}</b> &nbsp;|&nbsp; ROP: <b style="color:#e2e8f0">${r.reorder_point}</b> &nbsp;|&nbsp; Order: <b style="color:#fbbf24">${qty} ${r.unit||''}</b></div>
-        </div>
-        <span class="badge ${urg?'b-red':'b-amber'}">${r.urgency.replace(/_/g,' ')}</span>
-        ${qty > 0 ? `<button onclick="doRestock('${r.product_name}',${qty})" class="btn btn-success btn-sm">📦 Order ${qty}</button>` : ''}
-      </div>`;
-    }).join('');
-  } catch(e) { toast('Restock failed: ' + e.message, 'err'); }
-}
-
-async function doRestock(name, qty) {
-  if (!confirm(`Order ${qty} units of ${name}?`)) return;
-  try {
-    await api('/api/restock/order', { method: 'POST', body: JSON.stringify({ product_name: name, quantity: qty }) });
-    toast(`✅ Restocked ${qty} × ${name}`, 'ok');
-    loadRestock(); loadStock(); loadOverview();
-  } catch(e) { toast('Restock failed: ' + e.message, 'err'); }
-}
-
-/* ─── ANOMALIES ─── */
-async function loadAnomalies() {
-  try {
-    const data = await api('/api/anomalies');
-    const anoms   = data.anomalies || [];
-    const metrics = data.metrics   || {};
-    document.getElementById('anomScore').innerHTML = `
-      <div class="stat-card"><div class="stat-val" style="color:#34d399">${((metrics.precision||1)*100).toFixed(0)}%</div><div class="stat-lbl">Precision</div></div>
-      <div class="stat-card"><div class="stat-val" style="color:#60a5fa">${((metrics.recall||1)*100).toFixed(0)}%</div><div class="stat-lbl">Recall</div></div>
-      <div class="stat-card"><div class="stat-val" style="color:#c084fc">${(metrics.f1_score||1).toFixed(2)}</div><div class="stat-lbl">F1 Score</div></div>`;
-    const c = document.getElementById('anomList');
-    if (!anoms.length) { c.innerHTML = '<div class="card" style="color:#34d399;font-size:13px">✅ No anomalies detected — all clear!</div>'; return; }
-    c.innerHTML = anoms.map(a => `
-      <div class="card-sm" style="border-left:3px solid #ef4444">
-        <div style="display:flex;align-items:flex-start;justify-content:space-between;gap:10px">
-          <div>
-            <div style="font-weight:600;color:#f1f5f9">⚠️ ${a.product_name}</div>
-            <div style="font-size:12px;color:#94a3b8;margin-top:4px">${a.date} — ${a.description||'Unusual consumption spike'}</div>
-            <div style="font-size:12px;color:#fca5a5;margin-top:3px">Z-score: <b>${(a.z_score||0).toFixed(2)}σ</b> &nbsp;|&nbsp; Actual: <b>${a.actual_demand}</b> &nbsp;|&nbsp; Expected: <b>${(a.expected_demand||0).toFixed(1)}</b></div>
+        <div>
+          <div class="flex items-center gap-2">
+            <h1 class="font-cinzel text-xl sm:text-2xl font-black bg-gradient-to-r from-amber-400 via-orange-300 to-purple-400 bg-clip-text text-transparent">
+              THE POTION PANTRY
+            </h1>
+            <span class="text-[10px] uppercase font-bold tracking-wider px-2 py-0.5 rounded-full bg-emerald-500/20 text-emerald-400 border border-emerald-500/30">
+              Atlas Live
+            </span>
           </div>
-          <span class="badge b-red">Anomaly</span>
+          <p class="text-xs text-slate-400 font-medium">
+            Madam Hexley's Smart Apothecary • Store <span class="font-mono text-purple-300">HEXLEY-001</span>
+          </p>
         </div>
-      </div>`).join('');
-  } catch(e) { toast('Anomaly scan failed: ' + e.message, 'err'); }
-}
+      </div>
 
-/* ─── CRYSTAL BALL ─── */
-async function loadCrystal() {
-  try {
-    const data = await api('/api/analytics/crystal-ball');
-    const s = data.summary || data;
-    const dow = s.dow_pattern || {};
-    const days = ['Mon','Tue','Wed','Thu','Fri','Sat','Sun'];
-    const vals = days.map(d => dow[d] || 0);
+      <!-- Center View Toggles (Simple & Focused) -->
+      <div class="hidden md:flex items-center gap-1 p-1.5 rounded-2xl bg-black/40 border border-purple-900/40">
+        <button onclick="switchView('shelves')" id="nav-shelves" class="px-4 py-2 rounded-xl text-xs font-bold transition flex items-center gap-2 bg-gradient-to-r from-purple-900/60 to-purple-800/80 text-white border border-purple-500/40">
+          <span>📦</span> Potion Shelves
+        </button>
+        <button onclick="switchView('oracle')" id="nav-oracle" class="px-4 py-2 rounded-xl text-xs font-bold transition flex items-center gap-2 text-slate-400 hover:text-white">
+          <span>🔮</span> Prophecy & Restock
+        </button>
+        <button onclick="switchView('radar')" id="nav-radar" class="px-4 py-2 rounded-xl text-xs font-bold transition flex items-center gap-2 text-slate-400 hover:text-white">
+          <span>👁️</span> Anomaly Radar
+        </button>
+        <button onclick="switchView('analytics')" id="nav-analytics" class="px-4 py-2 rounded-xl text-xs font-bold transition flex items-center gap-2 text-slate-400 hover:text-white">
+          <span>📊</span> Demand Analytics
+        </button>
+      </div>
 
-    if (dowChart) dowChart.destroy();
-    dowChart = new Chart(document.getElementById('dowChart'), {
-      type: 'bar',
-      data: { labels: days, datasets: [{ label: 'Avg Demand', data: vals,
-        backgroundColor: days.map((_,i) => i>=4 ? 'rgba(147,51,234,.75)' : 'rgba(59,130,246,.5)'), borderRadius: 6 }] },
-      options: cOpts()
+      <!-- Action Cluster -->
+      <div class="flex items-center gap-2.5">
+        <!-- Midnight Curse Trigger -->
+        <button id="curseToggleBtn" onclick="toggleCurse()" class="relative px-3.5 sm:px-4 py-2 rounded-xl text-xs font-extrabold flex items-center gap-2 border transition duration-300 bg-purple-950/60 border-purple-500/40 hover:border-orange-500/70 hover:shadow-lg hover:shadow-orange-500/20">
+          <span id="curseMoonIcon">🌙</span>
+          <span id="curseBtnText" class="hidden sm:inline">Midnight Curse</span>
+          <span id="curseMultiplierBadge" class="hidden px-1.5 py-0.5 rounded text-[10px] bg-red-600 text-white animate-pulse">3.0×</span>
+        </button>
+
+        <!-- Quick Add Modal Trigger -->
+        <button onclick="openAddModal()" class="btn-halloween px-3.5 sm:px-4 py-2 rounded-xl text-xs flex items-center gap-1.5">
+          <span>➕</span>
+          <span class="hidden sm:inline">New Ingredient</span>
+        </button>
+      </div>
+
+    </div>
+
+    <!-- Mobile Navigation Sub-bar -->
+    <div class="md:hidden flex items-center justify-around border-t border-purple-900/30 px-2 py-1.5 bg-black/60 overflow-x-auto text-xs">
+      <button onclick="switchView('shelves')" id="mob-nav-shelves" class="px-3 py-1.5 rounded-lg font-bold text-amber-400">📦 Shelves</button>
+      <button onclick="switchView('oracle')" id="mob-nav-oracle" class="px-3 py-1.5 rounded-lg font-bold text-slate-400">🔮 Prophecy</button>
+      <button onclick="switchView('radar')" id="mob-nav-radar" class="px-3 py-1.5 rounded-lg font-bold text-slate-400">👁️ Anomalies</button>
+      <button onclick="switchView('analytics')" id="mob-nav-analytics" class="px-3 py-1.5 rounded-lg font-bold text-slate-400">📊 Charts</button>
+    </div>
+  </header>
+
+  <!-- ============================================================== -->
+  <!-- MAIN CONTENT CONTAINER -->
+  <!-- ============================================================== -->
+  <main class="max-w-7xl mx-auto px-4 sm:px-6 py-6 space-y-6">
+
+    <!-- ============================================================ -->
+    <!-- ✨ INTERACTIVE "LEARN BY DOING" TUTORIAL QUEST (WALKTHROUGH) -->
+    <!-- ============================================================ -->
+    <section class="glass-panel p-5 border-amber-500/30 bg-gradient-to-r from-purple-950/60 via-[#180e30]/80 to-amber-950/30 relative overflow-hidden">
+      <!-- Glow ambient -->
+      <div class="absolute -right-12 -top-12 w-48 h-48 bg-amber-500/10 rounded-full blur-3xl pointer-events-none"></div>
+
+      <div class="flex flex-col lg:flex-row items-start lg:items-center justify-between gap-4">
+        <div>
+          <div class="flex items-center gap-2 mb-1">
+            <span class="text-xl">✨</span>
+            <h2 class="font-cinzel text-base sm:text-lg font-bold text-amber-300">
+              Interactive Apprentice Quest: How To Master The Pantry
+            </h2>
+            <span class="text-[10px] px-2 py-0.5 rounded-full bg-amber-500/20 text-amber-300 font-bold border border-amber-500/30">
+              Hands-On
+            </span>
+          </div>
+          <p class="text-xs text-slate-300">
+            Click through these real actions to see the AI forecasting, instant selling, and seasonal curse in action:
+          </p>
+        </div>
+        
+        <div class="flex items-center gap-2">
+          <button onclick="resetQuest()" class="text-xs text-slate-400 hover:text-slate-200 underline">
+            Reset Quest
+          </button>
+        </div>
+      </div>
+
+      <!-- 4 Interactive Steps Cards -->
+      <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3 mt-4">
+        
+        <!-- Step 1 -->
+        <div id="step-card-1" class="quest-step p-3.5 rounded-xl flex items-start gap-3 cursor-pointer" onclick="highlightAction('step1')">
+          <div id="step-icon-1" class="w-7 h-7 rounded-lg bg-purple-900/60 text-purple-300 border border-purple-500/40 flex items-center justify-center font-bold text-xs shrink-0">
+            1
+          </div>
+          <div>
+            <div class="font-bold text-xs text-slate-200">Inspect Shelves</div>
+            <div class="text-[11px] text-slate-400 mt-0.5">Check current stock levels & red deficit alerts below.</div>
+          </div>
+        </div>
+
+        <!-- Step 2 -->
+        <div id="step-card-2" class="quest-step p-3.5 rounded-xl flex items-start gap-3 cursor-pointer" onclick="highlightAction('step2')">
+          <div id="step-icon-2" class="w-7 h-7 rounded-lg bg-purple-900/60 text-purple-300 border border-purple-500/40 flex items-center justify-center font-bold text-xs shrink-0">
+            2
+          </div>
+          <div>
+            <div class="font-bold text-xs text-slate-200">Record a Quick Sale</div>
+            <div class="text-[11px] text-slate-400 mt-0.5">Click <b class="text-amber-400">[-] Sell 1</b> on any potion card to trigger live MongoDB decrement.</div>
+          </div>
+        </div>
+
+        <!-- Step 3 -->
+        <div id="step-card-3" class="quest-step p-3.5 rounded-xl flex items-start gap-3 cursor-pointer" onclick="highlightAction('step3')">
+          <div id="step-icon-3" class="w-7 h-7 rounded-lg bg-purple-900/60 text-purple-300 border border-purple-500/40 flex items-center justify-center font-bold text-xs shrink-0">
+            3
+          </div>
+          <div>
+            <div class="font-bold text-xs text-slate-200">Trigger Midnight Curse</div>
+            <div class="text-[11px] text-slate-400 mt-0.5">Toggle the curse switch at top right to see demand triple (3.0×)!</div>
+          </div>
+        </div>
+
+        <!-- Step 4 -->
+        <div id="step-card-4" class="quest-step p-3.5 rounded-xl flex items-start gap-3 cursor-pointer" onclick="highlightAction('step4')">
+          <div id="step-icon-4" class="w-7 h-7 rounded-lg bg-purple-900/60 text-purple-300 border border-purple-500/40 flex items-center justify-center font-bold text-xs shrink-0">
+            4
+          </div>
+          <div>
+            <div class="font-bold text-xs text-slate-200">Cast Restock Spell</div>
+            <div class="text-[11px] text-slate-400 mt-0.5">Auto-replenish all urgent ingredients via ROP calculation.</div>
+          </div>
+        </div>
+
+      </div>
+    </section>
+
+    <!-- ============================================================ -->
+    <!-- SUMMARY TILES (LIVE SHOP HEALTH RADAR) -->
+    <!-- ============================================================ -->
+    <section class="grid grid-cols-2 md:grid-cols-4 gap-3.5">
+      
+      <div class="glass-panel p-4 flex items-center gap-3.5">
+        <div class="w-12 h-12 rounded-2xl bg-purple-500/10 border border-purple-500/30 flex items-center justify-center text-2xl shrink-0">
+          🧪
+        </div>
+        <div>
+          <div class="text-[11px] font-bold uppercase tracking-wider text-slate-400">Total Ingredients</div>
+          <div id="kpi-total" class="font-cinzel text-2xl font-black text-purple-300 mt-0.5">10</div>
+          <div class="text-[10px] text-slate-400">Master catalog loaded</div>
+        </div>
+      </div>
+
+      <div class="glass-panel p-4 flex items-center gap-3.5">
+        <div class="w-12 h-12 rounded-2xl bg-red-500/10 border border-red-500/30 flex items-center justify-center text-2xl shrink-0">
+          ⚠️
+        </div>
+        <div>
+          <div class="text-[11px] font-bold uppercase tracking-wider text-slate-400">Critical / Low Stock</div>
+          <div id="kpi-critical" class="font-cinzel text-2xl font-black text-red-400 mt-0.5">0</div>
+          <div class="text-[10px] text-slate-400">At or below safety limit</div>
+        </div>
+      </div>
+
+      <div class="glass-panel p-4 flex items-center gap-3.5">
+        <div class="w-12 h-12 rounded-2xl bg-amber-500/10 border border-amber-500/30 flex items-center justify-center text-2xl shrink-0">
+          👁️
+        </div>
+        <div>
+          <div class="text-[11px] font-bold uppercase tracking-wider text-slate-400">Anomalies Detected</div>
+          <div id="kpi-anomalies" class="font-cinzel text-2xl font-black text-amber-400 mt-0.5">5</div>
+          <div class="text-[10px] text-slate-400">Z-score &gt; 2.8σ spikes</div>
+        </div>
+      </div>
+
+      <div class="glass-panel p-4 flex items-center gap-3.5">
+        <div class="w-12 h-12 rounded-2xl bg-orange-500/10 border border-orange-500/30 flex items-center justify-center text-2xl shrink-0">
+          🌕
+        </div>
+        <div>
+          <div class="text-[11px] font-bold uppercase tracking-wider text-slate-400">Midnight Festival</div>
+          <div id="kpi-curse-state" class="font-cinzel text-xl font-black text-emerald-400 mt-0.5">NORMAL (1×)</div>
+          <div id="kpi-curse-sub" class="text-[10px] text-slate-400">Base consumption rates</div>
+        </div>
+      </div>
+
+    </section>
+
+    <!-- ============================================================ -->
+    <!-- VIEW 1: POTION SHELVES (INTERACTIVE INVENTORY BOARD) -->
+    <!-- ============================================================ -->
+    <div id="view-shelves" class="space-y-4">
+      
+      <!-- Filter Chips & Search Bar -->
+      <div class="glass-panel p-4 flex flex-col sm:flex-row items-center justify-between gap-3">
+        <div class="flex items-center gap-1.5 overflow-x-auto w-full sm:w-auto pb-1 sm:pb-0">
+          <button onclick="filterCategory('ALL')" id="filter-all" class="px-3 py-1.5 rounded-xl text-xs font-bold bg-purple-700 text-white transition">
+            All Items (10)
+          </button>
+          <button onclick="filterCategory('CRITICAL')" id="filter-critical" class="px-3 py-1.5 rounded-xl text-xs font-bold bg-white/5 text-slate-300 hover:bg-white/10 transition">
+            ⚠️ Low Stock Alert
+          </button>
+          <button onclick="filterCategory('CURSED')" id="filter-cursed" class="px-3 py-1.5 rounded-xl text-xs font-bold bg-white/5 text-slate-300 hover:bg-white/10 transition">
+            🌕 Festival 3× Spiked
+          </button>
+        </div>
+
+        <!-- Search input -->
+        <div class="relative w-full sm:w-64">
+          <span class="absolute left-3 top-2.5 text-xs text-slate-400">🔍</span>
+          <input 
+            type="text" 
+            id="ingredientSearch" 
+            placeholder="Search bat wings, ghost pepper..." 
+            oninput="renderShelves()"
+            class="w-full pl-8 pr-3 py-1.5 text-xs rounded-xl bg-black/40 border border-purple-900/50 text-white placeholder-slate-500 focus:outline-none focus:border-amber-500 transition"
+          >
+        </div>
+      </div>
+
+      <!-- Ingredient Cards Grid -->
+      <div id="shelvesGrid" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+        <!-- Rendered dynamically -->
+        <div class="col-span-full text-center py-12 text-slate-400">
+          Brewing potion inventory from MongoDB...
+        </div>
+      </div>
+
+    </div>
+
+    <!-- ============================================================ -->
+    <!-- VIEW 2: PROPHECY & RESTOCK ORACLE (CO-PILOT) -->
+    <!-- ============================================================ -->
+    <div id="view-oracle" class="hidden space-y-6">
+      
+      <!-- Oracle Banner -->
+      <div class="glass-panel p-5 bg-gradient-to-r from-purple-950/70 to-blue-950/40 border-purple-500/40">
+        <div class="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
+          <div>
+            <div class="flex items-center gap-2">
+              <span class="text-2xl">🔮</span>
+              <h2 class="font-cinzel text-lg font-bold text-purple-200">Madam Hexley's Predictive AI Prophecy</h2>
+            </div>
+            <p class="text-xs text-slate-300 mt-1">
+              Computes daily burn rate, safety buffer, and projected date of stock exhaustion under normal vs. festival curse conditions.
+            </p>
+          </div>
+          <button onclick="restockAllUrgent()" class="btn-halloween px-4 py-2 rounded-xl text-xs flex items-center gap-2 shrink-0">
+            <span>⚡</span> Restock All Deficit Items
+          </button>
+        </div>
+      </div>
+
+      <!-- Ranked Reorder Recommendations -->
+      <div class="glass-panel p-5">
+        <div class="flex items-center justify-between mb-4">
+          <h3 class="font-cinzel text-sm font-bold text-amber-300 uppercase tracking-wider flex items-center gap-2">
+            <span>🧪</span> Restock Spell: AI Reorder Plan
+          </h3>
+          <span class="text-xs text-slate-400 font-mono">Formula: ROP = (Demand × Lead Time) + Safety Stock</span>
+        </div>
+
+        <div id="oracleRecommendations" class="space-y-3">
+          <!-- Filled by JS -->
+          <div class="text-slate-400 text-xs py-4 text-center">Consulting oracle data...</div>
+        </div>
+      </div>
+
+    </div>
+
+    <!-- ============================================================ -->
+    <!-- VIEW 3: STRANGE HAPPENINGS (ANOMALY RADAR) -->
+    <!-- ============================================================ -->
+    <div id="view-radar" class="hidden space-y-6">
+      
+      <div class="glass-panel p-5 border-red-500/30 bg-gradient-to-r from-red-950/40 to-purple-950/40">
+        <div class="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
+          <div>
+            <div class="flex items-center gap-2">
+              <span class="text-2xl">👁️</span>
+              <h2 class="font-cinzel text-lg font-bold text-red-300">Strange Happenings Radar (Z-Score &gt; 2.8σ)</h2>
+            </div>
+            <p class="text-xs text-slate-300 mt-1">
+              Detects sudden theft, spoilage, or weird consumption surges against Whispering Woods historical patterns.
+            </p>
+          </div>
+
+          <!-- Benchmark metrics badge -->
+          <div class="flex items-center gap-3 bg-black/40 px-3.5 py-2 rounded-xl border border-red-500/30 text-xs">
+            <div>
+              <span class="text-slate-400">Precision:</span> <b class="text-emerald-400 font-mono" id="anomPrecision">100%</b>
+            </div>
+            <div class="h-4 w-px bg-slate-700"></div>
+            <div>
+              <span class="text-slate-400">Recall:</span> <b class="text-emerald-400 font-mono" id="anomRecall">100%</b>
+            </div>
+            <div class="h-4 w-px bg-slate-700"></div>
+            <div>
+              <span class="text-slate-400">F1 Score:</span> <b class="text-amber-300 font-mono" id="anomF1">1.00</b>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Anomalies List -->
+      <div id="anomaliesFeed" class="grid grid-cols-1 md:grid-cols-2 gap-3.5">
+        <!-- Rendered by JS -->
+      </div>
+
+    </div>
+
+    <!-- ============================================================ -->
+    <!-- VIEW 4: DEMAND ANALYTICS (CRYSTAL BALL CHARTS) -->
+    <!-- ============================================================ -->
+    <div id="view-analytics" class="hidden space-y-6">
+      
+      <div class="grid grid-cols-1 lg:grid-cols-2 gap-5">
+        
+        <!-- 14-day forecast with selector -->
+        <div class="glass-panel p-5">
+          <div class="flex items-center justify-between mb-4">
+            <div>
+              <h3 class="font-cinzel text-sm font-bold text-amber-300">14-Day Demand Forecast</h3>
+              <p class="text-[11px] text-slate-400">Projected day-by-day sales including weekend gathering surge</p>
+            </div>
+            <select id="forecastIngredientSelect" onchange="renderForecastChart()" class="bg-black/50 border border-purple-500/40 rounded-xl px-2.5 py-1.5 text-xs text-white focus:outline-none">
+              <!-- Options filled dynamically -->
+            </select>
+          </div>
+          <div class="h-64">
+            <canvas id="forecastChartCanvas"></canvas>
+          </div>
+        </div>
+
+        <!-- Day of week seasonality -->
+        <div class="glass-panel p-5">
+          <div class="flex items-center justify-between mb-4">
+            <div>
+              <h3 class="font-cinzel text-sm font-bold text-purple-300">Day-of-Week Gathering Pattern</h3>
+              <p class="text-[11px] text-slate-400">Historical demand weightings across shop days</p>
+            </div>
+            <span class="badge-pill bg-purple-500/20 text-purple-300 border border-purple-500/30">Weekend Surge</span>
+          </div>
+          <div class="h-64">
+            <canvas id="dowChartCanvas"></canvas>
+          </div>
+        </div>
+
+      </div>
+
+      <!-- 180-Day Trend -->
+      <div class="glass-panel p-5">
+        <div class="flex items-center justify-between mb-4">
+          <div>
+            <h3 class="font-cinzel text-sm font-bold text-emerald-300">180-Day Historical Sales Trend</h3>
+            <p class="text-[11px] text-slate-400">Full apothecary sales volume timeline</p>
+          </div>
+        </div>
+        <div class="h-56">
+          <canvas id="trendChartCanvas"></canvas>
+        </div>
+      </div>
+
+    </div>
+
+  </main>
+
+  <!-- ============================================================== -->
+  <!-- MODALS -->
+  <!-- ============================================================== -->
+
+  <!-- Add Ingredient Modal -->
+  <div id="addModal" class="hidden fixed inset-0 z-50 bg-black/80 backdrop-blur-sm flex items-center justify-center p-4">
+    <div class="glass-panel p-6 max-w-md w-full border-purple-500/40 relative">
+      <div class="flex items-center justify-between mb-4">
+        <h3 class="font-cinzel text-lg font-bold text-amber-300">➕ Add New Potion Ingredient</h3>
+        <button onclick="closeAddModal()" class="text-slate-400 hover:text-white text-lg">✕</button>
+      </div>
+
+      <div class="space-y-3 text-xs">
+        <div>
+          <label class="block text-slate-300 mb-1">Ingredient Name *</label>
+          <input type="text" id="addName" placeholder="e.g. Wolfsbane Blossom" class="w-full px-3 py-2 rounded-xl bg-black/50 border border-purple-900 text-white focus:outline-none focus:border-amber-500">
+        </div>
+        <div class="grid grid-cols-2 gap-2.5">
+          <div>
+            <label class="block text-slate-300 mb-1">Category</label>
+            <input type="text" id="addCategory" placeholder="Flora & Herbs" class="w-full px-3 py-2 rounded-xl bg-black/50 border border-purple-900 text-white focus:outline-none focus:border-amber-500">
+          </div>
+          <div>
+            <label class="block text-slate-300 mb-1">Unit</label>
+            <input type="text" id="addUnit" placeholder="bundles" class="w-full px-3 py-2 rounded-xl bg-black/50 border border-purple-900 text-white focus:outline-none focus:border-amber-500">
+          </div>
+        </div>
+        <div class="grid grid-cols-2 gap-2.5">
+          <div>
+            <label class="block text-slate-300 mb-1">Current Stock *</label>
+            <input type="number" id="addStock" placeholder="100" class="w-full px-3 py-2 rounded-xl bg-black/50 border border-purple-900 text-white focus:outline-none focus:border-amber-500">
+          </div>
+          <div>
+            <label class="block text-slate-300 mb-1">Safety Stock</label>
+            <input type="number" id="addSafety" placeholder="25" class="w-full px-3 py-2 rounded-xl bg-black/50 border border-purple-900 text-white focus:outline-none focus:border-amber-500">
+          </div>
+        </div>
+        <div class="grid grid-cols-2 gap-2.5">
+          <div>
+            <label class="block text-slate-300 mb-1">Supplier</label>
+            <input type="text" id="addSupplier" placeholder="Shadowbrook Herbalists" class="w-full px-3 py-2 rounded-xl bg-black/50 border border-purple-900 text-white focus:outline-none focus:border-amber-500">
+          </div>
+          <div>
+            <label class="block text-slate-300 mb-1">Lead Time (days)</label>
+            <input type="number" id="addLeadTime" placeholder="4" class="w-full px-3 py-2 rounded-xl bg-black/50 border border-purple-900 text-white focus:outline-none focus:border-amber-500">
+          </div>
+        </div>
+      </div>
+
+      <div class="flex justify-end gap-2.5 mt-6">
+        <button onclick="closeAddModal()" class="btn-secondary px-4 py-2 rounded-xl text-xs font-bold">Cancel</button>
+        <button onclick="submitNewIngredient()" class="btn-halloween px-4 py-2 rounded-xl text-xs font-bold">Save Ingredient</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Toast Container -->
+  <div id="toast-container"></div>
+
+  <!-- ============================================================== -->
+  <!-- JAVASCRIPT LOGIC & API HOOKS -->
+  <!-- ============================================================== -->
+  <script>
+    // Global State
+    let catalog = [];
+    let prophecies = [];
+    let anomalies = [];
+    let curseActive = false;
+    let currentFilter = 'ALL';
+    let questState = { step1: false, step2: false, step3: false, step4: false };
+
+    // Charts
+    let forecastChart = null;
+    let dowChart = null;
+    let trendChart = null;
+
+    // Category Emoji Map
+    const emojiMap = {
+      'Moonflower': '🌸',
+      'Phoenix Feather': '🪶',
+      'Enchanted Mushroom': '🍄',
+      'Bat Wing': '🦇',
+      'Mandrake Root': '🪴',
+      'Ghost Pepper': '🌶️',
+      'Dragon Scale': '🐉',
+      'Mermaid Tear': '💧',
+      'Unicorn Horn Powder': '🦄',
+      'Nightshade Berries': '🫐'
+    };
+
+    // -------------------------------------------------------------
+    // INIT
+    // -------------------------------------------------------------
+    window.addEventListener('DOMContentLoaded', async () => {
+      await refreshAllData();
+      checkCurseStatus();
+      updateQuestUI();
     });
 
-    const hist = s.historical_trend || [];
-    if (hist.length) {
-      if (histChart) histChart.destroy();
-      histChart = new Chart(document.getElementById('histChart'), {
-        type: 'line',
-        data: { labels: hist.map(h => h.date || h.month),
-          datasets: [{ label: 'Sales', data: hist.map(h => h.total_sold||h.sales||0),
-            borderColor: '#9333ea', backgroundColor: 'rgba(147,51,234,.12)',
-            fill: true, tension: .4, pointRadius: 0 }] },
-        options: cOpts()
+    async function refreshAllData() {
+      try {
+        const [invRes, prophRes, anomRes, curseRes] = await Promise.all([
+          fetch('/api/inventory').then(r => r.json()),
+          fetch('/api/prophecy').then(r => r.json()),
+          fetch('/api/anomalies').then(r => r.json()),
+          fetch('/api/curse').then(r => r.json())
+        ]);
+
+        catalog = invRes.ingredients || [];
+        prophecies = prophRes.prophecies || [];
+        anomalies = anomRes.anomalies || [];
+        curseActive = curseRes.curse_active;
+
+        renderShelves();
+        renderKPIs();
+        renderOracle();
+        renderAnomalies(anomRes);
+        populateForecastDropdown();
+        updateCurseUI();
+      } catch (err) {
+        showToast('Error syncing with potion engine: ' + err.message, 'error');
+      }
+    }
+
+    // -------------------------------------------------------------
+    // VIEW SWITCHER
+    // -------------------------------------------------------------
+    function switchView(viewName) {
+      const views = ['shelves', 'oracle', 'radar', 'analytics'];
+      views.forEach(v => {
+        const el = document.getElementById(`view-${v}`);
+        const nav = document.getElementById(`nav-${v}`);
+        const mobNav = document.getElementById(`mob-nav-${v}`);
+
+        if (v === viewName) {
+          el.classList.remove('hidden');
+          if (nav) {
+            nav.className = "px-4 py-2 rounded-xl text-xs font-bold transition flex items-center gap-2 bg-gradient-to-r from-purple-900/60 to-purple-800/80 text-white border border-purple-500/40";
+          }
+          if (mobNav) mobNav.className = "px-3 py-1.5 rounded-lg font-bold text-amber-400";
+        } else {
+          el.classList.add('hidden');
+          if (nav) {
+            nav.className = "px-4 py-2 rounded-xl text-xs font-bold transition flex items-center gap-2 text-slate-400 hover:text-white";
+          }
+          if (mobNav) mobNav.className = "px-3 py-1.5 rounded-lg font-bold text-slate-400";
+        }
+      });
+
+      if (viewName === 'analytics') {
+        setTimeout(initCharts, 150);
+      }
+    }
+
+    // -------------------------------------------------------------
+    // RENDER SHELVES (INTERACTIVE POTION CARDS)
+    // -------------------------------------------------------------
+    function filterCategory(cat) {
+      currentFilter = cat;
+      ['all', 'critical', 'cursed'].forEach(c => {
+        const btn = document.getElementById(`filter-${c}`);
+        if (c.toUpperCase() === cat) {
+          btn.className = "px-3 py-1.5 rounded-xl text-xs font-bold bg-purple-700 text-white transition";
+        } else {
+          btn.className = "px-3 py-1.5 rounded-xl text-xs font-bold bg-white/5 text-slate-300 hover:bg-white/10 transition";
+        }
+      });
+      renderShelves();
+    }
+
+    function renderShelves() {
+      const grid = document.getElementById('shelvesGrid');
+      const searchQuery = (document.getElementById('ingredientSearch')?.value || '').toLowerCase().trim();
+
+      const curseItems = ['Moonflower', 'Phoenix Feather', 'Enchanted Mushroom'];
+
+      const filtered = catalog.filter(item => {
+        const matchesSearch = item.name.toLowerCase().includes(searchQuery) || (item.category || '').toLowerCase().includes(searchQuery);
+        if (!matchesSearch) return false;
+
+        const isCritical = (item.current_stock || 0) <= (item.safety_stock || 25);
+        const isCursed = curseItems.includes(item.name);
+
+        if (currentFilter === 'CRITICAL') return isCritical;
+        if (currentFilter === 'CURSED') return isCursed;
+        return true;
+      });
+
+      if (!filtered.length) {
+        grid.innerHTML = `
+          <div class="col-span-full text-center py-12 text-slate-400">
+            No ingredients found matching your search.
+          </div>
+        `;
+        return;
+      }
+
+      grid.innerHTML = filtered.map(item => {
+        const emoji = emojiMap[item.name] || '🧪';
+        const stock = item.current_stock || 0;
+        const safety = item.safety_stock || 25;
+        const maxExpected = Math.max(stock, safety * 4, 150);
+        const percent = Math.min(100, Math.round((stock / maxExpected) * 100));
+
+        const isCritical = stock <= safety;
+        const isLow = !isCritical && stock <= safety * 1.5;
+        const isFestivalSpike = curseActive && curseItems.includes(item.name);
+
+        // Find prophecy details
+        const proph = prophecies.find(p => p.product_name === item.name) || {};
+        const daysLeft = proph.days_until_stockout != null ? proph.days_until_stockout : '—';
+        const depletionDate = proph.depletion_date || 'Safe';
+
+        let badgeHtml = '';
+        if (isCritical) {
+          badgeHtml = `<span class="badge-pill bg-red-500/20 text-red-400 border border-red-500/40">⚠️ Critical Stock</span>`;
+        } else if (isLow) {
+          badgeHtml = `<span class="badge-pill bg-amber-500/20 text-amber-300 border border-amber-500/40">🔔 Low Buffer</span>`;
+        } else {
+          badgeHtml = `<span class="badge-pill bg-emerald-500/20 text-emerald-400 border border-emerald-500/40">✓ In Stock</span>`;
+        }
+
+        if (isFestivalSpike) {
+          badgeHtml += `<span class="badge-pill bg-orange-500/25 text-orange-300 border border-orange-500/50">🌕 3× Surge</span>`;
+        }
+
+        const barColor = isCritical ? 'bg-red-500' : isLow ? 'bg-amber-400' : 'bg-emerald-400';
+
+        return `
+          <div class="potion-card p-4 flex flex-col justify-between">
+            <div>
+              <div class="flex items-start justify-between gap-2">
+                <div class="flex items-center gap-2.5">
+                  <span class="text-3xl">${emoji}</span>
+                  <div>
+                    <h3 class="font-bold text-sm text-slate-100">${item.name}</h3>
+                    <div class="text-[11px] text-slate-400">${item.category || 'Potion Ingredient'}</div>
+                  </div>
+                </div>
+                <div class="flex flex-col items-end gap-1">
+                  ${badgeHtml}
+                </div>
+              </div>
+
+              <!-- Stock Meter & Numbers -->
+              <div class="mt-4 p-3 rounded-xl bg-black/40 border border-purple-900/40">
+                <div class="flex items-center justify-between text-xs mb-1.5 font-mono">
+                  <span class="text-slate-400">Current Stock:</span>
+                  <span class="font-bold text-slate-100 text-sm">${stock} <span class="text-[11px] font-normal text-slate-400">${item.unit || 'units'}</span></span>
+                </div>
+                <div class="vial-meter">
+                  <div class="vial-fill ${barColor}" style="width: ${percent}%;"></div>
+                </div>
+                <div class="flex items-center justify-between text-[10px] text-slate-400 mt-1.5">
+                  <span>Safety: ${safety}</span>
+                  <span class="text-purple-300 font-semibold">Runs out: <b class="text-amber-300">${depletionDate}</b> (${daysLeft}d left)</span>
+                </div>
+              </div>
+            </div>
+
+            <!-- Instant Functional Actions (Sell 1, Restock 10) -->
+            <div class="mt-4 pt-3 border-t border-purple-900/30 flex items-center justify-between gap-2">
+              <div class="flex items-center gap-1.5">
+                <button onclick="quickSell('${item.name}', 1)" class="btn-halloween px-2.5 py-1.5 rounded-lg text-xs font-bold" title="Sell 1 unit live">
+                  [-] Sell 1
+                </button>
+                <button onclick="quickSell('${item.name}', 5)" class="btn-secondary px-2 py-1.5 rounded-lg text-[11px] font-bold" title="Sell 5 units">
+                  -5
+                </button>
+              </div>
+
+              <div class="flex items-center gap-1.5">
+                <button onclick="quickRestock('${item.name}', 25)" class="btn-witch px-2.5 py-1.5 rounded-lg text-xs font-bold" title="Replenish +25 units">
+                  [+] Restock +25
+                </button>
+                <button onclick="deleteIngredient('${item.name}')" class="p-1.5 text-slate-500 hover:text-red-400 text-xs transition" title="Delete ingredient">
+                  🗑️
+                </button>
+              </div>
+            </div>
+          </div>
+        `;
+      }).join('');
+    }
+
+    // -------------------------------------------------------------
+    // RENDER KPIS
+    // -------------------------------------------------------------
+    function renderKPIs() {
+      const total = catalog.length;
+      const criticalCount = catalog.filter(i => (i.current_stock || 0) <= (i.safety_stock || 25)).length;
+      const anomCount = anomalies.length;
+
+      document.getElementById('kpi-total').textContent = total;
+      document.getElementById('kpi-critical').textContent = criticalCount;
+      document.getElementById('kpi-anomalies').textContent = anomCount;
+
+      const curseLabel = document.getElementById('kpi-curse-state');
+      const curseSub = document.getElementById('kpi-curse-sub');
+      if (curseActive) {
+        curseLabel.textContent = 'ACTIVE (3.0×)';
+        curseLabel.className = 'font-cinzel text-xl font-black text-red-400 mt-0.5';
+        curseSub.textContent = 'Full Moon Festival surge active';
+      } else {
+        curseLabel.textContent = 'NORMAL (1×)';
+        curseLabel.className = 'font-cinzel text-xl font-black text-emerald-400 mt-0.5';
+        curseSub.textContent = 'Base consumption rates';
+      }
+    }
+
+    // -------------------------------------------------------------
+    // RENDER ORACLE (PROPHECY & RESTOCK RECOMMENDATIONS)
+    // -------------------------------------------------------------
+    function renderOracle() {
+      const container = document.getElementById('oracleRecommendations');
+      if (!prophecies.length) {
+        container.innerHTML = `<div class="text-slate-400 text-xs text-center py-4">No prophecy data available.</div>`;
+        return;
+      }
+
+      // Sort by urgency: CRITICAL_DEFICIT first
+      const sorted = [...prophecies].sort((a, b) => (b.recommended_reorder_qty || 0) - (a.recommended_reorder_qty || 0));
+
+      container.innerHTML = sorted.map(p => {
+        const emoji = emojiMap[p.product_name] || '🧪';
+        const isUrgent = p.status === 'CRITICAL_DEFICIT' || p.status === 'IMMINENT_STOCKOUT';
+        const qtyToOrder = p.recommended_reorder_qty || 0;
+
+        return `
+          <div class="p-3.5 rounded-xl border ${isUrgent ? 'border-red-500/40 bg-red-950/20' : 'border-purple-900/40 bg-black/30'} flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3">
+            <div class="flex items-center gap-3">
+              <span class="text-2xl">${emoji}</span>
+              <div>
+                <div class="flex items-center gap-2">
+                  <h4 class="font-bold text-sm text-slate-100">${p.product_name}</h4>
+                  <span class="badge-pill ${isUrgent ? 'bg-red-500/20 text-red-400' : 'bg-emerald-500/20 text-emerald-400'} text-[10px]">
+                    ${p.status.replace(/_/g, ' ')}
+                  </span>
+                </div>
+                <div class="text-[11px] text-slate-400 mt-0.5">
+                  Supplier: <b class="text-slate-300">${p.supplier || 'Pantry Supply'}</b> • Lead time: <b>${p.lead_time_days || 4} days</b> • Daily burn: <b>${(p.avg_daily_demand || 0).toFixed(1)}/day</b>
+                </div>
+              </div>
+            </div>
+
+            <div class="flex items-center gap-3 self-end sm:self-center shrink-0">
+              <div class="text-right">
+                <div class="text-[10px] text-slate-400 uppercase font-mono">Suggested Reorder</div>
+                <div class="font-bold text-sm ${qtyToOrder > 0 ? 'text-amber-400' : 'text-slate-400'}">${qtyToOrder} ${p.unit || 'units'}</div>
+              </div>
+              ${qtyToOrder > 0 ? `
+                <button onclick="quickRestock('${p.product_name}', ${qtyToOrder})" class="btn-halloween px-3 py-1.5 rounded-xl text-xs font-bold">
+                  Order ${qtyToOrder}
+                </button>
+              ` : `
+                <span class="text-xs text-emerald-400 font-semibold px-2 py-1">✓ Stocked</span>
+              `}
+            </div>
+          </div>
+        `;
+      }).join('');
+    }
+
+    // -------------------------------------------------------------
+    // RENDER ANOMALIES
+    // -------------------------------------------------------------
+    function renderAnomalies(anomData) {
+      const feed = document.getElementById('anomaliesFeed');
+      const anoms = anomData.anomalies || [];
+      const metrics = anomData.metrics || {};
+
+      document.getElementById('anomPrecision').textContent = ((metrics.precision || 1.0) * 100).toFixed(0) + '%';
+      document.getElementById('anomRecall').textContent = ((metrics.recall || 1.0) * 100).toFixed(0) + '%';
+      document.getElementById('anomF1').textContent = (metrics.f1_score || 1.0).toFixed(2);
+
+      if (!anoms.length) {
+        feed.innerHTML = `<div class="col-span-full text-center py-8 text-emerald-400 text-xs">✅ No strange happenings detected across shelves.</div>`;
+        return;
+      }
+
+      feed.innerHTML = anoms.map(a => {
+        return `
+          <div class="p-4 rounded-xl border border-red-500/30 bg-red-950/20 backdrop-blur-md flex items-start justify-between gap-3">
+            <div>
+              <div class="flex items-center gap-2">
+                <span class="text-lg">⚠️</span>
+                <h4 class="font-bold text-sm text-red-200">${a.product_name}</h4>
+                <span class="badge-pill bg-red-500/30 text-red-300 font-mono text-[10px]">${a.date}</span>
+              </div>
+              <p class="text-xs text-slate-300 mt-1">${a.description || 'Unusual consumption spike detected'}</p>
+              <div class="flex items-center gap-3 text-[11px] text-slate-400 mt-2 font-mono">
+                <span>Actual: <b class="text-red-300">${a.actual_demand}</b></span>
+                <span>Expected: <b>${(a.expected_demand || 0).toFixed(1)}</b></span>
+                <span>Z-Score: <b class="text-amber-400">${(a.z_score || 0).toFixed(2)}σ</b></span>
+              </div>
+            </div>
+            <span class="badge-pill bg-red-500/20 text-red-400 border border-red-500/40 text-[10px] shrink-0">
+              Spike
+            </span>
+          </div>
+        `;
+      }).join('');
+    }
+
+    // -------------------------------------------------------------
+    // QUICK FUNCTIONAL ACTIONS (SELL / RESTOCK / DELETE)
+    // -------------------------------------------------------------
+    async function quickSell(productName, quantity) {
+      try {
+        const res = await fetch('/api/sales', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ product_name: productName, quantity: quantity })
+        });
+        if (!res.ok) throw new Error(await res.text());
+        
+        showToast(`Sold ${quantity} × ${productName}! Stock updated in MongoDB.`, 'success');
+        
+        // Mark quest step 2 done!
+        completeQuestStep('step2');
+
+        await refreshAllData();
+      } catch (err) {
+        showToast('Sale failed: ' + err.message, 'error');
+      }
+    }
+
+    async function quickRestock(productName, quantity) {
+      try {
+        const res = await fetch('/api/restock/order', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ product_name: productName, quantity: quantity })
+        });
+        if (!res.ok) throw new Error(await res.text());
+
+        showToast(`Restocked ${quantity} × ${productName}! Shelves replenished.`, 'success');
+
+        // Mark quest step 4 done!
+        completeQuestStep('step4');
+
+        await refreshAllData();
+      } catch (err) {
+        showToast('Restock failed: ' + err.message, 'error');
+      }
+    }
+
+    async function restockAllUrgent() {
+      const urgent = prophecies.filter(p => (p.recommended_reorder_qty || 0) > 0);
+      if (!urgent.length) {
+        showToast('All ingredients are currently healthy!', 'info');
+        return;
+      }
+
+      try {
+        for (const item of urgent) {
+          await fetch('/api/restock/order', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ product_name: item.product_name, quantity: item.recommended_reorder_qty })
+          });
+        }
+        showToast(`Successfully replenished all ${urgent.length} deficient ingredients!`, 'success');
+        completeQuestStep('step4');
+        await refreshAllData();
+      } catch (err) {
+        showToast('Bulk restock error: ' + err.message, 'error');
+      }
+    }
+
+    async function deleteIngredient(name) {
+      if (!confirm(`Delete ${name} from Madam Hexley's pantry?`)) return;
+      try {
+        const res = await fetch(`/api/inventory/${encodeURIComponent(name)}`, { method: 'DELETE' });
+        if (!res.ok) throw new Error(await res.text());
+        showToast(`Removed ${name} from catalog.`, 'info');
+        await refreshAllData();
+      } catch (err) {
+        showToast('Delete failed: ' + err.message, 'error');
+      }
+    }
+
+    // -------------------------------------------------------------
+    // MIDNIGHT CURSE TOGGLE
+    // -------------------------------------------------------------
+    async function toggleCurse() {
+      try {
+        const res = await fetch('/api/curse/toggle', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ activate: !curseActive })
+        });
+        const data = await res.json();
+        curseActive = data.curse_active;
+
+        updateCurseUI();
+
+        if (curseActive) {
+          showToast('🌕 Full Moon Festival announced! Demand for 3 ingredients tripled!', 'warning');
+          completeQuestStep('step3');
+        } else {
+          showToast('🌙 Midnight Curse lifted. Demand normalized.', 'info');
+        }
+
+        await refreshAllData();
+      } catch (err) {
+        showToast('Failed to toggle curse: ' + err.message, 'error');
+      }
+    }
+
+    function checkCurseStatus() {
+      fetch('/api/curse')
+        .then(r => r.json())
+        .then(d => {
+          curseActive = d.curse_active;
+          updateCurseUI();
+        })
+        .catch(() => {});
+    }
+
+    function updateCurseUI() {
+      const banner = document.getElementById('curseBanner');
+      const badge = document.getElementById('curseMultiplierBadge');
+      const moonIcon = document.getElementById('curseMoonIcon');
+      const btnText = document.getElementById('curseBtnText');
+
+      if (curseActive) {
+        banner.classList.remove('hidden');
+        badge.classList.remove('hidden');
+        moonIcon.textContent = '🌕';
+        btnText.textContent = 'Lift Curse';
+      } else {
+        banner.classList.add('hidden');
+        badge.classList.add('hidden');
+        moonIcon.textContent = '🌙';
+        btnText.textContent = 'Midnight Curse';
+      }
+    }
+
+    // -------------------------------------------------------------
+    // QUEST / WALKTHROUGH LOGIC (LEARN BY DOING)
+    // -------------------------------------------------------------
+    function highlightAction(stepKey) {
+      if (stepKey === 'step1') {
+        switchView('shelves');
+        filterCategory('CRITICAL');
+        completeQuestStep('step1');
+        showToast('Step 1 complete: Viewing critical stock items.', 'info');
+      } else if (stepKey === 'step2') {
+        switchView('shelves');
+        const firstBtn = document.querySelector('button[title="Sell 1 unit live"]');
+        if (firstBtn) {
+          firstBtn.classList.add('ring-4', 'ring-orange-500', 'animate-pulse');
+          setTimeout(() => firstBtn.classList.remove('ring-4', 'ring-orange-500', 'animate-pulse'), 3000);
+        }
+        showToast('Step 2: Click [-] Sell 1 on any ingredient card!', 'info');
+      } else if (stepKey === 'step3') {
+        toggleCurse();
+      } else if (stepKey === 'step4') {
+        switchView('oracle');
+        completeQuestStep('step4');
+        showToast('Step 4: Check recommended order quantities or click "Restock All"!', 'info');
+      }
+    }
+
+    function completeQuestStep(stepKey) {
+      questState[stepKey] = true;
+      updateQuestUI();
+    }
+
+    function resetQuest() {
+      questState = { step1: false, step2: false, step3: false, step4: false };
+      updateQuestUI();
+      showToast('Apprentice quest reset! Ready to learn again.', 'info');
+    }
+
+    function updateQuestUI() {
+      ['1', '2', '3', '4'].forEach(num => {
+        const key = 'step' + num;
+        const card = document.getElementById(`step-card-${num}`);
+        const icon = document.getElementById(`step-icon-${num}`);
+        if (questState[key]) {
+          card.classList.add('completed');
+          icon.innerHTML = '✓';
+          icon.className = 'w-7 h-7 rounded-lg bg-emerald-600 text-white font-bold text-xs flex items-center justify-center shrink-0';
+        } else {
+          card.classList.remove('completed');
+          icon.innerHTML = num;
+          icon.className = 'w-7 h-7 rounded-lg bg-purple-900/60 text-purple-300 border border-purple-500/40 flex items-center justify-center font-bold text-xs shrink-0';
+        }
       });
     }
-  } catch(e) { toast('Crystal ball failed: ' + e.message, 'err'); }
-}
 
-async function loadForecast() {
-  const prod = document.getElementById('fcSel').value;
-  if (!prod) return;
-  try {
-    const data = await api(`/api/prophecy/forecast/${encodeURIComponent(prod)}`);
-    const fc = data.forecast || [];
-    if (fcChart) fcChart.destroy();
-    fcChart = new Chart(document.getElementById('fcChart'), {
-      type: 'bar',
-      data: { labels: fc.map(d => d.date),
-        datasets: [{ label: 'Predicted Demand', data: fc.map(d => d.predicted_demand),
-          backgroundColor: 'rgba(245,158,11,.65)', borderRadius: 5 }] },
-      options: cOpts()
-    });
-  } catch(e) { toast('Forecast failed: ' + e.message, 'err'); }
-}
-
-function cOpts() {
-  return {
-    responsive: true, maintainAspectRatio: true,
-    plugins: { legend: { display: false }, tooltip: { backgroundColor: '#1a1030', titleColor: '#c4b5fd', bodyColor: '#cbd5e1' } },
-    scales: {
-      x: { grid: { color: 'rgba(255,255,255,.04)' }, ticks: { color: '#475569', font: { size: 10 } } },
-      y: { grid: { color: 'rgba(255,255,255,.04)' }, ticks: { color: '#475569', font: { size: 10 } } }
+    // -------------------------------------------------------------
+    // CHARTS (CRYSTAL BALL DEMAND ANALYTICS)
+    // -------------------------------------------------------------
+    function populateForecastDropdown() {
+      const select = document.getElementById('forecastIngredientSelect');
+      if (!select) return;
+      select.innerHTML = catalog.map(i => `<option value="${i.name}">${i.name}</option>`).join('');
     }
-  };
-}
 
-function populateFcSelect(ings) {
-  const sel = document.getElementById('fcSel');
-  const cur = sel.value;
-  sel.innerHTML = '<option value="">Select ingredient…</option>' + ings.map(i => `<option value="${i.name}" ${i.name===cur?'selected':''}>${i.name}</option>`).join('');
-}
+    async function initCharts() {
+      // 1. DOW seasonality
+      const dowRes = await fetch('/api/analytics/crystal-ball').then(r => r.json());
+      const dowPattern = dowRes.summary?.dow_pattern || { 'Mon': 15, 'Tue': 16, 'Wed': 17, 'Thu': 19, 'Fri': 25, 'Sat': 32, 'Sun': 28 };
 
-/* ─── DATABASE ─── */
-async function loadDb() {
-  try {
-    const data = await api('/api/db/summary');
-    const cols = data.collection_counts || data.collections || {};
-    const isMock = data.is_mock;
-    document.getElementById('dbStats').innerHTML =
-      Object.entries(cols).map(([n,cnt]) => `<div class="stat-card"><div class="stat-val" style="color:#c084fc">${cnt}</div><div class="stat-lbl">${n}</div></div>`).join('') +
-      `<div class="stat-card"><div style="margin-bottom:6px;font-size:11px;color:#64748b;font-weight:600;text-transform:uppercase">Connection</div>
-       <span class="badge ${isMock?'b-amber':'b-green'}">${isMock?'Mock DB':'MongoDB Atlas ✓'}</span></div>`;
-  } catch(e) { toast('DB load failed: ' + e.message, 'err'); }
-}
+      const dowCtx = document.getElementById('dowChartCanvas').getContext('2d');
+      if (dowChart) dowChart.destroy();
+      dowChart = new Chart(dowCtx, {
+        type: 'bar',
+        data: {
+          labels: Object.keys(dowPattern),
+          datasets: [{
+            label: 'Avg Demand Weight',
+            data: Object.values(dowPattern),
+            backgroundColor: ['#9333ea', '#9333ea', '#9333ea', '#a855f7', '#ff7700', '#ff7700', '#ea580c'],
+            borderRadius: 6
+          }]
+        },
+        options: {
+          responsive: true,
+          maintainAspectRatio: false,
+          plugins: { legend: { display: false } },
+          scales: {
+            x: { grid: { color: 'rgba(255,255,255,0.05)' }, ticks: { color: '#94a3b8' } },
+            y: { grid: { color: 'rgba(255,255,255,0.05)' }, ticks: { color: '#94a3b8' } }
+          }
+        }
+      });
 
-async function loadColl() {
-  const col = document.getElementById('dbCollSel').value;
-  if (!col) return;
-  document.getElementById('dbOut').textContent = 'Loading…';
-  try {
-    const data = await api(`/api/db/collection/${col}?limit=20`);
-    const docs = data.documents || data;
-    document.getElementById('dbDocCount').textContent = Array.isArray(docs) ? `${docs.length} docs shown` : '';
-    document.getElementById('dbOut').textContent = JSON.stringify(docs, null, 2);
-  } catch(e) { document.getElementById('dbOut').textContent = 'Error: ' + e.message; }
-}
+      // 2. Trend Chart
+      const trendCtx = document.getElementById('trendChartCanvas').getContext('2d');
+      const trendData = dowRes.summary?.historical_trend || [];
+      if (trendChart) trendChart.destroy();
+      trendChart = new Chart(trendCtx, {
+        type: 'line',
+        data: {
+          labels: trendData.map(d => d.date),
+          datasets: [{
+            label: 'Total Potion Volume',
+            data: trendData.map(d => d.total_sold),
+            borderColor: '#ff7700',
+            backgroundColor: 'rgba(255, 119, 0, 0.1)',
+            fill: true,
+            tension: 0.35,
+            pointRadius: 1
+          }]
+        },
+        options: {
+          responsive: true,
+          maintainAspectRatio: false,
+          plugins: { legend: { display: false } },
+          scales: {
+            x: { grid: { color: 'rgba(255,255,255,0.04)' }, ticks: { color: '#64748b', maxTicksLimit: 12 } },
+            y: { grid: { color: 'rgba(255,255,255,0.04)' }, ticks: { color: '#64748b' } }
+          }
+        }
+      });
 
-function doReset() {
-  if (!confirm('Reset ALL demo data to initial CSV seed? This cannot be undone.')) return;
-  api('/api/admin/reset', { method: 'POST' })
-    .then(() => { toast('Demo data reset!', 'ok'); loadDb(); loadStock(); loadOverview(); })
-    .catch(e => toast('Reset failed: ' + e.message, 'err'));
-}
+      // 3. 14-day item forecast
+      renderForecastChart();
+    }
 
-/* ─── MIDNIGHT CURSE ─── */
-async function toggleCurse() {
-  try {
-    const data = await api('/api/curse/toggle', { method: 'POST', body: JSON.stringify({ activate: !curseActive }) });
-    curseActive = data.curse_active;
-    updateCurseUI();
-    toast(curseActive ? '🌕 Midnight Curse ACTIVE — demand ×3!' : '🌙 Curse lifted.', curseActive ? 'err' : 'inf');
-    if (document.getElementById('pane-prophecy').classList.contains('on')) loadProphecy();
-    loadOverview();
-  } catch(e) { toast('Curse toggle failed: ' + e.message, 'err'); }
-}
+    async function renderForecastChart() {
+      const select = document.getElementById('forecastIngredientSelect');
+      const itemName = select ? select.value : (catalog[0]?.name || 'Moonflower');
 
-function updateCurseUI() {
-  document.getElementById('curseBanner').className = curseActive ? 'on' : '';
-  document.getElementById('curseBtnTxt').textContent = curseActive ? 'Lift Curse' : 'Midnight Curse';
-  document.getElementById('curseNavBtn').querySelector('span').textContent = curseActive ? '🌕' : '🌙';
-  const ob = document.getElementById('ovCurseBtn');
-  if (ob) ob.textContent = curseActive ? '🌙 Lift Curse' : '🌙 Activate Curse';
-}
+      try {
+        const res = await fetch(`/api/prophecy/forecast/${encodeURIComponent(itemName)}?days=14`).then(r => r.json());
+        const days = res.forecast || [];
 
-/* ─── SALE MODAL ─── */
-function populateSaleSelect(ings) {
-  document.getElementById('saleProd').innerHTML = '<option value="">Select…</option>' +
-    ings.map(i => `<option value="${i.name}">${i.name} (${i.current_stock||0} ${i.unit||''})</option>`).join('');
-}
-function openSale()  { document.getElementById('saleQty').value = ''; document.getElementById('saleModal').classList.remove('off'); }
-function closeSale() { document.getElementById('saleModal').classList.add('off'); }
-async function submitSale() {
-  const prod = document.getElementById('saleProd').value;
-  const qty  = parseInt(document.getElementById('saleQty').value);
-  if (!prod || !qty || qty < 1) { toast('Choose ingredient and enter quantity', 'err'); return; }
-  try {
-    await api('/api/sales', { method: 'POST', body: JSON.stringify({ product_name: prod, quantity: qty }) });
-    closeSale();
-    toast(`Sold ${qty} × ${prod}!`, 'ok');
-    loadStock(); loadOverview();
-  } catch(e) { toast('Sale failed: ' + e.message, 'err'); }
-}
+        const ctx = document.getElementById('forecastChartCanvas').getContext('2d');
+        if (forecastChart) forecastChart.destroy();
 
-/* ─── ADD MODAL ─── */
-function openAdd()  { document.getElementById('addModal').classList.remove('off'); }
-function closeAdd() { document.getElementById('addModal').classList.add('off'); }
-async function submitAdd() {
-  const name = document.getElementById('nName').value.trim();
-  const qty  = parseInt(document.getElementById('nQty').value);
-  if (!name || isNaN(qty)) { toast('Name and stock are required', 'err'); return; }
-  try {
-    await api('/api/inventory', { method: 'POST', body: JSON.stringify({
-      name,
-      category:      document.getElementById('nCat').value || 'Misc',
-      unit:          document.getElementById('nUnit').value || 'units',
-      current_stock: qty,
-      safety_stock:  parseInt(document.getElementById('nSafe').value) || 25,
-      supplier:      document.getElementById('nSupplier').value || 'Unknown',
-      lead_time_days: parseInt(document.getElementById('nLead').value) || 4
-    })});
-    closeAdd();
-    toast(`Added ${name}!`, 'ok');
-    loadStock(); loadOverview();
-  } catch(e) { toast('Add failed: ' + e.message, 'err'); }
-}
-
-/* ─── EDIT MODAL ─── */
-function openEdit(name, stock, safe, supplier, lead) {
-  document.getElementById('editName').value = name;
-  document.getElementById('editSubLbl').textContent = 'Editing: ' + name;
-  document.getElementById('eQty').value      = stock;
-  document.getElementById('eSafe').value     = safe;
-  document.getElementById('eSupplier').value = supplier;
-  document.getElementById('eLead').value     = lead;
-  document.getElementById('editModal').classList.remove('off');
-}
-function closeEdit() { document.getElementById('editModal').classList.add('off'); }
-async function submitEdit() {
-  const name = document.getElementById('editName').value;
-  try {
-    await api(`/api/inventory/${encodeURIComponent(name)}`, { method: 'PUT', body: JSON.stringify({
-      current_stock:  parseInt(document.getElementById('eQty').value),
-      safety_stock:   parseInt(document.getElementById('eSafe').value),
-      supplier:       document.getElementById('eSupplier').value,
-      lead_time_days: parseInt(document.getElementById('eLead').value)
-    })});
-    closeEdit();
-    toast(`${name} updated!`, 'ok');
-    loadStock(); loadOverview();
-  } catch(e) { toast('Update failed: ' + e.message, 'err'); }
-}
-
-async function delIng(name) {
-  if (!confirm(`Delete "${name}"? Cannot be undone.`)) return;
-  try {
-    await api(`/api/inventory/${encodeURIComponent(name)}`, { method: 'DELETE' });
-    toast(`${name} deleted.`, 'inf');
-    loadStock(); loadOverview();
-  } catch(e) { toast('Delete failed: ' + e.message, 'err'); }
-}
-
-/* ─────────────────────────────────────────────
-   TUTORIAL — step-by-step interactive guide
-───────────────────────────────────────────── */
-const TUT = [
-  {
-    title: '👋 Welcome to Potion Pantry!',
-    text: "I'm going to walk you through every feature step by step. Click Next to start — or click anywhere outside to skip.",
-    target: null, tab: 'overview', do: null
-  },
-  {
-    title: '🏠 Overview Dashboard',
-    text: 'This is your home screen. It shows total ingredients, critical stock count, anomalies detected, and whether the Midnight Curse is active — all at a glance.',
-    target: '.grid-4', tab: 'overview', do: () => go('overview')
-  },
-  {
-    title: '⚡ Quick Actions',
-    text: 'These buttons let you instantly record a sale, add a new ingredient, jump to any section. Try "Record Sale" after this tour — it auto-decrements your stock!',
-    target: '#pane-overview .card', tab: 'overview', do: null
-  },
-  {
-    title: '📦 Stock Management',
-    text: 'The Stock tab shows all 10 ingredients with live quantities, colour-coded progress bars (green = healthy, amber = low, red = critical), and supplier info.',
-    target: '#tb-stock', tab: 'stock', do: () => go('stock')
-  },
-  {
-    title: '🔮 Prophecy — AI Runout Predictions',
-    text: 'The engine analyses 30 days of sales and predicts exactly when each ingredient runs out. Red = act now, Amber = reorder soon, Green = all good.',
-    target: '#tb-prophecy', tab: 'prophecy', do: () => go('prophecy')
-  },
-  {
-    title: '🌕 Midnight Curse — Demand Surge',
-    text: 'Click this navbar button to trigger the Full Moon Festival. Demand for Moonflower, Phoenix Feather, and Enchanted Mushroom instantly triples. Watch Prophecy cards turn red!',
-    target: '#curseNavBtn', tab: 'prophecy', do: null
-  },
-  {
-    title: '🧪 Restock Spell',
-    text: 'The Restock tab calculates the exact reorder quantity using the ROP formula: (Avg Daily Demand × Lead Time) + Safety Stock. Click "Order Now" to log a restock.',
-    target: '#tb-restock', tab: 'restock', do: () => go('restock')
-  },
-  {
-    title: '👁️ Strange Happenings',
-    text: 'Our Z-score algorithm (threshold 2.8σ) scans every ingredient for unusual spikes. It achieves 100% precision, 100% recall, F1 = 1.0 on our dataset.',
-    target: '#tb-anomalies', tab: 'anomalies', do: () => go('anomalies')
-  },
-  {
-    title: '📊 Crystal Ball Charts',
-    text: 'Select any ingredient from the dropdown to see a 14-day demand forecast. The Day-of-Week chart shows weekends are the busiest. Great for pre-stocking!',
-    target: '#tb-crystal', tab: 'crystal', do: () => go('crystal')
-  },
-  {
-    title: '🎉 You\'re all set!',
-    text: 'Now try it yourself: go to Stock, record a sale, then open Prophecy to see the updated runout date. Activate the Midnight Curse for the final boss! 🧙‍♀️',
-    target: null, tab: 'overview', do: () => go('overview')
-  }
-];
-
-function startTut() {
-  tutIdx = 0;
-  document.getElementById('tutOverlay').classList.add('on');
-  document.getElementById('tutDrop').style.display = 'block';
-  renderTut();
-}
-
-function renderTut() {
-  const s = TUT[tutIdx];
-  const total = TUT.length;
-  const card  = document.getElementById('tutCard');
-  const spot  = document.getElementById('tutSpot');
-
-  // Progress dots
-  document.getElementById('tutDots').innerHTML =
-    TUT.map((_,i) => `<div class="tut-dot${i<=tutIdx?' done':''}"></div>`).join('');
-
-  document.getElementById('tutBadge').textContent = `Step ${tutIdx+1} / ${total}`;
-  document.getElementById('tutH').textContent = s.title;
-  document.getElementById('tutP').textContent = s.text;
-  document.getElementById('tutNext').textContent = tutIdx === total-1 ? 'Finish ✓' : 'Next →';
-  document.getElementById('tutPrev').classList.toggle('off', tutIdx === 0);
-
-  if (s.do) s.do();
-
-  if (s.target) {
-    setTimeout(() => {
-      const el = document.querySelector(s.target);
-      if (el) {
-        const r = el.getBoundingClientRect();
-        const pad = 8;
-        spot.style.cssText = `display:block;top:${r.top-pad+window.scrollY}px;left:${r.left-pad}px;width:${r.width+pad*2}px;height:${r.height+pad*2}px;`;
-        const cTop  = r.bottom + 18 + window.scrollY;
-        const cLeft = Math.max(8, Math.min(r.left, window.innerWidth - 330));
-        card.style.cssText = `display:block;top:${cTop}px;left:${cLeft}px;`;
-        el.scrollIntoView({ behavior: 'smooth', block: 'center' });
-      } else {
-        spot.style.display = 'none';
-        card.style.cssText = 'display:block;top:50%;left:50%;transform:translate(-50%,-50%)';
+        forecastChart = new Chart(ctx, {
+          type: 'bar',
+          data: {
+            labels: days.map(d => d.date.slice(5)), // MM-DD
+            datasets: [{
+              label: 'Predicted Units',
+              data: days.map(d => d.predicted_demand),
+              backgroundColor: 'rgba(168, 85, 247, 0.75)',
+              hoverBackgroundColor: '#ff7700',
+              borderRadius: 6
+            }]
+          },
+          options: {
+            responsive: true,
+            maintainAspectRatio: false,
+            plugins: { legend: { display: false } },
+            scales: {
+              x: { grid: { color: 'rgba(255,255,255,0.05)' }, ticks: { color: '#94a3b8', font: { size: 10 } } },
+              y: { grid: { color: 'rgba(255,255,255,0.05)' }, ticks: { color: '#94a3b8' } }
+            }
+          }
+        });
+      } catch (err) {
+        console.error('Forecast chart error', err);
       }
-    }, 350);
-  } else {
-    spot.style.display = 'none';
-    card.style.cssText = 'display:block;top:50%;left:50%;transform:translate(-50%,-50%)';
-  }
-  card.style.display = 'block';
-}
+    }
 
-function nextTut() { if (tutIdx >= TUT.length-1) { endTut(); return; } tutIdx++; renderTut(); }
-function prevTut() { if (tutIdx <= 0) return; tutIdx--; renderTut(); }
-function endTut() {
-  document.getElementById('tutOverlay').classList.remove('on');
-  document.getElementById('tutDrop').style.display  = 'none';
-  document.getElementById('tutSpot').style.display  = 'none';
-  document.getElementById('tutCard').style.display  = 'none';
-  go('overview');
-}
+    // -------------------------------------------------------------
+    // ADD INGREDIENT MODAL
+    // -------------------------------------------------------------
+    function openAddModal() {
+      document.getElementById('addModal').classList.remove('hidden');
+    }
 
-/* ─── INIT ─── */
-window.addEventListener('DOMContentLoaded', async () => {
-  try {
-    const s = await api('/api/curse');
-    curseActive = s.curse_active;
-    updateCurseUI();
-  } catch(_) {}
-  loadOverview();
-});
-</script>
+    function closeAddModal() {
+      document.getElementById('addModal').classList.add('hidden');
+    }
+
+    async function submitNewIngredient() {
+      const name = document.getElementById('addName').value.trim();
+      const category = document.getElementById('addCategory').value.trim() || 'General Flora';
+      const unit = document.getElementById('addUnit').value.trim() || 'bundles';
+      const stock = parseInt(document.getElementById('addStock').value) || 0;
+      const safety = parseInt(document.getElementById('addSafety').value) || 20;
+      const supplier = document.getElementById('addSupplier').value.trim() || 'Local Apothecary';
+      const leadTime = parseInt(document.getElementById('addLeadTime').value) || 4;
+
+      if (!name) {
+        showToast('Please specify an ingredient name.', 'error');
+        return;
+      }
+
+      try {
+        const res = await fetch('/api/inventory', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            name,
+            category,
+            unit,
+            current_stock: stock,
+            safety_stock: safety,
+            supplier,
+            lead_time_days: leadTime
+          })
+        });
+
+        if (!res.ok) throw new Error(await res.text());
+
+        showToast(`Added ${name} to Madam Hexley's pantry!`, 'success');
+        closeAddModal();
+        await refreshAllData();
+      } catch (err) {
+        showToast('Failed to add ingredient: ' + err.message, 'error');
+      }
+    }
+
+    // -------------------------------------------------------------
+    // TOAST NOTIFICATIONS
+    // -------------------------------------------------------------
+    function showToast(message, type = 'info') {
+      const container = document.getElementById('toast-container');
+      const toast = document.createElement('div');
+
+      let bg = 'bg-purple-950/90 text-purple-200 border border-purple-500/50';
+      let icon = 'ℹ️';
+
+      if (type === 'success') {
+        bg = 'bg-emerald-950/90 text-emerald-200 border border-emerald-500/50';
+        icon = '✅';
+      } else if (type === 'error') {
+        bg = 'bg-red-950/90 text-red-200 border border-red-500/50';
+        icon = '❌';
+      } else if (type === 'warning') {
+        bg = 'bg-orange-950/90 text-orange-200 border border-orange-500/50';
+        icon = '🌕';
+      }
+
+      toast.className = `toast-card ${bg}`;
+      toast.innerHTML = `<span>${icon}</span><span>${message}</span>`;
+      container.appendChild(toast);
+
+      setTimeout(() => {
+        toast.style.transition = 'all 0.3s ease';
+        toast.style.opacity = '0';
+        toast.style.transform = 'translateY(10px)';
+        setTimeout(() => toast.remove(), 300);
+      }, 3500);
+    }
+  </script>
 </body>
 </html>
