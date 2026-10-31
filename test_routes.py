@@ -21,7 +21,10 @@ def test_all():
 
     # 1. Root & Health
     r = client.get("/")
-    assert_test("GET / (Root Meta)", r.status_code == 200 and r.json()["service"] == "Potion Pantry Smart Inventory Engine")
+    assert_test("GET / (Website Index HTML)", r.status_code == 200 and "Potion Pantry" in r.text)
+
+    r = client.get("/api/info")
+    assert_test("GET /api/info (Root Meta)", r.status_code == 200 and r.json()["service"] == "Potion Pantry Smart Inventory Engine")
 
     r = client.get("/api/health")
     assert_test("GET /api/health", r.status_code == 200 and r.json()["database_connected"] is True)
@@ -117,3 +120,4 @@ def test_all():
 
 if __name__ == "__main__":
     test_all()
+

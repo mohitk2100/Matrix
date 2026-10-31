@@ -1,5 +1,8 @@
 from fastapi import FastAPI, HTTPException, Query, status
 from fastapi.middleware.cors import CORSMiddleware
+from fastapi.staticfiles import StaticFiles
+from fastapi.responses import FileResponse
+import os
 from pydantic import BaseModel, Field
 from typing import Optional, List, Dict, Any
 from db import db_instance
@@ -21,6 +24,11 @@ app.add_middleware(
 )
 
 engine = ProphecyEngine(db_instance)
+
+# Mount Static Assets
+static_dir = os.path.join(os.path.dirname(os.path.abspath(__file__)), "static")
+if os.path.exists(static_dir):
+    app.mount("/static", StaticFiles(directory=static_dir), name="static")
 
 # Server-side state for the Midnight Curse
 server_state = {
@@ -64,10 +72,22 @@ class CurseToggle(BaseModel):
     activate: bool = Field(..., example=True)
 
 # ==========================
-# 1. Health & Meta Routes
+# 1. Website & Meta Routes
 # ==========================
-@app.get("/", tags=["Health & Meta"])
-def root():
+@app.get("/", tags=["Website"])
+def serve_website():
+    """Serves Madam Hexley's Potion Pantry Web Application."""
+    index_file = os.path.join(static_dir, "index.html")
+    if os.path.exists(index_file):
+        return FileResponse(index_file)
+    return {
+        "status": "online",
+        "service": "Potion Pantry Smart Inventory Engine",
+        "docs_url": "/docs"
+    }
+
+@app.get("/api/info", tags=["Health & Meta"])
+def root_meta():
     return {
         "status": "online",
         "service": "Potion Pantry Smart Inventory Engine",
