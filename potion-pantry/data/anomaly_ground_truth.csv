@@ -1,0 +1,6 @@
+date,product_name,quantity_sold,expected_quantity,spike_multiplier,anomaly_label,is_anomaly,description
+2026-06-13,Dragon Root,79,17,4.5,consumption_spike,True,Dragon Fire Outbreak in Whispering Woods: sudden emergency demand for fire-warding salves
+2026-07-28,Phoenix Feather,22,6,4.0,consumption_spike,True,High Inquisitor Resurrection Ritual: massive unexpected requisition by Grand Sorcerers
+2026-08-20,Mystic Water,136,39,3.5,consumption_spike,True,"Cauldron Cooling Crisis: regional heatwave dried local wells, creating emergency water buying"
+2026-09-15,Moonflower,91,22,4.2,consumption_spike,True,Total Lunar Eclipse Gathering: Silver Coven gathered for rare midnight brewing ceremonies
+2026-10-13,Enchanted Mushroom,142,30,4.8,consumption_spike,True,Fairy Ring Convergence: alchemical panic buying after wild mushroom shortage rumor

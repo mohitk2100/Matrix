@@ -1,0 +1,11 @@
+name,category,current_stock,safety_stock,supplier,lead_time_days,unit
+Moonflower,Flora & Herbs,120,30,Silvermoon Botanical Coven,4,blossoms
+Dragon Root,Roots & Bark,85,25,Wyrmfang Mountain Foragers,7,roots
+Crystal Dust,Minerals & Gems,250,50,Starlight Alchemical Guild,3,ounces
+Phoenix Feather,Mythical Fauna,35,15,Ashen Crest Aviaries,10,feathers
+Witch Hazel,Flora & Herbs,180,40,Shadowbrook Herbalists,2,bundles
+Unicorn Hair,Mythical Fauna,45,15,Glade of the Celestials,12,strands
+Shadow Berries,Flora & Herbs,140,35,Nightfall Briar Harvesters,5,pints
+Mystic Water,Essences & Liquids,300,60,Feywild Springs Co.,3,vials
+Silver Thorn,Roots & Bark,95,20,Ironbark Bramble Keepers,6,spikes
+Enchanted Mushroom,Fungi & Spores,160,45,Gloomspore Fungi Hollow,4,caps

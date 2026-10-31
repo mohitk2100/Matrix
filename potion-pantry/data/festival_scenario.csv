@@ -1,0 +1,11 @@
+festival_name,festival_start_date,festival_end_date,product_name,demand_multiplier,is_curse_affected,baseline_daily_demand,projected_daily_demand,scenario_notes
+Full Moon Harvest Festival,2026-11-01,2026-11-07,Enchanted Mushroom,3.0,True,24,72,Surge item for Full Moon Harvest Festival; full moon magical catalyst required in 3x quantities
+Full Moon Harvest Festival,2026-11-01,2026-11-07,Moonflower,3.0,True,18,54,Surge item for Full Moon Harvest Festival; full moon magical catalyst required in 3x quantities
+Full Moon Harvest Festival,2026-11-01,2026-11-07,Phoenix Feather,3.0,True,6,18,Surge item for Full Moon Harvest Festival; full moon magical catalyst required in 3x quantities
+Full Moon Harvest Festival,2026-11-01,2026-11-07,Crystal Dust,1.0,False,28,28,Standard consumption pattern unaffected by full moon alignment
+Full Moon Harvest Festival,2026-11-01,2026-11-07,Dragon Root,1.0,False,12,12,Standard consumption pattern unaffected by full moon alignment
+Full Moon Harvest Festival,2026-11-01,2026-11-07,Mystic Water,1.0,False,40,40,Standard consumption pattern unaffected by full moon alignment
+Full Moon Harvest Festival,2026-11-01,2026-11-07,Shadow Berries,1.0,False,16,16,Standard consumption pattern unaffected by full moon alignment
+Full Moon Harvest Festival,2026-11-01,2026-11-07,Silver Thorn,1.0,False,14,14,Standard consumption pattern unaffected by full moon alignment
+Full Moon Harvest Festival,2026-11-01,2026-11-07,Unicorn Hair,1.0,False,7,7,Standard consumption pattern unaffected by full moon alignment
+Full Moon Harvest Festival,2026-11-01,2026-11-07,Witch Hazel,1.0,False,22,22,Standard consumption pattern unaffected by full moon alignment
