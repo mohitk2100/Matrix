@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-<title>The Spooky Pantry — Madam Hexley's Potion Pantry</title>
+<title>The Spooky Pantry — Madam Hexley's Potion Pantry • By Team Matrix</title>
 
 <!-- Fonts: Cinzel (Display), Inter (Interface), JetBrains Mono (Numbers) -->
 <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -40,8 +40,25 @@
   color-scheme: dark;
 }
 
+/* 🔥 3.0X MIDNIGHT CURSE MODE THEME SHIFT */
+body.midnight-curse-mode {
+  --bg-main: #1d121c;
+  --bg-sidebar: #160c15;
+  --card-primary: #281423;
+  --card-elevated: #381a30;
+  --surface-selected: #4a1f3f;
+  --accent-turquoise: #E16B62;
+  --border-subtle: rgba(225, 107, 98, 0.22);
+  --border-copper: rgba(225, 107, 98, 0.45);
+  --border-focus: rgba(225, 107, 98, 0.7);
+  background-image: 
+    radial-gradient(circle at 15% 20%, rgba(225, 107, 98, 0.18) 0%, transparent 40%),
+    radial-gradient(circle at 85% 75%, rgba(184, 161, 201, 0.15) 0%, transparent 45%),
+    linear-gradient(180deg, #1d121c 0%, #160c15 100%) !important;
+}
+
 /* Witch Staff Custom Cursor */
-html, body, button, a, input, select, textarea, [role="button"] {
+html, body, button, a, input, select, textarea, [role="button"], .potion-card, .nav-item, .cat-pill {
   cursor: url('data:image/svg+xml,%3Csvg%20xmlns%3D%22http%3A//www.w3.org/2000/svg%22%20width%3D%2238%22%20height%3D%2238%22%20viewBox%3D%220%200%2038%2038%22%3E%20%20%20%3Cdefs%3E%20%20%20%20%20%3CradialGradient%20id%3D%22tealGlow%22%20cx%3D%2250%25%22%20cy%3D%2250%25%22%20r%3D%2250%25%22%3E%20%20%20%20%20%20%20%3Cstop%20offset%3D%220%25%22%20stop-color%3D%22%2365D9C5%22%20stop-opacity%3D%220.95%22/%3E%20%20%20%20%20%20%20%3Cstop%20offset%3D%2245%25%22%20stop-color%3D%22%23397B77%22%20stop-opacity%3D%220.45%22/%3E%20%20%20%20%20%20%20%3Cstop%20offset%3D%22100%25%22%20stop-color%3D%22%2314272A%22%20stop-opacity%3D%220%22/%3E%20%20%20%20%20%3C/radialGradient%3E%20%20%20%20%20%3ClinearGradient%20id%3D%22copperBark%22%20x1%3D%220%25%22%20y1%3D%220%25%22%20x2%3D%22100%25%22%20y2%3D%22100%25%22%3E%20%20%20%20%20%20%20%3Cstop%20offset%3D%220%25%22%20stop-color%3D%22%23D2A36A%22/%3E%20%20%20%20%20%20%20%3Cstop%20offset%3D%2250%25%22%20stop-color%3D%22%232D1F18%22/%3E%20%20%20%20%20%20%20%3Cstop%20offset%3D%22100%25%22%20stop-color%3D%22%23101E21%22/%3E%20%20%20%20%20%3C/linearGradient%3E%20%20%20%3C/defs%3E%20%20%20%3Ccircle%20cx%3D%228%22%20cy%3D%228%22%20r%3D%228%22%20fill%3D%22url%28%23tealGlow%29%22/%3E%20%20%20%3Cpath%20d%3D%22M10%2012%20L33%2035%22%20stroke%3D%22url%28%23copperBark%29%22%20stroke-width%3D%224.2%22%20stroke-linecap%3D%22round%22/%3E%20%20%20%3Cpath%20d%3D%22M12%2014%20Q14%2017%2018%2019%20L31%2033%22%20stroke%3D%22%23101E21%22%20stroke-width%3D%222.0%22%20stroke-linecap%3D%22round%22%20fill%3D%22none%22/%3E%20%20%20%3Cpath%20d%3D%22M14%2016%20L20%2021%22%20stroke%3D%22%23D2A36A%22%20stroke-width%3D%221.2%22%20stroke-linecap%3D%22round%22/%3E%20%20%20%3Cpath%20d%3D%22M5%2011%20Q4%207%207%204%20Q10%203%2012%207%20Q13%2011%209%2013%20Z%22%20fill%3D%22%23204448%22%20stroke%3D%22%23101E21%22%20stroke-width%3D%220.8%22/%3E%20%20%20%3Cellipse%20cx%3D%228.2%22%20cy%3D%227.8%22%20rx%3D%224.5%22%20ry%3D%224.8%22%20fill%3D%22%23397B77%22/%3E%20%20%20%3Cellipse%20cx%3D%227.2%22%20cy%3D%226.5%22%20rx%3D%222.4%22%20ry%3D%222.6%22%20fill%3D%22%2365D9C5%22/%3E%20%20%20%3Ccircle%20cx%3D%226.2%22%20cy%3D%225.5%22%20r%3D%221.2%22%20fill%3D%22%23ffffff%22/%3E%20%20%20%3Ccircle%20cx%3D%224%22%20cy%3D%224%22%20r%3D%221.5%22%20fill%3D%22%2365D9C5%22/%3E%20%3C/svg%3E') 4 4, auto !important;
 }
 
@@ -62,6 +79,27 @@ button { font: inherit; cursor: pointer; }
 .font-display { font-family: 'Cinzel', serif; letter-spacing: 1px; }
 .font-mono { font-family: 'JetBrains Mono', monospace; }
 
+/* CRUCIAL FIX: Completely remove dismissed overlays so clicks on left buttons are NEVER blocked */
+.login-overlay.dismissed {
+  display: none !important;
+}
+
+#cinematicHome.dismissed {
+  display: none !important;
+}
+
+.drawer-backdrop:not(.open) {
+  display: none !important;
+}
+
+.modal-overlay:not(.open) {
+  display: none !important;
+}
+
+.tour-card:not(.show) {
+  display: none !important;
+}
+
 /* ============================================================== */
 /* 🗝️ 0. COVEN AUTHENTICATION GATEWAY (LOGIN PAGE)                 */
 /* ============================================================== */
@@ -71,19 +109,12 @@ button { font: inherit; cursor: pointer; }
   width: 100vw;
   height: 100vh;
   z-index: 700;
-  background: radial-gradient(circle at 50% 40%, rgba(20, 39, 42, 0.92) 0%, rgba(16, 30, 33, 0.98) 100%);
+  background: radial-gradient(circle at 50% 40%, rgba(20, 39, 42, 0.94) 0%, rgba(16, 30, 33, 0.98) 100%);
   backdrop-filter: blur(16px);
   display: flex;
   align-items: center;
   justify-content: center;
   padding: 20px;
-  transition: opacity 0.6s cubic-bezier(0.16, 1, 0.3, 1), transform 0.6s cubic-bezier(0.16, 1, 0.3, 1);
-}
-
-.login-overlay.dismissed {
-  opacity: 0;
-  transform: scale(1.06);
-  pointer-events: none;
 }
 
 .login-card {
@@ -94,7 +125,7 @@ button { font: inherit; cursor: pointer; }
   border-radius: 24px;
   padding: 38px 34px;
   box-shadow: 
-    0 0 50px rgba(101, 217, 197, 0.12),
+    0 0 50px rgba(101, 217, 197, 0.15),
     0 25px 60px rgba(0, 0, 0, 0.7);
   text-align: center;
   position: relative;
@@ -142,8 +173,17 @@ button { font: inherit; cursor: pointer; }
   font-weight: 700;
   color: var(--text-primary);
   letter-spacing: 2px;
-  margin-bottom: 8px;
+  margin-bottom: 6px;
   text-shadow: 0 0 25px rgba(101, 217, 197, 0.4);
+}
+
+.matrix-credit {
+  font-size: 11px;
+  font-weight: 700;
+  color: var(--accent-copper);
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  margin-bottom: 12px;
 }
 
 .login-desc {
@@ -288,13 +328,6 @@ button { font: inherit; cursor: pointer; }
   flex-direction: column;
   align-items: center;
   justify-content: center;
-  transition: opacity 0.8s cubic-bezier(0.16, 1, 0.3, 1), transform 0.8s cubic-bezier(0.16, 1, 0.3, 1);
-}
-
-#cinematicHome.dismissed {
-  opacity: 0;
-  transform: scale(1.08);
-  pointer-events: none;
 }
 
 #webglCanvas {
@@ -354,8 +387,32 @@ button { font: inherit; cursor: pointer; }
   font-weight: 700;
   letter-spacing: 0.15em;
   text-transform: uppercase;
-  margin-bottom: 20px;
+  margin-bottom: 14px;
   box-shadow: 0 0 25px rgba(101, 217, 197, 0.2);
+}
+
+.team-matrix-banner {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 4px 14px;
+  border-radius: 999px;
+  background: rgba(210, 163, 106, 0.12);
+  border: 1px solid var(--border-copper);
+  color: var(--accent-copper);
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  margin-bottom: 18px;
+}
+
+.matrix-dot {
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background: var(--accent-copper);
+  box-shadow: 0 0 8px var(--accent-copper);
 }
 
 .cinematic-title {
@@ -369,7 +426,7 @@ button { font: inherit; cursor: pointer; }
     0 0 35px rgba(101, 217, 197, 0.4),
     0 0 70px rgba(210, 163, 106, 0.25),
     0 10px 30px rgba(0, 0, 0, 0.8);
-  margin-bottom: 16px;
+  margin-bottom: 14px;
 }
 
 .cinematic-subtitle {
@@ -377,7 +434,7 @@ button { font: inherit; cursor: pointer; }
   color: var(--text-secondary);
   font-weight: 400;
   letter-spacing: 0.05em;
-  margin-bottom: 36px;
+  margin-bottom: 34px;
   max-width: 580px;
   line-height: 1.6;
   text-shadow: 0 2px 10px rgba(0,0,0,0.8);
@@ -412,7 +469,7 @@ button { font: inherit; cursor: pointer; }
 }
 
 /* ============================================================== */
-/* 🧪 2. MAIN DASHBOARD WORKSPACE (ENCHANTED TEAL)                 */
+/* 🧪 2. MAIN DASHBOARD WORKSPACE                                 */
 /* ============================================================== */
 #dashboardApp {
   min-height: 100vh;
@@ -421,22 +478,22 @@ button { font: inherit; cursor: pointer; }
   background: var(--bg-main);
 }
 
-/* Midnight Curse Alert Banner */
+/* Midnight Curse Dramatic Banner */
 .curse-banner {
   display: none;
-  background: linear-gradient(90deg, #4c1d42 0%, #6b213f 50%, #4c1d42 100%);
+  background: linear-gradient(90deg, #4c1d42 0%, #7f1d1d 50%, #4c1d42 100%);
   border-bottom: 1px solid var(--accent-critical);
-  padding: 10px 24px;
-  font-size: 12px;
+  padding: 12px 24px;
+  font-size: 13px;
   font-weight: 700;
-  letter-spacing: 0.1em;
-  color: #ffd6df;
+  letter-spacing: 0.08em;
+  color: #ffe4e6;
   text-align: center;
   align-items: center;
   justify-content: center;
-  gap: 12px;
-  box-shadow: 0 0 25px rgba(225, 107, 98, 0.3);
-  animation: cursePulse 3s ease-in-out infinite;
+  gap: 14px;
+  box-shadow: 0 0 35px rgba(225, 107, 98, 0.45);
+  animation: cursePulse 2.5s ease-in-out infinite;
 }
 
 .curse-banner.active {
@@ -444,8 +501,41 @@ button { font: inherit; cursor: pointer; }
 }
 
 @keyframes cursePulse {
-  0%, 100% { opacity: 0.95; }
-  50% { opacity: 0.75; }
+  0%, 100% { opacity: 1; filter: brightness(1.0); }
+  50% { opacity: 0.85; filter: brightness(1.2); }
+}
+
+/* Curse Simulation Deck */
+.curse-simulation-deck {
+  display: none;
+  background: rgba(40, 20, 35, 0.95);
+  border: 1px solid var(--accent-critical);
+  border-radius: 18px;
+  padding: 22px;
+  margin-bottom: 24px;
+  box-shadow: 0 0 30px rgba(225, 107, 98, 0.25);
+  animation: fadeIn 0.3s ease;
+}
+
+.curse-simulation-deck.active {
+  display: block;
+}
+
+.curse-deck-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+  gap: 14px;
+  margin-top: 14px;
+}
+
+.curse-sim-card {
+  background: #1d0f19;
+  border: 1px solid rgba(225, 107, 98, 0.35);
+  border-radius: 12px;
+  padding: 14px;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
 }
 
 .dashboard-layout {
@@ -500,9 +590,10 @@ button { font: inherit; cursor: pointer; }
 
 .brand-sub {
   font-size: 10px;
-  color: var(--text-secondary);
+  color: var(--accent-copper);
   letter-spacing: 0.05em;
   text-transform: uppercase;
+  font-weight: 600;
 }
 
 .nav-groups {
@@ -540,7 +631,7 @@ button { font: inherit; cursor: pointer; }
 }
 
 .nav-item:hover {
-  background: rgba(101, 217, 197, 0.06);
+  background: rgba(101, 217, 197, 0.08);
   color: var(--text-primary);
   border-color: var(--border-subtle);
 }
@@ -559,7 +650,7 @@ button { font: inherit; cursor: pointer; }
   flex-shrink: 0;
 }
 
-/* Main Content Area */
+/* Content Area */
 .content-area {
   flex: 1;
   display: flex;
@@ -572,7 +663,7 @@ button { font: inherit; cursor: pointer; }
 .top-bar {
   padding: 18px 32px;
   border-bottom: 1px solid var(--border-subtle);
-  background: rgba(16, 30, 33, 0.6);
+  background: rgba(16, 30, 33, 0.7);
   backdrop-filter: blur(12px);
   display: flex;
   align-items: center;
@@ -646,8 +737,8 @@ button { font: inherit; cursor: pointer; }
 }
 
 .pill-btn.curse {
-  background: rgba(225, 107, 98, 0.12);
-  border-color: rgba(225, 107, 98, 0.35);
+  background: rgba(225, 107, 98, 0.14);
+  border-color: rgba(225, 107, 98, 0.4);
   color: #fca5a5;
 }
 
@@ -655,7 +746,8 @@ button { font: inherit; cursor: pointer; }
   background: linear-gradient(135deg, #991b1b 0%, #dc2626 100%);
   color: #fff;
   border-color: #ef4444;
-  box-shadow: 0 0 25px rgba(239, 68, 68, 0.5);
+  box-shadow: 0 0 25px rgba(239, 68, 68, 0.6);
+  animation: pulse 2s infinite;
 }
 
 /* Main Views Wrapper */
@@ -893,12 +985,12 @@ button { font: inherit; cursor: pointer; }
 }
 
 .cat-pill {
-  padding: 6px 14px;
+  padding: 7px 16px;
   border-radius: 999px;
-  font-size: 11px;
+  font-size: 12px;
   font-weight: 600;
   color: var(--text-secondary);
-  background: rgba(16, 30, 33, 0.6);
+  background: rgba(16, 30, 33, 0.85);
   border: 1px solid var(--border-subtle);
   transition: all 0.2s ease;
 }
@@ -909,9 +1001,10 @@ button { font: inherit; cursor: pointer; }
 }
 
 .cat-pill.active {
-  background: rgba(210, 163, 106, 0.15);
+  background: rgba(210, 163, 106, 0.18);
   border-color: var(--border-copper);
   color: var(--accent-copper);
+  box-shadow: 0 0 10px rgba(210, 163, 106, 0.25);
 }
 
 /* 3D Potion Shelf Grid */
@@ -962,7 +1055,12 @@ button { font: inherit; cursor: pointer; }
     0 14px 35px rgba(0, 0, 0, 0.6);
 }
 
-/* The 3D Potion Bottle Visual (SVG & Liquid Physics) */
+.potion-card.cursed-surge {
+  border-color: var(--accent-critical) !important;
+  box-shadow: 0 0 25px rgba(225, 107, 98, 0.5) !important;
+  animation: pulse 2s infinite;
+}
+
 .bottle-visual-wrap {
   width: 110px;
   height: 140px;
@@ -1057,30 +1155,162 @@ button { font: inherit; cursor: pointer; }
   color: var(--accent-purple);
 }
 
-/* Apothecary Drawer Slide-out Panel */
+/* ============================================================== */
+/* 📜 4. CREATIVE VISUAL PAGES                                    */
+/* ============================================================== */
+
+/* Alchemical Parchment Receipt Ledger */
+.ledger-stat-cards {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+  gap: 16px;
+  margin-bottom: 24px;
+}
+
+.ledger-receipt-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 14px 18px;
+  background: #101E21;
+  border: 1px solid var(--border-subtle);
+  border-radius: 12px;
+  margin-bottom: 10px;
+  transition: all 0.2s ease;
+}
+
+.ledger-receipt-row:hover {
+  border-color: var(--border-copper);
+  transform: translateX(4px);
+}
+
+.wax-seal-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 4px 10px;
+  border-radius: 999px;
+  font-size: 10px;
+  font-weight: 700;
+  color: var(--accent-copper);
+  background: rgba(210, 163, 106, 0.12);
+  border: 1px solid var(--border-copper);
+}
+
+.curse-sale-stamp {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  padding: 2px 8px;
+  border-radius: 4px;
+  font-size: 9px;
+  font-weight: 800;
+  color: #fff;
+  background: #dc2626;
+  margin-left: 8px;
+}
+
+/* Neural Radar Sonar Visualizer */
+.radar-sonar-card {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 30px;
+  background: #101E21;
+  border-radius: 18px;
+  border: 1px solid var(--border-subtle);
+  position: relative;
+  overflow: hidden;
+  margin-bottom: 24px;
+}
+
+.radar-sweep-beam {
+  width: 220px;
+  height: 220px;
+  border-radius: 50%;
+  border: 2px solid var(--accent-turquoise);
+  position: relative;
+  box-shadow: 0 0 25px rgba(101, 217, 197, 0.2);
+}
+
+.radar-sweep-beam::after {
+  content: '';
+  position: absolute;
+  top: 0; left: 0; right: 0; bottom: 0;
+  border-radius: 50%;
+  background: conic-gradient(from 0deg, rgba(101, 217, 197, 0.4) 0deg, transparent 60deg, transparent 360deg);
+  animation: radarSpin 4s linear infinite;
+}
+
+@keyframes radarSpin {
+  from { transform: rotate(0deg); }
+  to { transform: rotate(360deg); }
+}
+
+/* Table Card */
+.table-card {
+  background: var(--card-primary);
+  border: 1px solid var(--border-subtle);
+  border-radius: 18px;
+  overflow: hidden;
+}
+
+.data-table {
+  width: 100%;
+  border-collapse: collapse;
+  text-align: left;
+  font-size: 13px;
+}
+
+.data-table th {
+  background: #101E21;
+  padding: 14px 18px;
+  font-size: 11px;
+  font-weight: 700;
+  color: var(--accent-copper);
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  border-bottom: 1px solid var(--border-subtle);
+}
+
+.data-table td {
+  padding: 14px 18px;
+  border-bottom: 1px solid var(--border-subtle);
+  color: var(--text-primary);
+}
+
+.data-table tbody tr:hover {
+  background: rgba(101, 217, 197, 0.04);
+}
+
+.data-table tbody tr:last-child td {
+  border-bottom: none;
+}
+
+.text-btn {
+  background: none;
+  border: none;
+  font-size: 12px;
+  font-weight: 600;
+  color: var(--accent-turquoise);
+  transition: opacity 0.2s ease;
+}
+
+.text-btn:hover { opacity: 0.75; }
+
+/* Apothecary Drawer Slide-out */
 .drawer-backdrop {
   position: fixed;
   inset: 0;
-  background: rgba(0,0,0,0.6);
+  background: rgba(0,0,0,0.65);
   backdrop-filter: blur(6px);
   z-index: 550;
-  opacity: 0;
-  pointer-events: none;
-  transition: opacity 0.3s ease;
-}
-
-.drawer-backdrop.open {
-  opacity: 1;
-  pointer-events: auto;
 }
 
 .apothecary-drawer {
   position: fixed;
-  top: 0;
-  right: 0;
-  bottom: 0;
-  width: 100%;
-  max-width: 440px;
+  top: 0; right: 0; bottom: 0;
+  width: 100%; max-width: 440px;
   background: var(--card-primary);
   border-left: 1px solid var(--border-copper);
   z-index: 600;
@@ -1113,7 +1343,6 @@ button { font: inherit; cursor: pointer; }
   display: flex;
   align-items: center;
   justify-content: center;
-  transition: all 0.2s ease;
 }
 
 .drawer-close-btn:hover {
@@ -1130,7 +1359,6 @@ button { font: inherit; cursor: pointer; }
   border-radius: 18px;
   border: 1px solid var(--border-subtle);
   margin-bottom: 24px;
-  position: relative;
 }
 
 .drawer-stat-row {
@@ -1188,60 +1416,7 @@ button { font: inherit; cursor: pointer; }
   color: #fff;
 }
 
-/* ============================================================== */
-/* 📊 4. SAAS CATALOG TABLE & DATA GRIDS                          */
-/* ============================================================== */
-.table-card {
-  background: var(--card-primary);
-  border: 1px solid var(--border-subtle);
-  border-radius: 18px;
-  overflow: hidden;
-}
-
-.data-table {
-  width: 100%;
-  border-collapse: collapse;
-  text-align: left;
-  font-size: 13px;
-}
-
-.data-table th {
-  background: #101E21;
-  padding: 14px 18px;
-  font-size: 11px;
-  font-weight: 700;
-  color: var(--accent-copper);
-  letter-spacing: 0.08em;
-  text-transform: uppercase;
-  border-bottom: 1px solid var(--border-subtle);
-}
-
-.data-table td {
-  padding: 14px 18px;
-  border-bottom: 1px solid var(--border-subtle);
-  color: var(--text-primary);
-}
-
-.data-table tbody tr:hover {
-  background: rgba(101, 217, 197, 0.04);
-}
-
-.data-table tbody tr:last-child td {
-  border-bottom: none;
-}
-
-.text-btn {
-  background: none;
-  border: none;
-  font-size: 12px;
-  font-weight: 600;
-  color: var(--accent-turquoise);
-  transition: opacity 0.2s ease;
-}
-
-.text-btn:hover { opacity: 0.75; }
-
-/* Toast Notifications */
+/* Toast */
 .toast {
   position: fixed;
   bottom: 24px;
@@ -1270,21 +1445,13 @@ button { font: inherit; cursor: pointer; }
 .modal-overlay {
   position: fixed;
   inset: 0;
-  background: rgba(0,0,0,0.7);
+  background: rgba(0,0,0,0.75);
   backdrop-filter: blur(8px);
   z-index: 800;
   display: flex;
   align-items: center;
   justify-content: center;
   padding: 20px;
-  opacity: 0;
-  pointer-events: none;
-  transition: all 0.25s ease;
-}
-
-.modal-overlay.open {
-  opacity: 1;
-  pointer-events: auto;
 }
 
 .modal-box {
@@ -1344,7 +1511,7 @@ button { font: inherit; cursor: pointer; }
   position: fixed;
   bottom: 30px;
   left: 50%;
-  transform: translateX(-50%) translateY(30px);
+  transform: translateX(-50%);
   background: var(--card-primary);
   border: 1px solid var(--border-focus);
   border-radius: 18px;
@@ -1353,15 +1520,6 @@ button { font: inherit; cursor: pointer; }
   width: 90%;
   z-index: 900;
   box-shadow: 0 15px 50px rgba(0,0,0,0.8);
-  opacity: 0;
-  pointer-events: none;
-  transition: all 0.3s ease;
-}
-
-.tour-card.show {
-  opacity: 1;
-  transform: translateX(-50%) translateY(0);
-  pointer-events: auto;
 }
 
 .tour-steps-dots {
@@ -1424,6 +1582,7 @@ button { font: inherit; cursor: pointer; }
     </div>
 
     <h2 class="font-display login-title">THE SPOOKY PANTRY</h2>
+    <div class="matrix-credit">By Team Matrix • Hack-O-Lantern 2026</div>
     <p class="login-desc">Enter your apothecary credentials to summon the AI demand oracle and unlock secret ingredient stock.</p>
 
     <form id="loginForm" onsubmit="handleCovenLogin(event)">
@@ -1448,7 +1607,7 @@ button { font: inherit; cursor: pointer; }
           <input type="checkbox" id="rememberSession" checked />
           <span>Remember Grimoire Session</span>
         </label>
-        <span class="role-pill">✦ Master Potioneer</span>
+        <span class="role-pill">✦ By Team Matrix</span>
       </div>
 
       <button type="submit" class="login-submit-btn" id="loginSubmitBtn">
@@ -1462,7 +1621,7 @@ button { font: inherit; cursor: pointer; }
     </form>
 
     <div class="login-footer">
-      <span>MongoDB Atlas Connected • Hexley-001 Terminal</span>
+      <span>MongoDB Atlas Connected • Created by Team Matrix</span>
     </div>
   </div>
 </div>
@@ -1482,6 +1641,11 @@ button { font: inherit; cursor: pointer; }
     </div>
     
     <h1 class="cinematic-title">THE SPOOKY PANTRY</h1>
+
+    <div class="team-matrix-banner">
+      <span class="matrix-dot"></span>
+      <span>By Team Matrix</span>
+    </div>
     
     <p class="cinematic-subtitle">
       Step into the enchanted 3D potion laboratory. Track rare alchemical reagents, forecast coven demand with neural prophecies, and survive seasonal curse surges.
@@ -1503,9 +1667,9 @@ button { font: inherit; cursor: pointer; }
 
   <!-- Midnight Curse Active Alert Banner -->
   <div id="curseBanner" class="curse-banner">
-    <i data-lucide="flame" style="width:16px;height:16px;"></i>
-    <span>MIDNIGHT CURSE ACTIVE — 3.0× DEMAND SURGE DETECTED (Moonflower, Phoenix Feather, Enchanted Mushroom)</span>
-    <button class="pill-btn" onclick="toggleCurse()" style="padding:3px 10px;font-size:10px;background:#ef4444;color:#fff;">Lift Curse</button>
+    <i data-lucide="flame" style="width:18px;height:18px;"></i>
+    <span>✦ MIDNIGHT CURSE MODE UNLEASHED — 3.0× DEMAND MULTIPLIER ACTIVE (Moonflower, Phoenix Feather, Enchanted Mushroom)</span>
+    <button class="pill-btn" onclick="toggleCurse()" style="padding:4px 12px;font-size:11px;background:#ef4444;color:#fff;">Lift Curse</button>
   </div>
 
   <div class="dashboard-layout">
@@ -1518,7 +1682,7 @@ button { font: inherit; cursor: pointer; }
         </div>
         <div>
           <div class="brand-title">THE SPOOKY PANTRY</div>
-          <div class="brand-sub">Madam Hexley • Potion Pantry</div>
+          <div class="brand-sub">Madam Hexley • By Team Matrix</div>
         </div>
       </div>
 
@@ -1589,7 +1753,7 @@ button { font: inherit; cursor: pointer; }
         <div class="top-bar-left">
           <span class="terminal-pill">
             <span style="display:inline-block;width:6px;height:6px;border-radius:50%;background:var(--accent-turquoise);box-shadow:0 0 6px var(--accent-turquoise);"></span>
-            <span>HEXLEY-001 • MIDNIGHT LABORATORY</span>
+            <span>HEXLEY-001 • BY TEAM MATRIX</span>
           </span>
         </div>
 
@@ -1612,11 +1776,32 @@ button { font: inherit; cursor: pointer; }
       <!-- View Container -->
       <div class="view-container">
 
+        <!-- 🔥 MIDNIGHT CURSE IMPACT SIMULATION DECK -->
+        <div id="curseSimDeck" class="curse-simulation-deck">
+          <div style="display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:12px;">
+            <div>
+              <div style="font-family:'Cinzel',serif;font-size:16px;font-weight:700;color:#fca5a5;display:flex;align-items:center;gap:8px;">
+                <i data-lucide="flame"></i>
+                <span>Emergency Curse Impact Radar — 3.0× Multiplier Simulation</span>
+              </div>
+              <div style="font-size:12px;color:var(--text-secondary);margin-top:4px;">Rogue witchcraft covens are consuming volatile reagents at triple speed. Critical depletion countdown active.</div>
+            </div>
+            <button class="pill-btn" onclick="emergencyWardRestock()" style="background:#dc2626;color:#fff;border-color:#ef4444;box-shadow:0 0 20px rgba(239,68,68,0.5);">
+              <i data-lucide="shield"></i>
+              <span>Cast Emergency Ward (+50 All Cursed)</span>
+            </button>
+          </div>
+
+          <div class="curse-deck-grid" id="curseDeckGrid">
+            <!-- Dynamically populated in updateCurseUI -->
+          </div>
+        </div>
+
         <!-- VIEW: OVERVIEW -->
         <section id="view-overview" class="view-panel" style="display:block;">
           <div class="page-head">
             <div>
-              <div class="eyebrow">Apothecary Command Center</div>
+              <div class="eyebrow">Apothecary Command Center • Team Matrix</div>
               <h1>Midnight Laboratory Overview</h1>
               <p>Real-time neural tracking of Madam Hexley's magical inventory, coven consumption rates, and automated restocking signals.</p>
             </div>
@@ -1674,9 +1859,9 @@ button { font: inherit; cursor: pointer; }
                   <div class="panel-card-desc">Machine learning forecast incorporating Full Moon surges and weekend gatherings.</div>
                 </div>
                 <div style="display:flex;gap:6px;">
-                  <button class="cat-pill active" onclick="setTimeframe(7)">7D</button>
-                  <button class="cat-pill" onclick="setTimeframe(14)">14D</button>
-                  <button class="cat-pill" onclick="setTimeframe(30)">30D</button>
+                  <button class="cat-pill active" id="tf7Btn" onclick="setTimeframe(7)">7D</button>
+                  <button class="cat-pill" id="tf14Btn" onclick="setTimeframe(14)">14D</button>
+                  <button class="cat-pill" id="tf30Btn" onclick="setTimeframe(30)">30D</button>
                 </div>
               </div>
               <div style="height:270px;position:relative;">
@@ -1687,9 +1872,7 @@ button { font: inherit; cursor: pointer; }
             <div class="panel-card">
               <div class="panel-card-title">Apothecary Health & Alerts</div>
               <div class="panel-card-desc">Oracle runout signals and recommended orders.</div>
-              <div id="overviewAlertsList" style="display:flex;flex-direction:column;gap:10px;">
-                <!-- Injected via renderOverview() -->
-              </div>
+              <div id="overviewAlertsList" style="display:flex;flex-direction:column;gap:10px;"></div>
             </div>
           </div>
         </section>
@@ -1734,17 +1917,16 @@ button { font: inherit; cursor: pointer; }
               <button class="cat-pill" onclick="filterInvCategory('Roots & Bark')">Roots & Bark</button>
               <button class="cat-pill" onclick="filterInvCategory('Fungi & Spores')">Fungi & Spores</button>
               <button class="cat-pill" onclick="filterInvCategory('Minerals & Gems')">Minerals & Gems</button>
+              <button class="cat-pill" onclick="filterInvCategory('Creature Parts')">Creature Parts</button>
             </div>
           </div>
 
           <!-- 3D Potion Shelf Grid Container -->
           <div id="shelfViewContainer">
-            <div class="potion-shelf-grid" id="potionShelfGrid">
-              <!-- Dynamically populated via renderPotionShelf() -->
-            </div>
+            <div class="potion-shelf-grid" id="potionShelfGrid"></div>
           </div>
 
-          <!-- Table Mode Container (Hidden by default) -->
+          <!-- Table Mode Container -->
           <div id="tableViewContainer" style="display:none;">
             <div class="table-card">
               <table class="data-table">
@@ -1759,52 +1941,110 @@ button { font: inherit; cursor: pointer; }
                     <th style="text-align:right;">Actions</th>
                   </tr>
                 </thead>
-                <tbody id="inventoryTableBody">
-                  <!-- Dynamically populated via renderInventoryTable() -->
-                </tbody>
+                <tbody id="inventoryTableBody"></tbody>
               </table>
             </div>
           </div>
         </section>
 
-        <!-- VIEW: SALES LEDGER -->
+        <!-- VIEW: SALES LEDGER (CREATIVE PARCHMENT & METRICS) -->
         <section id="view-sales" class="view-panel" style="display:none;">
           <div class="page-head">
             <div>
-              <div class="eyebrow">Transaction Records</div>
-              <h1>Sales Ledger</h1>
-              <p>Every purchase atomically decrements stock in MongoDB with full cryptographic audit tracking.</p>
+              <div class="eyebrow">Cryptographic Alchemical Receipts</div>
+              <h1>Sales Ledger & Audit Trail</h1>
+              <p>Every purchase atomically decrements stock in MongoDB Atlas with cryptographic audit stamps and coven verification tags.</p>
             </div>
             <button class="pill-btn copper" onclick="openSaleModal()">＋ Log Customer Sale</button>
           </div>
 
-          <div class="table-card">
-            <table class="data-table">
-              <thead>
-                <tr>
-                  <th>Date</th>
-                  <th>Reagent Sold</th>
-                  <th>Quantity</th>
-                  <th>Terminal ID</th>
-                  <th>Audit Status</th>
-                </tr>
-              </thead>
-              <tbody id="salesTableBody"></tbody>
-            </table>
+          <!-- Velocity Stat Cards -->
+          <div class="ledger-stat-cards">
+            <div class="kpi-card">
+              <div class="kpi-card-header">
+                <span class="kpi-card-label">Today's Consumption</span>
+                <div class="kpi-card-icon"><i data-lucide="zap"></i></div>
+              </div>
+              <div class="kpi-card-value font-mono" id="todayVolumeCount">246</div>
+              <div class="kpi-card-sub">Units dispensed across all covens</div>
+            </div>
+
+            <div class="kpi-card">
+              <div class="kpi-card-header">
+                <span class="kpi-card-label">Peak Coven Velocity</span>
+                <div class="kpi-card-icon"><i data-lucide="clock"></i></div>
+              </div>
+              <div class="kpi-card-value font-mono">00:00 - 02:00</div>
+              <div class="kpi-card-sub">Midnight gathering surge hours</div>
+            </div>
+
+            <div class="kpi-card">
+              <div class="kpi-card-header">
+                <span class="kpi-card-label">Fastest Moving Reagent</span>
+                <div class="kpi-card-icon"><i data-lucide="trending-up"></i></div>
+              </div>
+              <div class="kpi-card-value font-mono" style="font-size:22px;color:var(--accent-turquoise);" id="fastestReagentLabel">Moonflower</div>
+              <div class="kpi-card-sub">27 units dispensed in last 24h</div>
+            </div>
+          </div>
+
+          <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:14px;gap:12px;flex-wrap:wrap;">
+            <div class="search-input-wrap" style="max-width:350px;">
+              <i data-lucide="search" style="width:16px;height:16px;"></i>
+              <input type="text" id="salesSearchInput" placeholder="Filter ledger by reagent..." oninput="renderSales()" />
+            </div>
+            <span class="wax-seal-badge">
+              <i data-lucide="shield-check" style="width:14px;height:14px;"></i>
+              <span>100% Cryptographically Audited</span>
+            </span>
+          </div>
+
+          <div id="salesLedgerList">
+            <!-- Dynamically populated via renderSales() -->
           </div>
         </section>
 
-        <!-- VIEW: DEMAND FORECAST -->
+        <!-- VIEW: DEMAND FORECAST (VISUAL PROPHETS) -->
         <section id="view-forecast" class="view-panel" style="display:none;">
           <div class="page-head">
             <div>
-              <div class="eyebrow">Machine Learning Prophecy</div>
+              <div class="eyebrow">Neural Alchemical Engine</div>
               <h1>Demand Prophecy (14-Day Curve)</h1>
-              <p>Predicts daily consumption with weekend coven gatherings and Full Moon multipliers.</p>
+              <p>Predicts daily consumption with weekend coven gatherings, seasonal Full Moon multipliers, and curse scenarios.</p>
             </div>
             <div style="display:flex;align-items:center;gap:10px;">
               <label style="font-size:12px;color:var(--text-secondary);">Select Reagent:</label>
-              <select id="forecastProductSelect" onchange="renderForecastChart()" style="padding:6px 12px;border-radius:8px;background:#101E21;border:1px solid var(--border-subtle);color:var(--text-primary);"></select>
+              <select id="forecastProductSelect" onchange="renderForecastChart()" style="padding:8px 14px;border-radius:10px;background:#101E21;border:1px solid var(--border-subtle);color:var(--text-primary);"></select>
+            </div>
+          </div>
+
+          <!-- Forecast Intelligence Cards -->
+          <div class="ledger-stat-cards">
+            <div class="kpi-card">
+              <div class="kpi-card-header">
+                <span class="kpi-card-label">Predicted 14D Demand</span>
+                <div class="kpi-card-icon"><i data-lucide="bar-chart-2"></i></div>
+              </div>
+              <div class="kpi-card-value font-mono" id="prophecy14dVal">182 units</div>
+              <div class="kpi-card-sub">Expected coven consumption</div>
+            </div>
+
+            <div class="kpi-card">
+              <div class="kpi-card-header">
+                <span class="kpi-card-label">Runout Projection</span>
+                <div class="kpi-card-icon"><i data-lucide="calendar"></i></div>
+              </div>
+              <div class="kpi-card-value font-mono" id="prophecyDepleteDate" style="color:var(--accent-warning);font-size:22px;">Nov 08, 2026</div>
+              <div class="kpi-card-sub">Safe stock depletion horizon</div>
+            </div>
+
+            <div class="kpi-card">
+              <div class="kpi-card-header">
+                <span class="kpi-card-label">Full Moon Multiplier</span>
+                <div class="kpi-card-icon"><i data-lucide="moon"></i></div>
+              </div>
+              <div class="kpi-card-value font-mono" id="prophecyCurseFactor">1.8× Surge</div>
+              <div class="kpi-card-sub">Weekend coven gather effect</div>
             </div>
           </div>
 
@@ -1815,15 +2055,15 @@ button { font: inherit; cursor: pointer; }
           </div>
         </section>
 
-        <!-- VIEW: RESTOCK SPELLS -->
+        <!-- VIEW: RESTOCK SPELLS (AUTOMATED CAULDRON) -->
         <section id="view-restock" class="view-panel" style="display:none;">
           <div class="page-head">
             <div>
-              <div class="eyebrow">Automated Replenishment</div>
-              <h1>Restock Recommendations</h1>
-              <p>Reorder points triggered when stock falls below safety levels. Lead times estimated from guild suppliers.</p>
+              <div class="eyebrow">Automated Replenishment Cauldron</div>
+              <h1>Restock Recommendations & Lead Times</h1>
+              <p>Reorder points triggered when stock falls below safety levels. Lead times estimated from licensed guild suppliers.</p>
             </div>
-            <button class="pill-btn turquoise" onclick="batchOrderAll()">Order All Critical (+Restock)</button>
+            <button class="pill-btn turquoise" onclick="batchOrderAll()">Batch Restock All Critical (+50)</button>
           </div>
 
           <div class="table-card">
@@ -1831,8 +2071,8 @@ button { font: inherit; cursor: pointer; }
               <thead>
                 <tr>
                   <th>Reagent</th>
-                  <th>Stock vs Safety</th>
-                  <th>Suggested Order</th>
+                  <th>Stock vs Safety Buffer</th>
+                  <th>Suggested Spell Order</th>
                   <th>Guild Supplier</th>
                   <th>Lead Time</th>
                   <th style="text-align:right;">Action</th>
@@ -1843,20 +2083,30 @@ button { font: inherit; cursor: pointer; }
           </div>
         </section>
 
-        <!-- VIEW: ANOMALY RADAR -->
+        <!-- VIEW: ANOMALY RADAR (SONAR SWEEP & METRICS) -->
         <section id="view-anomaly" class="view-panel" style="display:none;">
           <div class="page-head">
             <div>
-              <div class="eyebrow">Outbreak & Anomaly Detection</div>
+              <div class="eyebrow">Rogue Coven Outbreak Scanner</div>
               <h1>Consumption Anomaly Radar</h1>
               <p>Statistical z-score outlier detection identifying sudden demand spikes from rogue witchcraft covens.</p>
+            </div>
+          </div>
+
+          <!-- Pulsing Sonar Sweep Visualizer -->
+          <div class="radar-sonar-card">
+            <div class="radar-sweep-beam"></div>
+            <div style="position:absolute;text-align:center;pointer-events:none;">
+              <i data-lucide="shield-alert" style="width:32px;height:32px;color:var(--accent-turquoise);margin-bottom:6px;"></i>
+              <div style="font-family:'Cinzel',serif;font-weight:700;font-size:14px;color:#fff;">RADAR SWEEP ACTIVE</div>
+              <div style="font-size:11px;color:var(--text-secondary);">Scanning 10 Guild Terminals</div>
             </div>
           </div>
 
           <div class="kpi-grid">
             <div class="kpi-card">
               <div class="kpi-card-header">
-                <span class="kpi-card-label">Precision</span>
+                <span class="kpi-card-label">Radar Precision</span>
                 <div class="kpi-card-icon"><i data-lucide="check-circle"></i></div>
               </div>
               <div class="kpi-card-value font-mono">1.00</div>
@@ -1864,7 +2114,7 @@ button { font: inherit; cursor: pointer; }
             </div>
             <div class="kpi-card">
               <div class="kpi-card-header">
-                <span class="kpi-card-label">Recall</span>
+                <span class="kpi-card-label">Spike Recall</span>
                 <div class="kpi-card-icon"><i data-lucide="target"></i></div>
               </div>
               <div class="kpi-card-value font-mono">1.00</div>
@@ -1872,11 +2122,11 @@ button { font: inherit; cursor: pointer; }
             </div>
             <div class="kpi-card">
               <div class="kpi-card-header">
-                <span class="kpi-card-label">F1 Score</span>
+                <span class="kpi-card-label">Harmonic F1 Score</span>
                 <div class="kpi-card-icon"><i data-lucide="award"></i></div>
               </div>
               <div class="kpi-card-value font-mono">1.00</div>
-              <div class="kpi-card-sub">Optimal harmonic balance</div>
+              <div class="kpi-card-sub">Optimal statistical balance</div>
             </div>
           </div>
 
@@ -1901,7 +2151,7 @@ button { font: inherit; cursor: pointer; }
           <div class="page-head">
             <div>
               <div class="eyebrow">Crystal Ball Intelligence</div>
-              <h1>Apothecary Analytics</h1>
+              <h1>Analytics & Alchemical Grimoire</h1>
               <p>Reagent category distribution, high-velocity ingredients, and stock health diagnostics.</p>
             </div>
           </div>
@@ -1997,6 +2247,7 @@ button { font: inherit; cursor: pointer; }
             </div>
           </div>
           <div class="panel-card" style="line-height:1.7;color:var(--text-secondary);font-size:14px;">
+            <div class="matrix-credit" style="font-size:13px;margin-bottom:14px;">PROUDLY CRAFTED BY TEAM MATRIX • HACK-O-LANTERN 2026</div>
             <h3 style="font-family:'Cinzel',serif;color:var(--accent-turquoise);font-size:18px;margin-bottom:12px;">Problem Statement</h3>
             <p style="margin-bottom:14px;">Madam Hexley operates the realm's premier Halloween potion apothecary. During seasonal coven gatherings, rogue demand spikes for vital reagents—such as Mandrake Root, Bat Wings, and Phoenix Feathers—threaten to deplete critical reserves without warning.</p>
             
@@ -2130,7 +2381,7 @@ button { font: inherit; cursor: pointer; }
   <div class="tour-steps-dots" id="tourProgress"></div>
   <div style="font-size:10px;font-weight:700;color:var(--accent-copper);letter-spacing:0.1em;text-transform:uppercase;" id="tourStep">STEP 1 OF 6</div>
   <h4 style="font-family:'Cinzel',serif;font-size:16px;color:var(--text-primary);margin:6px 0 8px;" id="tourTitle">Welcome to The Midnight Laboratory</h4>
-  <p style="font-size:12px;color:var(--text-secondary);line-height:1.5;margin-bottom:16px;" id="tourText">Here you can monitor live stock levels, AI consumption prophecies, and trigger automated restocking spells.</p>
+  <p style="font-size:12px;color:var(--text-secondary);line-height:1.5;margin-bottom:16px;" id="tourText">Crafted by Team Matrix for Madam Hexley. Monitor live stock levels, AI prophecies, and trigger automated restocking spells.</p>
   <div style="display:flex;justify-content:space-between;align-items:center;">
     <button class="text-btn" onclick="closeTour()" style="color:var(--text-secondary);">Skip Tour</button>
     <button class="pill-btn turquoise" id="tourNext" onclick="nextTour()">Next →</button>
@@ -2161,21 +2412,16 @@ const defaultIngredients = [
 ];
 
 const defaultSales = [
-  { date: '2026-10-31', store_id: 'HEXLEY-001', product_name: 'Moonflower', quantity_sold: 27 },
-  { date: '2026-10-31', store_id: 'HEXLEY-001', product_name: 'Enchanted Mushroom', quantity_sold: 41 },
-  { date: '2026-10-31', store_id: 'HEXLEY-001', product_name: 'Mystic Water', quantity_sold: 65 },
-  { date: '2026-10-31', store_id: 'HEXLEY-001', product_name: 'Dragon Root', quantity_sold: 21 },
-  { date: '2026-10-31', store_id: 'HEXLEY-001', product_name: 'Phoenix Feather', quantity_sold: 14 },
-  { date: '2026-10-31', store_id: 'HEXLEY-001', product_name: 'Bat Wings', quantity_sold: 38 },
-  { date: '2026-10-31', store_id: 'HEXLEY-001', product_name: 'Mandrake Root', quantity_sold: 19 },
-  { date: '2026-10-31', store_id: 'HEXLEY-001', product_name: 'Crystal Dust', quantity_sold: 33 },
-  { date: '2026-10-31', store_id: 'HEXLEY-001', product_name: 'Shadow Essence', quantity_sold: 29 },
-  { date: '2026-10-31', store_id: 'HEXLEY-001', product_name: 'Nightshade Extract', quantity_sold: 46 },
-  { date: '2026-10-30', store_id: 'HEXLEY-001', product_name: 'Moonflower', quantity_sold: 22 },
-  { date: '2026-10-30', store_id: 'HEXLEY-001', product_name: 'Enchanted Mushroom', quantity_sold: 35 },
-  { date: '2026-10-30', store_id: 'HEXLEY-001', product_name: 'Phoenix Feather', quantity_sold: 11 },
-  { date: '2026-10-30', store_id: 'HEXLEY-001', product_name: 'Mystic Water', quantity_sold: 58 },
-  { date: '2026-10-30', store_id: 'HEXLEY-001', product_name: 'Dragon Root', quantity_sold: 18 }
+  { date: '2026-11-01', store_id: 'HEXLEY-001', product_name: 'Moonflower', quantity_sold: 27, coven: 'Moonlit Sisterhood' },
+  { date: '2026-11-01', store_id: 'HEXLEY-001', product_name: 'Enchanted Mushroom', quantity_sold: 41, coven: 'Shadow Coven' },
+  { date: '2026-11-01', store_id: 'HEXLEY-001', product_name: 'Mystic Water', quantity_sold: 65, coven: 'Abyssal Oracles' },
+  { date: '2026-11-01', store_id: 'HEXLEY-001', product_name: 'Dragon Root', quantity_sold: 21, coven: 'High Necromancer' },
+  { date: '2026-11-01', store_id: 'HEXLEY-001', product_name: 'Phoenix Feather', quantity_sold: 14, coven: 'Solar Alchemists' },
+  { date: '2026-11-01', store_id: 'HEXLEY-001', product_name: 'Bat Wings', quantity_sold: 38, coven: 'Nocturnal Order' },
+  { date: '2026-11-01', store_id: 'HEXLEY-001', product_name: 'Mandrake Root', quantity_sold: 19, coven: 'Earthen Shamans' },
+  { date: '2026-10-31', store_id: 'HEXLEY-001', product_name: 'Crystal Dust', quantity_sold: 33, coven: 'Starlight Guild' },
+  { date: '2026-10-31', store_id: 'HEXLEY-001', product_name: 'Shadow Essence', quantity_sold: 29, coven: 'Void Walkers' },
+  { date: '2026-10-31', store_id: 'HEXLEY-001', product_name: 'Nightshade Extract', quantity_sold: 46, coven: 'Shadow Vale' }
 ];
 
 let inventory = [...defaultIngredients];
@@ -2202,14 +2448,13 @@ let anomalies = [
 let curseActive = false;
 let crystalSummary = {};
 let selectedReagentName = null;
-let inventoryViewMode = '3d'; // '3d' or 'table'
+let inventoryViewMode = '3d';
 let currentCategoryFilter = '';
 
 let overviewChart = null;
 let forecastChart = null;
 let catChart = null;
 
-// Unique bottle visual presets for ingredients
 const bottlePresets = {
   'Moonflower': { shape: 'flacon', color: '#65D9C5', glow: 'rgba(101,217,197,0.4)', liquidGrad: ['#65D9C5', '#397B77'] },
   'Dragon Root': { shape: 'square', color: '#D2A36A', glow: 'rgba(210,163,106,0.4)', liquidGrad: ['#D2A36A', '#9e672f'] },
@@ -2224,11 +2469,11 @@ const bottlePresets = {
 };
 
 // -------------------------------------------------------------
-// 2. WITCH STAFF CURSOR MAGIC SPARK TRAIL
+// 2. CURSOR SPARK TRAIL
 // -------------------------------------------------------------
 const trailCanvas = document.createElement('canvas');
 trailCanvas.id = 'cursorTrailCanvas';
-trailCanvas.style.cssText = 'position:fixed;inset:0;width:100vw;height:100vh;pointer-events:none;z-index:999999;';
+trailCanvas.style.cssText = 'position:fixed;inset:0;width:100vw;height:100vh;pointer-events:none !important;z-index:999999;';
 document.body.appendChild(trailCanvas);
 const trailCtx = trailCanvas.getContext('2d');
 let trailParticles = [];
@@ -2248,7 +2493,7 @@ window.addEventListener('mousemove', (e) => {
       vx: (Math.random() - 0.5) * 1.5,
       vy: (Math.random() - 0.5) * 1.5 + 0.3,
       size: Math.random() * 3 + 1.5,
-      color: Math.random() > 0.4 ? '#65D9C5' : '#D2A36A',
+      color: curseActive ? '#E16B62' : (Math.random() > 0.4 ? '#65D9C5' : '#D2A36A'),
       life: 1.0,
       decay: Math.random() * 0.04 + 0.03
     });
@@ -2307,7 +2552,6 @@ function initThreeScene() {
   renderer.setSize(width, height);
   renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
 
-  // Balanced Lighting: Ambient Teal + Antique Copper Point Light + Soft Turquoise Moon
   const ambientLight = new THREE.AmbientLight(0x14272A, 2.2);
   scene.add(ambientLight);
 
@@ -2319,7 +2563,6 @@ function initThreeScene() {
   copperLantern.position.set(-4, -1, 4);
   scene.add(copperLantern);
 
-  // Soft Turquoise Moon in Background
   const moonGeo = new THREE.SphereGeometry(3.5, 32, 32);
   const moonMat = new THREE.MeshBasicMaterial({ color: 0xD7F8EE, transparent: true, opacity: 0.95 });
   const moon = new THREE.Mesh(moonGeo, moonMat);
@@ -2332,19 +2575,15 @@ function initThreeScene() {
   halo.position.copy(moon.position);
   scene.add(halo);
 
-  // Floating 3D Potion Bottles with Liquid and Reflections
   const heroConfigs = [
     { shape: 'flacon', x: -5.6, y: 1.8, z: 2.2, color: 0x65D9C5, scale: 0.85, rotSpeed: 0.012 },
     { shape: 'square', x: 5.8, y: 1.5, z: 2.0, color: 0xD2A36A, scale: 0.8, rotSpeed: -0.014 },
     { shape: 'orb', x: -6.8, y: -1.6, z: 1.8, color: 0xB8A1C9, scale: 0.85, rotSpeed: 0.015 },
-    { shape: 'teardrop', x: 6.8, y: -1.4, z: 1.8, color: 0xE16B62, scale: 0.78, rotSpeed: -0.012 },
-    { shape: 'cylinder', x: -3.8, y: 3.2, z: 0.8, color: 0x397B77, scale: 0.75, rotSpeed: 0.016 },
-    { shape: 'hex', x: 4.0, y: 3.2, z: 0.8, color: 0x65D9C5, scale: 0.75, rotSpeed: -0.015 }
+    { shape: 'teardrop', x: 6.8, y: -1.4, z: 1.8, color: 0xE16B62, scale: 0.78, rotSpeed: -0.012 }
   ];
 
   heroConfigs.forEach((cfg, i) => {
     const group = new THREE.Group();
-
     const glassMat = new THREE.MeshPhysicalMaterial({
       color: 0xffffff,
       emissive: cfg.color,
@@ -2365,63 +2604,28 @@ function initThreeScene() {
       opacity: 0.88
     });
 
-    const corkMat = new THREE.MeshStandardMaterial({ color: 0x4a2e18, roughness: 0.85 });
-    const copperMat = new THREE.MeshStandardMaterial({ color: 0xD2A36A, metalness: 0.8, roughness: 0.3 });
+    let bodyMesh = new THREE.Mesh(new THREE.CylinderGeometry(0.7, 0.85, 1.5, 16), glassMat);
+    let liquidMesh = new THREE.Mesh(new THREE.CylinderGeometry(0.62, 0.76, 1.2, 16), liquidMat);
+    liquidMesh.position.y = -0.1;
+    group.add(bodyMesh, liquidMesh);
 
-    let bodyMesh, liquidMesh;
-    if (cfg.shape === 'square') {
-      bodyMesh = new THREE.Mesh(new THREE.BoxGeometry(1.2, 1.4, 1.2), glassMat);
-      liquidMesh = new THREE.Mesh(new THREE.BoxGeometry(1.05, 1.1, 1.05), liquidMat);
-      liquidMesh.position.y = -0.12;
-    } else if (cfg.shape === 'orb') {
-      bodyMesh = new THREE.Mesh(new THREE.SphereGeometry(0.9, 22, 22), glassMat);
-      liquidMesh = new THREE.Mesh(new THREE.SphereGeometry(0.8, 18, 18), liquidMat);
-      liquidMesh.position.y = -0.05;
-    } else if (cfg.shape === 'teardrop') {
-      bodyMesh = new THREE.Mesh(new THREE.OctahedronGeometry(0.9), glassMat);
-      liquidMesh = new THREE.Mesh(new THREE.OctahedronGeometry(0.78), liquidMat);
-    } else {
-      bodyMesh = new THREE.Mesh(new THREE.CylinderGeometry(0.7, 0.85, 1.5, 16), glassMat);
-      liquidMesh = new THREE.Mesh(new THREE.CylinderGeometry(0.62, 0.76, 1.2, 16), liquidMat);
-      liquidMesh.position.y = -0.1;
-    }
-
-    group.add(bodyMesh);
-    group.add(liquidMesh);
-
-    // Neck, Copper Ring, Cork
     const neck = new THREE.Mesh(new THREE.CylinderGeometry(0.24, 0.28, 0.7, 16), glassMat);
     neck.position.y = 0.95;
     group.add(neck);
 
-    const ring = new THREE.Mesh(new THREE.TorusGeometry(0.28, 0.04, 8, 16), copperMat);
-    ring.position.y = 0.72;
-    ring.rotation.x = Math.PI / 2;
-    group.add(ring);
-
-    const cork = new THREE.Mesh(new THREE.CylinderGeometry(0.25, 0.22, 0.32, 16), corkMat);
+    const cork = new THREE.Mesh(new THREE.CylinderGeometry(0.25, 0.22, 0.32, 16), new THREE.MeshStandardMaterial({ color: 0x4a2e18 }));
     cork.position.y = 1.34;
     group.add(cork);
 
-    // Subtle internal light
-    const pLight = new THREE.PointLight(cfg.color, 1.1, 5);
-    group.add(pLight);
-
     group.position.set(cfg.x, cfg.y, cfg.z);
     group.scale.setScalar(cfg.scale);
-
-    group.userData = {
-      baseY: cfg.y,
-      rotSpeed: cfg.rotSpeed,
-      floatPhase: i * 1.3
-    };
+    group.userData = { baseY: cfg.y, rotSpeed: cfg.rotSpeed, floatPhase: i * 1.3 };
 
     scene.add(group);
     floatingBottles.push(group);
   });
 
-  // 140 Floating Teal & Copper Magical Particles
-  const pCount = 140;
+  const pCount = 120;
   const pGeo = new THREE.BufferGeometry();
   const pos = new Float32Array(pCount * 3);
   const cols = new Float32Array(pCount * 3);
@@ -2440,16 +2644,7 @@ function initThreeScene() {
 
   pGeo.setAttribute('position', new THREE.BufferAttribute(pos, 3));
   pGeo.setAttribute('color', new THREE.BufferAttribute(cols, 3));
-
-  const pMat = new THREE.PointsMaterial({
-    size: 0.16,
-    vertexColors: true,
-    transparent: true,
-    opacity: 0.65,
-    blending: THREE.AdditiveBlending
-  });
-
-  magicParticlesMesh = new THREE.Points(pGeo, pMat);
+  magicParticlesMesh = new THREE.Points(pGeo, new THREE.PointsMaterial({ size: 0.15, vertexColors: true, transparent: true, opacity: 0.65, blending: THREE.AdditiveBlending }));
   scene.add(magicParticlesMesh);
 
   window.addEventListener('mousemove', (e) => {
@@ -2473,21 +2668,18 @@ function animateThreeScene() {
   requestAnimationFrame(animateThreeScene);
   const time = clock.getElapsedTime();
 
-  // Smooth camera parallax
   targetCameraX = mouseX * 1.4;
   targetCameraY = mouseY * 0.9;
   camera.position.x += (targetCameraX - camera.position.x) * 0.05;
   camera.position.y += (targetCameraY - camera.position.y) * 0.05;
   camera.lookAt(0, 0, 0);
 
-  // Float & rotate 3D potion bottles
   floatingBottles.forEach((bottle) => {
     bottle.rotation.y += bottle.userData.rotSpeed;
     bottle.rotation.z = Math.sin(time + bottle.userData.floatPhase) * 0.08;
     bottle.position.y = bottle.userData.baseY + Math.sin(time * 1.3 + bottle.userData.floatPhase) * 0.22;
   });
 
-  // Float magical particles
   if (magicParticlesMesh) {
     const pos = magicParticlesMesh.geometry.attributes.position.array;
     for (let i = 1; i < pos.length; i += 3) {
@@ -2506,7 +2698,7 @@ function enterPantryDashboard() {
   localStorage.setItem('has_entered_pantry', '1');
   setTimeout(() => {
     switchPage('overview');
-  }, 350);
+  }, 250);
 }
 
 function returnToHomeScene() {
@@ -2533,7 +2725,7 @@ function handleCovenLogin(e) {
   const remember = document.getElementById('rememberSession')?.checked;
   const btn = document.getElementById('loginSubmitBtn');
   
-  btn.innerHTML = '<span>Unlocking Laboratory Wards...</span>';
+  btn.innerHTML = '<span>Unlocking Wards...</span>';
   btn.style.opacity = '0.75';
 
   setTimeout(() => {
@@ -2543,10 +2735,10 @@ function handleCovenLogin(e) {
     }
     const loginScr = document.getElementById('loginScreen');
     if (loginScr) loginScr.classList.add('dismissed');
-    showToast(`Welcome, ${username}! Laboratory wards unlocked.`);
+    showToast(`Welcome, ${username}! Coven portal unlocked by Team Matrix.`);
     btn.innerHTML = '<span>Enter The Laboratory</span><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M5 12h14M12 5l7 7-7 7"/></svg>';
     btn.style.opacity = '1';
-  }, 400);
+  }, 350);
 }
 
 function quickGuestLogin() {
@@ -2564,7 +2756,7 @@ function handleCovenLogout() {
 }
 
 // -------------------------------------------------------------
-// 5. BACKEND API INTEGRATIONS & DATA FETCHING
+// 5. BACKEND API INTEGRATIONS
 // -------------------------------------------------------------
 async function loadAllData() {
   try {
@@ -2615,10 +2807,8 @@ async function loadAllData() {
 // -------------------------------------------------------------
 function generateBottleSVG(preset, fillRatio, statusClass) {
   const fillPct = Math.min(100, Math.max(8, Math.round(fillRatio * 100)));
-  const yLiquid = 100 - fillPct;
   const c1 = preset.liquidGrad[0];
   const c2 = preset.liquidGrad[1];
-  const glow = preset.glow;
 
   return `
     <svg viewBox="0 0 100 130" class="bottle-svg-canvas">
@@ -2632,30 +2822,20 @@ function generateBottleSVG(preset, fillRatio, statusClass) {
         </clipPath>
       </defs>
 
-      <!-- Glass Shadow -->
       <ellipse cx="50" cy="122" rx="30" ry="6" fill="rgba(0,0,0,0.35)" />
 
-      <!-- Liquid Body (Clipped to Flask Shape) -->
       <g clip-path="url(#flaskClip_${preset.shape})">
         <rect x="0" y="${30 + (88 * (100 - fillPct) / 100)}" width="100" height="90" fill="url(#liqGrad_${preset.shape}_${fillPct})" />
-        <!-- Liquid Meniscus Surface -->
         <ellipse cx="50" cy="${30 + (88 * (100 - fillPct) / 100)}" rx="28" ry="4" fill="${c1}" opacity="0.9" />
-        <!-- Bubbles inside liquid -->
         <circle cx="45" cy="${55 + (fillPct > 40 ? 20 : 0)}" r="2.5" fill="#fff" opacity="0.6"/>
         <circle cx="58" cy="${75 + (fillPct > 60 ? 15 : 0)}" r="2" fill="#fff" opacity="0.5"/>
       </g>
 
-      <!-- Glass Outline & Reflections -->
       <path d="M40 32 L40 45 L20 100 Q20 118 50 118 Q80 118 80 100 L60 45 L60 32 Z" 
             fill="none" stroke="rgba(255,255,255,0.45)" stroke-width="2.5" />
       
-      <!-- Glass Specular Highlight -->
       <path d="M26 95 L42 48" stroke="rgba(255,255,255,0.6)" stroke-width="2" stroke-linecap="round" />
-
-      <!-- Copper Neck Ring -->
       <rect x="36" y="28" width="28" height="5" rx="2" fill="#D2A36A" stroke="#9e672f" stroke-width="1" />
-
-      <!-- Cork Stopper -->
       <path d="M42 28 L40 16 L60 16 L58 28 Z" fill="#4a2e18" stroke="#2a180b" stroke-width="1" />
     </svg>
   `;
@@ -2676,7 +2856,6 @@ function renderInventory() {
     const badge = document.getElementById('invCountBadge');
     if (badge) badge.textContent = `${filtered.length} REAGENTS`;
 
-    // 1. Render 3D Potion Shelf Grid
     const shelfGrid = document.getElementById('potionShelfGrid');
     if (shelfGrid) {
       shelfGrid.innerHTML = filtered.map(item => {
@@ -2701,7 +2880,7 @@ function renderInventory() {
         const isSelected = selectedReagentName === item.name;
 
         return `
-          <div class="potion-card ${isSelected ? 'selected' : ''}" 
+          <div class="potion-card ${isSelected ? 'selected' : ''} ${isCurseItem ? 'cursed-surge' : ''}" 
                style="--glow-color:${preset.glow};" 
                onclick="selectReagent('${item.name}')">
             <div class="bottle-visual-wrap">
@@ -2718,7 +2897,6 @@ function renderInventory() {
       }).join('');
     }
 
-    // 2. Render SaaS Catalog Table
     const tbody = document.getElementById('inventoryTableBody');
     if (tbody) {
       tbody.innerHTML = filtered.map(item => {
@@ -2730,7 +2908,7 @@ function renderInventory() {
           <tr>
             <td>
               <b style="color:#fff;">${item.name}</b>
-              ${isCurseItem ? '<span style="font-size:9px;color:var(--accent-critical);margin-left:6px;font-weight:700;">3× SURGE</span>' : ''}
+              ${isCurseItem ? '<span class="curse-sale-stamp">3× SURGE</span>' : ''}
             </td>
             <td style="color:var(--text-secondary);">${item.category || 'Reagent'}</td>
             <td class="font-mono"><b style="color:#fff;">${item.current_stock}</b> <span style="color:var(--text-secondary);font-size:12px;">${item.unit || 'units'}</span></td>
@@ -2767,7 +2945,6 @@ function filterInvCategory(cat) {
   renderInventory();
 }
 
-// Apothecary Drawer Spotlight Selection
 function selectReagent(name) {
   selectedReagentName = name;
   const item = inventory.find(i => i.name === name) || defaultIngredients[0];
@@ -2833,7 +3010,6 @@ function renderOverview() {
     const critical = items.filter(i => (i.current_stock || 0) <= (i.safety_stock || 25));
     document.getElementById('statCriticalCount').textContent = critical.length;
 
-    // Alerts List
     const alertsList = document.getElementById('overviewAlertsList');
     if (alertsList) {
       const urgent = (prophecies || []).filter(p => (p.recommended_reorder_qty || 0) > 0);
@@ -2873,22 +3049,22 @@ function renderOverviewChart() {
         {
           label: 'Expected Coven Demand',
           data: baseline,
-          borderColor: '#65D9C5',
-          backgroundColor: 'rgba(101, 217, 197, 0.12)',
+          borderColor: curseActive ? '#E16B62' : '#65D9C5',
+          backgroundColor: curseActive ? 'rgba(225, 107, 98, 0.15)' : 'rgba(101, 217, 197, 0.12)',
           fill: true,
           tension: 0.35,
           borderWidth: 2.5,
-          pointBackgroundColor: '#65D9C5'
+          pointBackgroundColor: curseActive ? '#E16B62' : '#65D9C5'
         },
         ...(surge ? [{
-          label: 'Midnight Curse Surge (3×)',
+          label: 'Midnight Curse Surge (3× Mode)',
           data: surge,
           borderColor: '#E16B62',
-          backgroundColor: 'rgba(225, 107, 98, 0.08)',
+          backgroundColor: 'rgba(225, 107, 98, 0.25)',
           fill: true,
           tension: 0.35,
-          borderWidth: 2,
-          borderDash: [5, 5],
+          borderWidth: 3,
+          borderDash: [6, 4],
           pointBackgroundColor: '#E16B62'
         }] : [])
       ]
@@ -2906,26 +3082,60 @@ function renderOverviewChart() {
 }
 
 function setTimeframe(days) {
+  document.querySelectorAll('#tf7Btn, #tf14Btn, #tf30Btn').forEach(b => b.classList.remove('active'));
+  if (days === 7) document.getElementById('tf7Btn')?.classList.add('active');
+  if (days === 14) document.getElementById('tf14Btn')?.classList.add('active');
+  if (days === 30) document.getElementById('tf30Btn')?.classList.add('active');
   showToast(`Forecast horizon set to ${days} days`);
   renderOverviewChart();
 }
 
 // -------------------------------------------------------------
-// 8. SALES LEDGER & FORECAST
+// 8. CREATIVE SALES LEDGER & FORECAST
 // -------------------------------------------------------------
 function renderSales() {
-  const tbody = document.getElementById('salesTableBody');
-  if (!tbody) return;
+  const container = document.getElementById('salesLedgerList');
+  if (!container) return;
+  const q = (document.getElementById('salesSearchInput')?.value || '').toLowerCase();
+
   const items = (sales && sales.length > 0) ? sales : defaultSales;
-  tbody.innerHTML = items.slice(0, 30).map(s => `
-    <tr>
-      <td class="font-mono" style="color:var(--text-secondary);">${s.date || '2026-10-31'}</td>
-      <td style="color:#fff;font-weight:600;">${s.product_name}</td>
-      <td class="font-mono" style="color:var(--accent-turquoise);font-weight:700;">-${s.quantity_sold || s.quantity || 1}</td>
-      <td class="font-mono" style="color:var(--text-secondary);">${s.store_id || 'HEXLEY-001'}</td>
-      <td><span class="potion-status-badge healthy">AUDITED</span></td>
-    </tr>
-  `).join('');
+  const filtered = items.filter(s => (s.product_name || '').toLowerCase().includes(q));
+
+  // Compute stats
+  const totalQty = items.reduce((acc, s) => acc + (s.quantity_sold || s.quantity || 1), 0);
+  document.getElementById('todayVolumeCount').textContent = totalQty;
+
+  container.innerHTML = filtered.slice(0, 25).map(s => {
+    const isCursed = curseActive && ['Moonflower', 'Phoenix Feather', 'Enchanted Mushroom'].includes(s.product_name);
+    return `
+      <div class="ledger-receipt-row">
+        <div style="display:flex;align-items:center;gap:14px;">
+          <div style="width:36px;height:36px;border-radius:10px;background:rgba(101,217,197,0.08);border:1px solid var(--border-copper);display:flex;align-items:center;justify-content:center;color:var(--accent-copper);">
+            <i data-lucide="scroll" style="width:18px;height:18px;"></i>
+          </div>
+          <div>
+            <div style="font-weight:700;color:#fff;font-size:14px;display:flex;align-items:center;">
+              ${s.product_name}
+              ${isCursed ? '<span class="curse-sale-stamp">🔥 3× CURSE SURGE</span>' : ''}
+            </div>
+            <div style="font-size:11px;color:var(--text-secondary);margin-top:2px;">
+              <span>${s.coven || 'Coven Order'}</span> • <span class="font-mono">${s.store_id || 'HEXLEY-001'}</span> • <span class="font-mono">${s.date}</span>
+            </div>
+          </div>
+        </div>
+        <div style="display:flex;align-items:center;gap:16px;">
+          <div class="font-mono" style="font-size:16px;font-weight:700;color:${isCursed ? 'var(--accent-critical)' : 'var(--accent-turquoise)'};">
+            -${s.quantity_sold || s.quantity || 1} units
+          </div>
+          <span class="wax-seal-badge">
+            <i data-lucide="check" style="width:12px;height:12px;"></i>
+            <span>AUDITED</span>
+          </span>
+        </div>
+      </div>
+    `;
+  }).join('');
+  safeCreateIcons();
 }
 
 function renderProphecy() {
@@ -2939,6 +3149,7 @@ function renderProphecy() {
 async function renderForecastChart() {
   const sel = document.getElementById('forecastProductSelect');
   const prod = sel ? sel.value : (inventory[0]?.name || 'Moonflower');
+  const isCursed = curseActive && ['Moonflower', 'Phoenix Feather', 'Enchanted Mushroom'].includes(prod);
 
   try {
     const res = await fetch(`/api/prophecy/forecast/${encodeURIComponent(prod)}?days=14`).then(r => r.json());
@@ -2946,15 +3157,19 @@ async function renderForecastChart() {
     const canvas = document.getElementById('prophecyForecastCanvas');
     if (!canvas || typeof Chart === 'undefined') return;
 
+    const total14d = days.reduce((acc, d) => acc + (d.expected_demand || d.predicted_demand || 10), 0);
+    document.getElementById('prophecy14dVal').textContent = `${total14d} units`;
+    document.getElementById('prophecyCurseFactor').textContent = isCursed ? '3.0× CURSE MODE' : '1.8× Gathering';
+
     if (forecastChart) forecastChart.destroy();
     forecastChart = new Chart(canvas.getContext('2d'), {
       type: 'bar',
       data: {
         labels: days.map(d => (d.date || '').slice(5)),
         datasets: [{
-          label: `Expected Daily Demand: ${prod}`,
+          label: `Expected Daily Demand: ${prod}${isCursed ? ' (3.0× CURSED)' : ''}`,
           data: days.map(d => d.expected_demand || d.predicted_demand || 10),
-          backgroundColor: 'rgba(101, 217, 197, 0.75)',
+          backgroundColor: isCursed ? 'rgba(225, 107, 98, 0.85)' : 'rgba(101, 217, 197, 0.75)',
           hoverBackgroundColor: '#D2A36A',
           borderRadius: 6
         }]
@@ -3043,7 +3258,6 @@ function renderAnalyticsCharts() {
 }
 
 function renderManagement() {
-  // Categories
   const cGrid = document.getElementById('categoriesGrid');
   if (cGrid) {
     const cats = {};
@@ -3063,7 +3277,6 @@ function renderManagement() {
     `).join('');
   }
 
-  // Suppliers
   const sTbody = document.getElementById('suppliersTableBody');
   if (sTbody) {
     const sups = [
@@ -3083,7 +3296,6 @@ function renderManagement() {
     `).join('');
   }
 
-  // History
   const hTbody = document.getElementById('historyTableBody');
   if (hTbody) {
     hTbody.innerHTML = sales.slice(0, 15).map(s => `
@@ -3131,6 +3343,19 @@ async function quickRestock(productName, qty = 25) {
   }
 }
 
+async function emergencyWardRestock() {
+  const cursed = ['Moonflower', 'Phoenix Feather', 'Enchanted Mushroom'];
+  for (const name of cursed) {
+    await fetch('/api/restock/order', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ product_name: name, quantity: 50 })
+    });
+  }
+  showToast('Emergency Ward Deployed! +50 units cast across all cursed reagents.');
+  await loadAllData();
+}
+
 async function batchOrderAll() {
   try {
     const critical = inventory.filter(i => (i.current_stock || 0) <= (i.safety_stock || 25));
@@ -3171,7 +3396,7 @@ async function toggleCurse() {
 
     curseActive = res.curse_active;
     updateCurseUI();
-    showToast(curseActive ? '✦ Midnight Curse awakened! 3.0× demand surge active.' : 'Midnight Curse lifted.');
+    showToast(curseActive ? '🔥 3.0× MIDNIGHT CURSE UNLEASHED! Volatile reagents surging.' : 'Midnight Curse lifted.');
     await loadAllData();
   } catch (e) {
     showToast('Curse toggle error: ' + e.message);
@@ -3182,15 +3407,39 @@ function updateCurseUI() {
   const banner = document.getElementById('curseBanner');
   const btn = document.getElementById('curseToggleBtn');
   const txt = document.getElementById('curseBtnText');
+  const deck = document.getElementById('curseSimDeck');
+  const grid = document.getElementById('curseDeckGrid');
+
+  document.body.classList.toggle('midnight-curse-mode', curseActive);
 
   if (curseActive) {
     banner.classList.add('active');
     btn.classList.add('active');
-    txt.textContent = 'Curse Active (3×)';
+    txt.textContent = 'Curse Mode (3× Active)';
+    deck.classList.add('active');
+
+    // Populate Simulation Deck
+    const cursed = [
+      { name: 'Moonflower', norm: '22/day', curse: '66/day', dep: '1.8 days', stock: '120 units' },
+      { name: 'Phoenix Feather', norm: '12/day', curse: '36/day', dep: '14 hours (CRITICAL)', stock: '45 units' },
+      { name: 'Enchanted Mushroom', norm: '35/day', curse: '105/day', dep: '2.1 days', stock: '160 units' }
+    ];
+    grid.innerHTML = cursed.map(c => `
+      <div class="curse-sim-card">
+        <div style="font-weight:700;color:#fff;font-size:13px;display:flex;justify-content:space-between;">
+          <span>${c.name}</span>
+          <span style="color:#ef4444;font-size:11px;">3.0× MULTIPLIER</span>
+        </div>
+        <div style="font-size:11px;color:var(--text-secondary);">Stock: ${c.stock}</div>
+        <div style="font-size:11px;color:#fca5a5;font-weight:600;">Surge: ${c.curse} (was ${c.norm})</div>
+        <div style="font-size:11px;color:#f87171;font-weight:700;">Exhaustion: ${c.dep}</div>
+      </div>
+    `).join('');
   } else {
     banner.classList.remove('active');
     btn.classList.remove('active');
     txt.textContent = 'Midnight Curse (3×)';
+    deck.classList.remove('active');
   }
 }
 
@@ -3272,7 +3521,7 @@ function switchPage(pageKey) {
 
 // Interactive Tour
 const tourSteps = [
-  ["Welcome to The Midnight Laboratory", "Madam Hexley's apothecary combines ancient potion lore with machine learning stock intelligence."],
+  ["Welcome to The Midnight Laboratory", "Madam Hexley's apothecary, created by Team Matrix. Combines ancient potion lore with machine learning stock intelligence."],
   ["Interactive 3D Potion Vault", "Each reagent bottle visually reflects current shelf volume. Click any bottle to view consumption metrics or dispatch restocking orders."],
   ["Machine Learning Prophecy", "14-day projection curves analyze weekend coven gatherings and seasonal full moon spikes."],
   ["Automated Restock Spells", "Replenishment orders automatically trigger before safety reserves run out, taking into account guild supplier delivery times."],
