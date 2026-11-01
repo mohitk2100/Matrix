@@ -27,6 +27,13 @@
   --site-red: #ef4444;
   color-scheme: dark;
 }
+/* ============================================================== */
+/* 🪄 WITCH'S STAFF CUSTOM CURSOR (IMAGE REFERENCE)               */
+/* ============================================================== */
+html, body, button, a, input, select, textarea, [role="button"] {
+  cursor: url('data:image/svg+xml,%3Csvg%20xmlns%3D%22http%3A//www.w3.org/2000/svg%22%20width%3D%2238%22%20height%3D%2238%22%20viewBox%3D%220%200%2038%2038%22%3E%20%20%20%3Cdefs%3E%20%20%20%20%20%3CradialGradient%20id%3D%22greenGlow%22%20cx%3D%2250%25%22%20cy%3D%2250%25%22%20r%3D%2250%25%22%3E%20%20%20%20%20%20%20%3Cstop%20offset%3D%220%25%22%20stop-color%3D%22%2339ff14%22%20stop-opacity%3D%220.95%22/%3E%20%20%20%20%20%20%20%3Cstop%20offset%3D%2245%25%22%20stop-color%3D%22%2300e650%22%20stop-opacity%3D%220.45%22/%3E%20%20%20%20%20%20%20%3Cstop%20offset%3D%22100%25%22%20stop-color%3D%22%2300ff66%22%20stop-opacity%3D%220%22/%3E%20%20%20%20%20%3C/radialGradient%3E%20%20%20%20%20%3ClinearGradient%20id%3D%22woodBark%22%20x1%3D%220%25%22%20y1%3D%220%25%22%20x2%3D%22100%25%22%20y2%3D%22100%25%22%3E%20%20%20%20%20%20%20%3Cstop%20offset%3D%220%25%22%20stop-color%3D%22%233d2a1d%22/%3E%20%20%20%20%20%20%20%3Cstop%20offset%3D%2250%25%22%20stop-color%3D%22%231e140d%22/%3E%20%20%20%20%20%20%20%3Cstop%20offset%3D%22100%25%22%20stop-color%3D%22%230f0905%22/%3E%20%20%20%20%20%3C/linearGradient%3E%20%20%20%3C/defs%3E%20%20%20%3Ccircle%20cx%3D%228%22%20cy%3D%228%22%20r%3D%228%22%20fill%3D%22url%28%23greenGlow%29%22/%3E%20%20%20%3Cpath%20d%3D%22M10%2012%20L33%2035%22%20stroke%3D%22url%28%23woodBark%29%22%20stroke-width%3D%224.2%22%20stroke-linecap%3D%22round%22/%3E%20%20%20%3Cpath%20d%3D%22M12%2014%20Q14%2017%2018%2019%20Q22%2024%2026%2027%20L31%2033%22%20stroke%3D%22%23120c08%22%20stroke-width%3D%222.0%22%20stroke-linecap%3D%22round%22%20fill%3D%22none%22/%3E%20%20%20%3Cpath%20d%3D%22M14%2016%20L20%2021%22%20stroke%3D%22%235a3d28%22%20stroke-width%3D%221.2%22%20stroke-linecap%3D%22round%22/%3E%20%20%20%3Cpath%20d%3D%22M5%2011%20Q4%207%207%204%20Q10%203%2012%207%20Q13%2011%209%2013%20Z%22%20fill%3D%22%231e140d%22%20stroke%3D%22%230f0905%22%20stroke-width%3D%220.8%22/%3E%20%20%20%3Cellipse%20cx%3D%228.2%22%20cy%3D%227.8%22%20rx%3D%224.5%22%20ry%3D%224.8%22%20fill%3D%22%2300e650%22/%3E%20%20%20%3Cellipse%20cx%3D%227.2%22%20cy%3D%226.5%22%20rx%3D%222.4%22%20ry%3D%222.6%22%20fill%3D%22%2339ff14%22/%3E%20%20%20%3Ccircle%20cx%3D%226.2%22%20cy%3D%225.5%22%20r%3D%221.2%22%20fill%3D%22%23ffffff%22/%3E%20%20%20%3Ccircle%20cx%3D%224%22%20cy%3D%224%22%20r%3D%221.5%22%20fill%3D%22%2339ff14%22/%3E%20%3C/svg%3E') 4 4, auto !important;
+}
+
 
 * { box-sizing: border-box; margin: 0; padding: 0; }
 body {
@@ -690,9 +697,286 @@ button { font: inherit; cursor: pointer; }
   .stats { gap: 8px; }
   .top-actions .pill-btn:first-child { display: none; }
 }
+
+/* ============================================================== */
+/* 🗝️ COVEN AUTHENTICATION GATEWAY (LOGIN PAGE)                   */
+/* ============================================================== */
+.login-overlay {
+  position: fixed;
+  inset: 0;
+  width: 100vw;
+  height: 100vh;
+  z-index: 700;
+  background: radial-gradient(circle at 50% 40%, rgba(9, 18, 12, 0.88) 0%, rgba(5, 10, 7, 0.98) 100%);
+  backdrop-filter: blur(14px);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 20px;
+  transition: opacity 0.6s cubic-bezier(0.16, 1, 0.3, 1), transform 0.6s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.login-overlay.dismissed {
+  opacity: 0;
+  transform: scale(1.06);
+  pointer-events: none;
+}
+
+.login-card {
+  width: 100%;
+  max-width: 440px;
+  background: rgba(14, 24, 18, 0.96);
+  border: 1px solid rgba(183, 223, 37, 0.3);
+  border-radius: 24px;
+  padding: 36px 32px;
+  box-shadow: 
+    0 0 50px rgba(0, 230, 80, 0.15),
+    0 25px 60px rgba(0, 0, 0, 0.85);
+  text-align: center;
+  position: relative;
+  overflow: hidden;
+}
+
+.login-card::before {
+  content: '';
+  position: absolute;
+  top: 0; left: 0; right: 0; height: 3px;
+  background: linear-gradient(90deg, transparent, #39ff14, #b7df25, #f47a35, transparent);
+}
+
+.login-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 5px 14px;
+  border-radius: 999px;
+  background: rgba(57, 255, 20, 0.08);
+  border: 1px solid rgba(57, 255, 20, 0.3);
+  color: #39ff14;
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  margin-bottom: 16px;
+}
+
+.login-emblem {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 64px;
+  height: 64px;
+  border-radius: 50%;
+  background: rgba(183, 223, 37, 0.06);
+  border: 1px solid rgba(57, 255, 20, 0.35);
+  margin-bottom: 12px;
+  box-shadow: 0 0 25px rgba(57, 255, 20, 0.2);
+}
+
+.login-title {
+  font-size: 32px;
+  color: #fff;
+  letter-spacing: 3px;
+  margin-bottom: 8px;
+  text-shadow: 0 0 20px rgba(183, 223, 37, 0.5);
+}
+
+.login-desc {
+  font-size: 13px;
+  color: #9ab09e;
+  line-height: 1.5;
+  margin-bottom: 24px;
+}
+
+.login-input-group {
+  text-align: left;
+  margin-bottom: 16px;
+}
+
+.login-input-group label {
+  display: block;
+  font-size: 12px;
+  font-weight: 600;
+  color: #c7d8c5;
+  margin-bottom: 6px;
+}
+
+.input-with-icon {
+  position: relative;
+  display: flex;
+  align-items: center;
+}
+
+.input-with-icon svg {
+  position: absolute;
+  left: 14px;
+  color: #8fa08e;
+  pointer-events: none;
+}
+
+.input-with-icon input {
+  width: 100%;
+  padding: 12px 14px 12px 42px;
+  border-radius: 12px;
+  background: rgba(7, 13, 9, 0.85);
+  border: 1px solid rgba(183, 223, 37, 0.25);
+  color: #fff;
+  font-family: inherit;
+  font-size: 14px;
+  outline: none;
+  transition: all 0.2s ease;
+}
+
+.input-with-icon input:focus {
+  border-color: #39ff14;
+  box-shadow: 0 0 15px rgba(57, 255, 20, 0.25);
+}
+
+.login-options {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 22px;
+  font-size: 12px;
+}
+
+.remember-check {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  color: #9ab09e;
+  cursor: pointer;
+}
+
+.remember-check input {
+  accent-color: #39ff14;
+}
+
+.role-pill {
+  font-size: 11px;
+  color: #d8f572;
+  font-weight: 700;
+  background: rgba(183, 223, 37, 0.12);
+  padding: 3px 8px;
+  border-radius: 6px;
+  border: 1px solid rgba(183, 223, 37, 0.3);
+}
+
+.login-submit-btn {
+  width: 100%;
+  padding: 14px;
+  border-radius: 12px;
+  background: linear-gradient(135deg, #39ff14 0%, #20b809 100%);
+  color: #050f07;
+  font-weight: 700;
+  font-size: 14px;
+  letter-spacing: 0.05em;
+  border: none;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+  transition: all 0.25s ease;
+  box-shadow: 0 0 25px rgba(57, 255, 20, 0.35);
+  margin-bottom: 12px;
+}
+
+.login-submit-btn:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 0 35px rgba(57, 255, 20, 0.55);
+}
+
+.login-guest-btn {
+  width: 100%;
+  padding: 10px;
+  border-radius: 12px;
+  background: transparent;
+  color: #9ab09e;
+  font-size: 12px;
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  transition: all 0.2s ease;
+}
+
+.login-guest-btn:hover {
+  background: rgba(255, 255, 255, 0.05);
+  color: #fff;
+  border-color: rgba(183, 223, 37, 0.4);
+}
+
+.login-footer {
+  margin-top: 20px;
+  font-size: 11px;
+  color: #687d6d;
+}
 </style>
 </head>
 <body>
+
+<!-- ============================================================== -->
+<!-- 0. COVEN AUTHENTICATION GATEWAY (LOGIN PAGE)                 -->
+<!-- ============================================================== -->
+<div id="loginScreen" class="login-overlay">
+  <div class="login-card">
+    <div class="login-badge">
+      <span style="display:inline-block;width:6px;height:6px;border-radius:50%;background:#39ff14;box-shadow:0 0 8px #39ff14;"></span>
+      <span>Madam Hexley's Potion Pantry</span>
+    </div>
+
+    <div class="login-emblem">
+      <svg width="42" height="42" viewBox="0 0 38 38" fill="none">
+        <circle cx="8" cy="8" r="8" fill="rgba(57,255,20,0.3)" filter="blur(2px)"/>
+        <path d="M10 12 L33 35" stroke="#3d2a1d" stroke-width="4.2" stroke-linecap="round"/>
+        <path d="M12 14 Q14 17 18 19 L31 33" stroke="#120c08" stroke-width="2.0" stroke-linecap="round"/>
+        <ellipse cx="8.2" cy="7.8" rx="4.5" ry="4.8" fill="#00e650"/>
+        <ellipse cx="7.2" cy="6.5" rx="2.4" ry="2.6" fill="#39ff14"/>
+        <circle cx="6.2" cy="5.5" r="1.2" fill="#ffffff"/>
+      </svg>
+    </div>
+
+    <h2 class="font-spooky login-title">THE SPOOKY PANTRY</h2>
+    <p class="login-desc">Enter your apothecary credentials to summon the AI demand oracle and unlock secret ingredient stock.</p>
+
+    <form id="loginForm" onsubmit="handleCovenLogin(event)">
+      <div class="login-input-group">
+        <label>Alchemist Identity</label>
+        <div class="input-with-icon">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
+          <input type="text" id="loginUsername" value="Madam Hexley" placeholder="e.g. Madam Hexley" required />
+        </div>
+      </div>
+
+      <div class="login-input-group">
+        <label>Secret Coven Spellphrase</label>
+        <div class="input-with-icon">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="11" width="18" height="11" rx="2" ry="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg>
+          <input type="password" id="loginPassword" value="hexley-curse-2026" placeholder="Enter spellphrase" required />
+        </div>
+      </div>
+
+      <div class="login-options">
+        <label class="remember-check">
+          <input type="checkbox" id="rememberSession" checked />
+          <span>Remember Grimoire Session</span>
+        </label>
+        <span class="role-pill">✦ Master Potioneer</span>
+      </div>
+
+      <button type="submit" class="login-submit-btn" id="loginSubmitBtn">
+        <span>Enter The Coven</span>
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
+      </button>
+
+      <button type="button" class="login-guest-btn" onclick="quickGuestLogin()">
+        Quick Guest Access (Auditor)
+      </button>
+    </form>
+
+    <div class="login-footer">
+      <span>MongoDB Atlas Connected • Hexley-001 Terminal</span>
+    </div>
+  </div>
+</div>
+
 
 <!-- ============================================================== -->
 <!-- 1. FULL-SCREEN 3D CINEMATIC HALLOWEEN HOME PAGE               -->
@@ -2146,6 +2430,9 @@ const tourSteps = [
 let tourIndex = 0;
 
 window.addEventListener('DOMContentLoaded', async () => {
+  // 0. Check Login Gateway
+  checkAuthOnLoad();
+
   // 1. Initialize 3D scene
   initThreeScene();
 
@@ -2169,6 +2456,114 @@ function safeCreateIcons() {
   if (window.lucide && typeof lucide.createIcons === 'function') {
     try { lucide.createIcons(); } catch(e) {}
   }
+}
+
+
+// -------------------------------------------------------------
+// 🪄 WITCH STAFF CURSOR MAGIC SPARK TRAIL
+// -------------------------------------------------------------
+const trailCanvas = document.createElement('canvas');
+trailCanvas.id = 'cursorTrailCanvas';
+trailCanvas.style.cssText = 'position:fixed;inset:0;width:100vw;height:100vh;pointer-events:none;z-index:999999;';
+document.body.appendChild(trailCanvas);
+const trailCtx = trailCanvas.getContext('2d');
+let trailParticles = [];
+
+function resizeTrailCanvas() {
+  trailCanvas.width = window.innerWidth;
+  trailCanvas.height = window.innerHeight;
+}
+window.addEventListener('resize', resizeTrailCanvas);
+resizeTrailCanvas();
+
+window.addEventListener('mousemove', (e) => {
+  for (let i = 0; i < 2; i++) {
+    trailParticles.push({
+      x: e.clientX,
+      y: e.clientY,
+      vx: (Math.random() - 0.5) * 1.5,
+      vy: (Math.random() - 0.5) * 1.5 + 0.3,
+      size: Math.random() * 3 + 1.5,
+      color: Math.random() > 0.4 ? '#39ff14' : '#b7df25',
+      life: 1.0,
+      decay: Math.random() * 0.04 + 0.03
+    });
+  }
+  if (trailParticles.length > 50) trailParticles.splice(0, trailParticles.length - 50);
+});
+
+function animateCursorTrail() {
+  trailCtx.clearRect(0, 0, trailCanvas.width, trailCanvas.height);
+  for (let i = trailParticles.length - 1; i >= 0; i--) {
+    const p = trailParticles[i];
+    p.x += p.vx;
+    p.y += p.vy;
+    p.life -= p.decay;
+    if (p.life <= 0) {
+      trailParticles.splice(i, 1);
+    } else {
+      trailCtx.save();
+      trailCtx.globalAlpha = p.life * 0.8;
+      trailCtx.fillStyle = p.color;
+      trailCtx.shadowColor = p.color;
+      trailCtx.shadowBlur = 6;
+      trailCtx.beginPath();
+      trailCtx.arc(p.x, p.y, p.size * p.life, 0, Math.PI * 2);
+      trailCtx.fill();
+      trailCtx.restore();
+    }
+  }
+  requestAnimationFrame(animateCursorTrail);
+}
+animateCursorTrail();
+
+// -------------------------------------------------------------
+// 🗝️ LOGIN GATEWAY CONTROLLER
+// -------------------------------------------------------------
+function checkAuthOnLoad() {
+  const loggedIn = localStorage.getItem('pantry_logged_in');
+  const loginScr = document.getElementById('loginScreen');
+  if (loggedIn === '1') {
+    if (loginScr) loginScr.classList.add('dismissed');
+  } else {
+    if (loginScr) loginScr.classList.remove('dismissed');
+  }
+}
+
+function handleCovenLogin(e) {
+  if (e) e.preventDefault();
+  const username = document.getElementById('loginUsername').value.trim() || 'Madam Hexley';
+  const remember = document.getElementById('rememberSession')?.checked;
+  const btn = document.getElementById('loginSubmitBtn');
+  
+  btn.innerHTML = '<span>Unlocking Coven Wards...</span>';
+  btn.style.opacity = '0.75';
+
+  setTimeout(() => {
+    if (remember) {
+      localStorage.setItem('pantry_logged_in', '1');
+      localStorage.setItem('pantry_alchemist', username);
+    }
+    const loginScr = document.getElementById('loginScreen');
+    if (loginScr) loginScr.classList.add('dismissed');
+    showToast(`Welcome, ${username}! Coven wards dissolved.`);
+    btn.innerHTML = '<span>Enter The Coven</span><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M5 12h14M12 5l7 7-7 7"/></svg>';
+    btn.style.opacity = '1';
+  }, 400);
+}
+
+function quickGuestLogin() {
+  document.getElementById('loginUsername').value = 'Guest Alchemist';
+  handleCovenLogin(null);
+}
+
+function handleCovenLogout() {
+  localStorage.removeItem('pantry_logged_in');
+  const loginScr = document.getElementById('loginScreen');
+  if (loginScr) loginScr.classList.remove('dismissed');
+  const home = document.getElementById('cinematicHome');
+  if (home) home.classList.remove('dismissed');
+  showToast('Portal locked. Ancient wards reactivated.');
 }
 
 async function loadAllData() {
