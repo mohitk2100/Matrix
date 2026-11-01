@@ -1,4 +1,4 @@
-# 🧙 Potion Pantry – Madam Hexley's Potion Shop
+# 🧙 The Skoopy Pantry – Madam Hexley's Potion Shop
 ### Synthetic Dataset Generator & Data Quality Pipeline
 *Created for Hack-O-Lantern Hackathon (Track 1: Smart Inventory & Demand Prediction)*
 
