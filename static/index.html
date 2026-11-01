@@ -1276,21 +1276,309 @@ button { font: inherit; cursor: pointer; }
 <script>
 // -------------------------------------------------------------
 // -------------------------------------------------------------
-// 1. THREE.JS 3D HALLOWEEN SCENE
+// -------------------------------------------------------------
+// 1. THREE.JS 3D HALLOWEEN SCENE: WITCH, POTIONS & HAUNTED FOREST
 // -------------------------------------------------------------
 let scene, camera, renderer;
 let potionBottles = [];
 let particlesMesh;
-let pumpkinMesh, ghostMesh;
+let witchCharacter;
+let pumpkinMeshes = [];
 let bats = [];
 let sparkParticles = [];
+let spellStreamParticles;
 let mouseX = 0, mouseY = 0;
 let targetCameraX = 0, targetCameraY = 0;
 
-function createJackOLantern() {
+// --- 1. Cute Cartoon Witch on Broomstick ---
+function createCartoonWitch() {
+  const witch = new THREE.Group();
+
+  // 1. Broomstick
+  const broomGroup = new THREE.Group();
+  
+  // Wooden handle
+  const handleGeo = new THREE.CylinderGeometry(0.08, 0.08, 4.2, 12);
+  const woodMat = new THREE.MeshStandardMaterial({ color: 0x5c3a21, roughness: 0.8 });
+  const handle = new THREE.Mesh(handleGeo, woodMat);
+  handle.rotation.z = Math.PI / 2.3;
+  broomGroup.add(handle);
+
+  // Straw tail bristles
+  const bristleGeo = new THREE.ConeGeometry(0.45, 1.5, 12);
+  const bristleMat = new THREE.MeshStandardMaterial({ color: 0xc8963e, roughness: 0.9 });
+  const bristles = new THREE.Mesh(bristleGeo, bristleMat);
+  bristles.position.set(-1.9, -0.65, 0);
+  bristles.rotation.z = Math.PI / 2.3 - Math.PI;
+  broomGroup.add(bristles);
+
+  // Rope ties on bristles
+  const tieGeo = new THREE.TorusGeometry(0.25, 0.04, 8, 16);
+  const tieMat = new THREE.MeshStandardMaterial({ color: 0x22150c });
+  const tie1 = new THREE.Mesh(tieGeo, tieMat);
+  tie1.position.set(-1.35, -0.42, 0);
+  tie1.rotation.y = Math.PI / 2;
+  broomGroup.add(tie1);
+
+  witch.add(broomGroup);
+
+  // 2. Witch Character
+  const bodyGroup = new THREE.Group();
+  bodyGroup.position.set(-0.15, 0.35, 0);
+
+  // Robe / Dress
+  const robeGeo = new THREE.ConeGeometry(0.72, 1.35, 16);
+  const robeMat = new THREE.MeshStandardMaterial({ color: 0x3b1561, roughness: 0.4 });
+  const robe = new THREE.Mesh(robeGeo, robeMat);
+  robe.position.y = 0.22;
+  bodyGroup.add(robe);
+
+  // Lime-green potion belt
+  const beltGeo = new THREE.CylinderGeometry(0.44, 0.46, 0.12, 16);
+  const beltMat = new THREE.MeshStandardMaterial({ color: 0xb7df25, emissive: 0x557700, roughness: 0.3 });
+  const belt = new THREE.Mesh(beltGeo, beltMat);
+  belt.position.y = 0.36;
+  bodyGroup.add(belt);
+
+  // Chibi Head
+  const headGeo = new THREE.SphereGeometry(0.5, 24, 24);
+  const skinMat = new THREE.MeshStandardMaterial({ color: 0xfce7d6, roughness: 0.35 });
+  const head = new THREE.Mesh(headGeo, skinMat);
+  head.position.y = 1.18;
+  bodyGroup.add(head);
+
+  // Cartoon Eyes
+  const eyeMat = new THREE.MeshBasicMaterial({ color: 0x111827 });
+  const eyeL = new THREE.Mesh(new THREE.SphereGeometry(0.08, 12, 12), eyeMat);
+  eyeL.position.set(0.3, 1.22, 0.38);
+  bodyGroup.add(eyeL);
+
+  const eyeR = new THREE.Mesh(new THREE.SphereGeometry(0.08, 12, 12), eyeMat);
+  eyeR.position.set(0.44, 1.22, 0.2);
+  bodyGroup.add(eyeR);
+
+  // Eye highlights
+  const hlMat = new THREE.MeshBasicMaterial({ color: 0xffffff });
+  const hlL = new THREE.Mesh(new THREE.SphereGeometry(0.025, 8, 8), hlMat);
+  hlL.position.set(0.32, 1.25, 0.44);
+  bodyGroup.add(hlL);
+
+  // Rosy cheeks
+  const blushMat = new THREE.MeshBasicMaterial({ color: 0xf47a35, transparent: true, opacity: 0.65 });
+  const blushL = new THREE.Mesh(new THREE.SphereGeometry(0.07, 8, 8), blushMat);
+  blushL.position.set(0.32, 1.12, 0.36);
+  bodyGroup.add(blushL);
+
+  const blushR = new THREE.Mesh(new THREE.SphereGeometry(0.07, 8, 8), blushMat);
+  blushR.position.set(0.44, 1.12, 0.16);
+  bodyGroup.add(blushR);
+
+  // Flowing Orange Hair
+  const hairMat = new THREE.MeshStandardMaterial({ color: 0xf97316, roughness: 0.5 });
+  const hairBack = new THREE.Mesh(new THREE.SphereGeometry(0.54, 16, 16), hairMat);
+  hairBack.position.set(-0.08, 1.18, -0.05);
+  bodyGroup.add(hairBack);
+
+  for (let h = 0; h < 3; h++) {
+    const strand = new THREE.Mesh(new THREE.CylinderGeometry(0.08, 0.04, 0.65, 8), hairMat);
+    strand.position.set(0.12 + h * 0.12, 0.85, 0.35 - h * 0.15);
+    strand.rotation.z = -0.3;
+    bodyGroup.add(strand);
+  }
+
+  // 3. Pointed Witch Hat
+  const hatGroup = new THREE.Group();
+  hatGroup.position.set(0, 1.48, 0);
+  hatGroup.rotation.z = -0.15;
+  hatGroup.rotation.x = -0.1;
+
+  // Brim
+  const brimGeo = new THREE.CylinderGeometry(0.98, 0.98, 0.05, 24);
+  const hatMat = new THREE.MeshStandardMaterial({ color: 0x1d0d33, roughness: 0.4 });
+  const brim = new THREE.Mesh(brimGeo, hatMat);
+  hatGroup.add(brim);
+
+  // Orange Hatband
+  const bandGeo = new THREE.CylinderGeometry(0.48, 0.52, 0.15, 20);
+  const bandMat = new THREE.MeshStandardMaterial({ color: 0xf97316, emissive: 0x5a2000, roughness: 0.3 });
+  const band = new THREE.Mesh(bandGeo, bandMat);
+  band.position.y = 0.1;
+  hatGroup.add(band);
+
+  // Cone base
+  const coneGeo1 = new THREE.ConeGeometry(0.46, 0.95, 16);
+  const cone1 = new THREE.Mesh(coneGeo1, hatMat);
+  cone1.position.y = 0.58;
+  hatGroup.add(cone1);
+
+  // Crooked tip
+  const coneGeo2 = new THREE.ConeGeometry(0.24, 0.6, 12);
+  const cone2 = new THREE.Mesh(coneGeo2, hatMat);
+  cone2.position.set(-0.16, 1.15, 0);
+  cone2.rotation.z = 0.38;
+  hatGroup.add(cone2);
+
+  bodyGroup.add(hatGroup);
+
+  // 4. Magic Wand & Casting Glow
+  const armGeo = new THREE.CylinderGeometry(0.08, 0.08, 0.6, 8);
+  const arm = new THREE.Mesh(armGeo, robeMat);
+  arm.position.set(0.4, 0.68, 0.3);
+  arm.rotation.x = Math.PI / 3;
+  arm.rotation.z = -Math.PI / 4;
+  bodyGroup.add(arm);
+
+  const wandGeo = new THREE.CylinderGeometry(0.03, 0.05, 0.95, 8);
+  const wand = new THREE.Mesh(wandGeo, woodMat);
+  wand.position.set(0.72, 0.88, 0.58);
+  wand.rotation.x = Math.PI / 4;
+  wand.rotation.z = -Math.PI / 3;
+  bodyGroup.add(wand);
+
+  // Glowing Wand Crystal Tip
+  const crystalGeo = new THREE.OctahedronGeometry(0.14);
+  const crystalMat = new THREE.MeshStandardMaterial({
+    color: 0xb7df25,
+    emissive: 0xb7df25,
+    emissiveIntensity: 1.2,
+    roughness: 0.1
+  });
+  const crystalTip = new THREE.Mesh(crystalGeo, crystalMat);
+  crystalTip.position.set(1.08, 1.08, 0.88);
+  bodyGroup.add(crystalTip);
+
+  const wandLight = new THREE.PointLight(0xb7df25, 3.5, 12);
+  wandLight.position.set(1.08, 1.08, 0.88);
+  bodyGroup.add(wandLight);
+
+  witch.add(bodyGroup);
+
+  witch.position.set(-3.6, 0.6, 3.5);
+  witch.rotation.y = 0.38;
+  witch.scale.setScalar(1.05);
+
+  witch.userData = {
+    baseY: 0.6,
+    broomGroup,
+    bodyGroup,
+    crystalTip,
+    wandLight,
+    hatGroup
+  };
+
+  return witch;
+}
+
+// --- 2. Beautiful 3D Magical Potion Bottles with Liquid ---
+function createPotionBottle(cfg, index) {
+  const group = new THREE.Group();
+
+  const glassMat = new THREE.MeshPhysicalMaterial({
+    color: 0xffffff,
+    emissive: cfg.color,
+    emissiveIntensity: 0.25,
+    roughness: 0.1,
+    metalness: 0.05,
+    transmission: 0.85,
+    transparent: true,
+    opacity: 0.72
+  });
+
+  const liquidMat = new THREE.MeshStandardMaterial({
+    color: cfg.color,
+    emissive: cfg.color,
+    emissiveIntensity: 0.65,
+    roughness: 0.2,
+    transparent: true,
+    opacity: 0.88
+  });
+
+  const corkMat = new THREE.MeshStandardMaterial({ color: 0x4a2e18, roughness: 0.85 });
+
+  // Unique bottle body based on config type
+  let glassMesh, liquidMesh, neckMesh, neckLiquidMesh;
+
+  if (cfg.type === 'cone') {
+    glassMesh = new THREE.Mesh(new THREE.ConeGeometry(0.9, 1.6, 20), glassMat);
+    liquidMesh = new THREE.Mesh(new THREE.ConeGeometry(0.82, 1.35, 18), liquidMat);
+    liquidMesh.position.y = -0.12;
+  } else if (cfg.type === 'hex') {
+    glassMesh = new THREE.Mesh(new THREE.CylinderGeometry(0.75, 0.85, 1.5, 6), glassMat);
+    liquidMesh = new THREE.Mesh(new THREE.CylinderGeometry(0.68, 0.76, 1.25, 6), liquidMat);
+    liquidMesh.position.y = -0.1;
+  } else if (cfg.type === 'round') {
+    glassMesh = new THREE.Mesh(new THREE.SphereGeometry(0.95, 24, 24), glassMat);
+    liquidMesh = new THREE.Mesh(new THREE.SphereGeometry(0.86, 20, 20), liquidMat);
+    liquidMesh.position.y = -0.05;
+  } else if (cfg.type === 'diamond') {
+    glassMesh = new THREE.Mesh(new THREE.OctahedronGeometry(0.95), glassMat);
+    liquidMesh = new THREE.Mesh(new THREE.OctahedronGeometry(0.84), liquidMat);
+  } else if (cfg.type === 'hourglass') {
+    const hGroup = new THREE.Group();
+    const top = new THREE.Mesh(new THREE.ConeGeometry(0.7, 0.8, 16), glassMat);
+    top.position.y = 0.42;
+    const bot = new THREE.Mesh(new THREE.ConeGeometry(0.7, 0.8, 16), glassMat);
+    bot.position.y = -0.42;
+    bot.rotation.z = Math.PI;
+    hGroup.add(top, bot);
+    glassMesh = hGroup;
+
+    liquidMesh = new THREE.Mesh(new THREE.ConeGeometry(0.62, 0.72, 16), liquidMat);
+    liquidMesh.position.y = -0.42;
+    liquidMesh.rotation.z = Math.PI;
+  } else {
+    // Classic sphere flask
+    glassMesh = new THREE.Mesh(new THREE.SphereGeometry(0.88, 24, 24), glassMat);
+    liquidMesh = new THREE.Mesh(new THREE.SphereGeometry(0.8, 20, 20), liquidMat);
+    liquidMesh.position.y = -0.08;
+  }
+
+  group.add(glassMesh);
+  group.add(liquidMesh);
+
+  // Neck & cork
+  neckMesh = new THREE.Mesh(new THREE.CylinderGeometry(0.24, 0.28, 0.75, 16), glassMat);
+  neckMesh.position.y = 1.0;
+  group.add(neckMesh);
+
+  const cork = new THREE.Mesh(new THREE.CylinderGeometry(0.25, 0.22, 0.35, 16), corkMat);
+  cork.position.y = 1.42;
+  group.add(cork);
+
+  // Inner floating bubbles inside liquid
+  const bubbles = [];
+  for (let b = 0; b < 3; b++) {
+    const bubbleGeo = new THREE.SphereGeometry(0.08 + b * 0.03, 8, 8);
+    const bubbleMat = new THREE.MeshBasicMaterial({ color: 0xffffff, transparent: true, opacity: 0.6 });
+    const bMesh = new THREE.Mesh(bubbleGeo, bubbleMat);
+    bMesh.position.set((Math.random() - 0.5) * 0.5, -0.4 + b * 0.35, (Math.random() - 0.5) * 0.5);
+    group.add(bMesh);
+    bubbles.push({ mesh: bMesh, speed: 0.8 + b * 0.4, baseY: bMesh.position.y });
+  }
+
+  // Inner bottle light
+  const pLight = new THREE.PointLight(cfg.color, 1.8, 6);
+  pLight.position.set(0, 0, 0);
+  group.add(pLight);
+
+  group.position.set(cfg.x, cfg.y, cfg.z);
+  group.scale.setScalar(cfg.scale);
+
+  group.userData = {
+    baseY: cfg.y,
+    rotSpeed: cfg.rotSpeed,
+    floatPhase: index * 1.2,
+    liquidMesh,
+    bubbles
+  };
+
+  return group;
+}
+
+// --- 3. Jack-o-Lantern with Flickering Flame ---
+function createJackOLantern(x, y, z, scale, rotY) {
   const pGroup = new THREE.Group();
   
-  // Ribbed pumpkin body
   const numLobes = 10;
   const lobeMat = new THREE.MeshStandardMaterial({
     color: 0xf47a35,
@@ -1310,7 +1598,6 @@ function createJackOLantern() {
     pGroup.add(lobe);
   }
 
-  // Stalk on top
   const stalkGeo = new THREE.CylinderGeometry(0.12, 0.2, 0.75, 8);
   const stalkMat = new THREE.MeshStandardMaterial({ color: 0x2e4c1e, roughness: 0.9 });
   const stalk = new THREE.Mesh(stalkGeo, stalkMat);
@@ -1319,7 +1606,6 @@ function createJackOLantern() {
   stalk.rotation.x = -0.15;
   pGroup.add(stalk);
 
-  // Carved glowing eyes & jagged mouth
   const eyeMat = new THREE.MeshBasicMaterial({ color: 0xffea00 });
 
   const eyeGeoL = new THREE.ConeGeometry(0.24, 0.3, 3);
@@ -1336,12 +1622,6 @@ function createJackOLantern() {
   eyeR.rotation.x = 0.25;
   pGroup.add(eyeR);
 
-  const noseGeo = new THREE.ConeGeometry(0.14, 0.2, 3);
-  const nose = new THREE.Mesh(noseGeo, eyeMat);
-  nose.position.set(0, 0.02, 1.32);
-  nose.rotation.z = Math.PI;
-  pGroup.add(nose);
-
   const mouthGeo = new THREE.TorusGeometry(0.55, 0.1, 8, 12, Math.PI);
   const mouth = new THREE.Mesh(mouthGeo, eyeMat);
   mouth.position.set(0, -0.28, 1.2);
@@ -1349,69 +1629,54 @@ function createJackOLantern() {
   mouth.rotation.z = Math.PI;
   pGroup.add(mouth);
 
-  // Inner candle light that flickers
   const candle = new THREE.PointLight(0xffa726, 4.5, 14);
   candle.position.set(0, 0, 0.3);
   pGroup.add(candle);
 
-  pGroup.position.set(4.2, -1.8, 3.8);
-  pGroup.rotation.y = -0.45;
-  pGroup.scale.setScalar(1.25);
+  pGroup.position.set(x, y, z);
+  pGroup.rotation.y = rotY;
+  pGroup.scale.setScalar(scale);
 
-  pGroup.userData = { candle, baseY: -1.8 };
+  pGroup.userData = { candle, baseY: y };
   return pGroup;
 }
 
-function createCuteGhost() {
-  const gGroup = new THREE.Group();
-  
-  const ghostMat = new THREE.MeshStandardMaterial({
-    color: 0xf1f5f9,
-    emissive: 0xdcfce7,
-    emissiveIntensity: 0.3,
-    roughness: 0.25,
-    transparent: true,
-    opacity: 0.92
+// --- 4. Spooky Haunted Forest Tree ---
+function createSpookyTree(x, z, scale, rotY) {
+  const tree = new THREE.Group();
+  const woodMat = new THREE.MeshStandardMaterial({ color: 0x08120b, roughness: 0.95 });
+
+  const trunkGeo = new THREE.CylinderGeometry(0.35, 0.75, 7.5, 8);
+  const trunk = new THREE.Mesh(trunkGeo, woodMat);
+  trunk.position.y = 3.5;
+  tree.add(trunk);
+
+  const branches = [
+    { y: 4.5, rZ: 0.65, len: 3.2, thick: 0.22 },
+    { y: 5.2, rZ: -0.7, len: 3.0, thick: 0.2 },
+    { y: 6.2, rX: 0.55, rZ: 0.4, len: 2.4, thick: 0.16 },
+    { y: 6.8, rX: -0.5, rZ: -0.45, len: 2.0, thick: 0.14 }
+  ];
+
+  branches.forEach(b => {
+    const bGeo = new THREE.CylinderGeometry(b.thick * 0.5, b.thick, b.len, 6);
+    const branch = new THREE.Mesh(bGeo, woodMat);
+    branch.position.y = b.y;
+    if (b.rX) branch.rotation.x = b.rX;
+    if (b.rZ) branch.rotation.z = b.rZ;
+    tree.add(branch);
   });
 
-  const bodyGeo = new THREE.SphereGeometry(0.75, 24, 24);
-  bodyGeo.scale(1, 1.35, 0.95);
-  const body = new THREE.Mesh(bodyGeo, ghostMat);
-  gGroup.add(body);
-
-  const eyeMat = new THREE.MeshBasicMaterial({ color: 0x090e0b });
-  const eyeGeo = new THREE.SphereGeometry(0.09, 12, 12);
-  eyeGeo.scale(1, 1.5, 0.4);
-
-  const eL = new THREE.Mesh(eyeGeo, eyeMat);
-  eL.position.set(-0.22, 0.28, 0.7);
-  gGroup.add(eL);
-
-  const eR = new THREE.Mesh(eyeGeo, eyeMat);
-  eR.position.set(0.22, 0.28, 0.7);
-  gGroup.add(eR);
-
-  const mGeo = new THREE.SphereGeometry(0.1, 12, 12);
-  mGeo.scale(0.8, 1.6, 0.4);
-  const mouth = new THREE.Mesh(mGeo, eyeMat);
-  mouth.position.set(0, 0.02, 0.72);
-  gGroup.add(mouth);
-
-  const aura = new THREE.PointLight(0xb7df25, 2.0, 8);
-  aura.position.set(0, 0, 0.2);
-  gGroup.add(aura);
-
-  gGroup.position.set(-4.6, 0.8, 3.2);
-  gGroup.scale.setScalar(1.05);
-  gGroup.rotation.y = 0.35;
-
-  gGroup.userData = { baseY: 0.8, floatPhase: 2.2 };
-  return gGroup;
+  tree.position.set(x, -5.5, z);
+  tree.scale.setScalar(scale);
+  tree.rotation.y = rotY;
+  return tree;
 }
 
+// --- 5. Flapping 3D Bats ---
 function createBat(i) {
   const bat = new THREE.Group();
-  const mat = new THREE.MeshBasicMaterial({ color: 0x0d1410, side: THREE.DoubleSide });
+  const mat = new THREE.MeshBasicMaterial({ color: 0x090e0b, side: THREE.DoubleSide });
 
   const bodyGeo = new THREE.ConeGeometry(0.12, 0.5, 5);
   const body = new THREE.Mesh(bodyGeo, mat);
@@ -1441,15 +1706,16 @@ function createBat(i) {
   bat.userData = {
     leftWing,
     rightWing,
-    orbitRadius: 7.5 + i * 1.5,
-    orbitSpeed: 0.35 + i * 0.1,
+    orbitRadius: 7.5 + i * 1.6,
+    orbitSpeed: 0.35 + i * 0.08,
     orbitAngle: (i / 4) * Math.PI * 2,
-    orbitY: 2.2 + (i % 2) * 1.5,
+    orbitY: 2.0 + (i % 2) * 1.5,
     flapSpeed: 14 + i * 3
   };
   return bat;
 }
 
+// --- 6. Initialize Full 3D Scene ---
 function initThreeScene() {
   const canvas = document.getElementById('webglCanvas');
   if (!canvas || typeof THREE === 'undefined') return;
@@ -1458,7 +1724,7 @@ function initThreeScene() {
   const height = window.innerHeight;
 
   scene = new THREE.Scene();
-  scene.fog = new THREE.FogExp2(0x07110a, 0.035);
+  scene.fog = new THREE.FogExp2(0x060c08, 0.038);
 
   camera = new THREE.PerspectiveCamera(55, width / height, 0.1, 100);
   camera.position.set(0, 0, 14);
@@ -1467,19 +1733,19 @@ function initThreeScene() {
   renderer.setSize(width, height);
   renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
 
-  // Lights: Ethereal Moonlight + Warm Amber Pumpkin Glow
-  const ambientLight = new THREE.AmbientLight(0x1a3322, 1.8);
+  // Lighting
+  const ambientLight = new THREE.AmbientLight(0x13261a, 2.0);
   scene.add(ambientLight);
 
-  const moonLight = new THREE.DirectionalLight(0xd4ef85, 2.4);
-  moonLight.position.set(5, 12, 8);
+  const moonLight = new THREE.DirectionalLight(0xd4ef85, 2.6);
+  moonLight.position.set(6, 12, 6);
   scene.add(moonLight);
 
-  const lanternLight = new THREE.PointLight(0xff7700, 3.5, 25);
+  const lanternLight = new THREE.PointLight(0xff7700, 3.2, 25);
   lanternLight.position.set(0, -2, 5);
   scene.add(lanternLight);
 
-  // 1. Giant Glowing Moon in background
+  // Giant Glowing Moon
   const moonGeo = new THREE.SphereGeometry(3.6, 32, 32);
   const moonMat = new THREE.MeshBasicMaterial({
     color: 0xf6fde0,
@@ -1487,10 +1753,10 @@ function initThreeScene() {
     opacity: 0.95
   });
   const moonMesh = new THREE.Mesh(moonGeo, moonMat);
-  moonMesh.position.set(5.5, 4.2, -12);
+  moonMesh.position.set(5.8, 4.2, -12);
   scene.add(moonMesh);
 
-  // Moon halo glow
+  // Moon Halo
   const haloGeo = new THREE.SphereGeometry(4.8, 32, 32);
   const haloMat = new THREE.MeshBasicMaterial({
     color: 0xb7df25,
@@ -1502,79 +1768,48 @@ function initThreeScene() {
   haloMesh.position.copy(moonMesh.position);
   scene.add(haloMesh);
 
-  // 2. 3D Jack-o-Lantern Pumpkin
-  pumpkinMesh = createJackOLantern();
-  scene.add(pumpkinMesh);
+  // Spooky Haunted Forest Trees
+  scene.add(createSpookyTree(-8.5, -4, 1.2, 0.4));
+  scene.add(createSpookyTree(8.2, -5, 1.1, -0.6));
+  scene.add(createSpookyTree(-6.2, -7, 0.9, 0.9));
 
-  // 3. Cute Floating Ghost
-  ghostMesh = createCuteGhost();
-  scene.add(ghostMesh);
+  // Cute Cartoon Witch on Broomstick
+  witchCharacter = createCartoonWitch();
+  scene.add(witchCharacter);
 
-  // 4. Orbiting Bats
+  // 6 Beautiful 3D Magical Potion Bottles with Liquid
+  const bottleConfigs = [
+    { type: 'sphere', x: -1.2, y: 1.8, z: 3.2, color: 0x10b981, scale: 0.85, rotSpeed: 0.014 }, // Emerald Green
+    { type: 'cone', x: 2.5, y: 2.2, z: 2.4, color: 0xa855f7, scale: 0.9, rotSpeed: -0.015 },    // Amethyst Purple
+    { type: 'hex', x: -3.8, y: -2.0, z: 3.0, color: 0x06b6d4, scale: 0.8, rotSpeed: 0.018 },    // Electric Blue
+    { type: 'round', x: 1.6, y: -2.2, z: 3.8, color: 0xf97316, scale: 1.0, rotSpeed: -0.012 },  // Pumpkin Orange
+    { type: 'diamond', x: -5.4, y: 0.2, z: 2.0, color: 0xef4444, scale: 0.78, rotSpeed: 0.014 }, // Blood Red
+    { type: 'hourglass', x: 4.8, y: 0.2, z: 2.5, color: 0x22d3ee, scale: 0.82, rotSpeed: -0.016 } // Luminous Cyan
+  ];
+
+  bottleConfigs.forEach((cfg, i) => {
+    const bottle = createPotionBottle(cfg, i);
+    potionBottles.push(bottle);
+    scene.add(bottle);
+  });
+
+  // Glowing Carved Jack-o-Lanterns
+  pumpkinMeshes.push(createJackOLantern(4.2, -1.8, 3.8, 1.25, -0.45));
+  pumpkinMeshes.push(createJackOLantern(-5.2, -2.5, 2.2, 0.85, 0.5));
+  pumpkinMeshes.forEach(p => scene.add(p));
+
+  // Orbiting Flapping Bats
   for (let i = 0; i < 4; i++) {
     const bat = createBat(i);
     bats.push(bat);
     scene.add(bat);
   }
 
-  // 5. 3D Floating Glowing Potion Bottles
-  const bottleConfigs = [
-    { x: -5.4, y: -2.0, z: 3.5, color: 0xb7df25, scale: 0.9, rotSpeed: 0.015 },
-    { x: 2.2, y: 2.6, z: 2.2, color: 0xf47a35, scale: 0.85, rotSpeed: -0.012 },
-    { x: -2.2, y: -2.8, z: 4.5, color: 0x06b6d4, scale: 0.85, rotSpeed: 0.02 },
-    { x: 5.6, y: 1.8, z: 1.5, color: 0xa855f7, scale: 0.75, rotSpeed: -0.018 }
-  ];
-
-  bottleConfigs.forEach((cfg, i) => {
-    const group = new THREE.Group();
-
-    // Bottle body (rounded flask)
-    const bodyGeo = new THREE.SphereGeometry(0.85, 24, 24);
-    const bodyMat = new THREE.MeshPhysicalMaterial({
-      color: cfg.color,
-      emissive: cfg.color,
-      emissiveIntensity: 0.45,
-      roughness: 0.15,
-      metalness: 0.1,
-      transmission: 0.65,
-      transparent: true,
-      opacity: 0.85
-    });
-    const bodyMesh = new THREE.Mesh(bodyGeo, bodyMat);
-    group.add(bodyMesh);
-
-    // Bottle neck
-    const neckGeo = new THREE.CylinderGeometry(0.24, 0.28, 0.75, 16);
-    const neckMesh = new THREE.Mesh(neckGeo, bodyMat);
-    neckMesh.position.y = 0.95;
-    group.add(neckMesh);
-
-    // Cork stopper
-    const corkGeo = new THREE.CylinderGeometry(0.26, 0.22, 0.35, 16);
-    const corkMat = new THREE.MeshStandardMaterial({ color: 0x4a2e18, roughness: 0.8 });
-    const corkMesh = new THREE.Mesh(corkGeo, corkMat);
-    corkMesh.position.y = 1.38;
-    group.add(corkMesh);
-
-    group.position.set(cfg.x, cfg.y, cfg.z);
-    group.scale.setScalar(cfg.scale);
-
-    group.userData = {
-      baseY: cfg.y,
-      rotSpeed: cfg.rotSpeed,
-      floatPhase: i * 1.5
-    };
-
-    scene.add(group);
-    potionBottles.push(group);
-  });
-
-  // 6. Magical Firefly & Fog Particle System
+  // 240 Magical Firefly & Fog Particles
   const particleCount = 240;
   const particleGeo = new THREE.BufferGeometry();
   const positions = new Float32Array(particleCount * 3);
   const colors = new Float32Array(particleCount * 3);
-
   const cLime = new THREE.Color(0xb7df25);
   const cOrange = new THREE.Color(0xf47a35);
 
@@ -1582,13 +1817,11 @@ function initThreeScene() {
     positions[i * 3] = (Math.random() - 0.5) * 26;
     positions[i * 3 + 1] = (Math.random() - 0.5) * 16;
     positions[i * 3 + 2] = (Math.random() - 0.5) * 18;
-
-    const chosenColor = Math.random() > 0.4 ? cLime : cOrange;
-    colors[i * 3] = chosenColor.r;
-    colors[i * 3 + 1] = chosenColor.g;
-    colors[i * 3 + 2] = chosenColor.b;
+    const col = Math.random() > 0.4 ? cLime : cOrange;
+    colors[i * 3] = col.r;
+    colors[i * 3 + 1] = col.g;
+    colors[i * 3 + 2] = col.b;
   }
-
   particleGeo.setAttribute('position', new THREE.BufferAttribute(positions, 3));
   particleGeo.setAttribute('color', new THREE.BufferAttribute(colors, 3));
 
@@ -1599,17 +1832,37 @@ function initThreeScene() {
     opacity: 0.75,
     blending: THREE.AdditiveBlending
   });
-
   particlesMesh = new THREE.Points(particleGeo, particleMat);
   scene.add(particlesMesh);
 
-  // Mouse parallax interaction
+  // Wand Spell Stream (Particles connecting witch wand to central potions)
+  const streamCount = 45;
+  const streamGeo = new THREE.BufferGeometry();
+  const sPos = new Float32Array(streamCount * 3);
+  for (let s = 0; s < streamCount; s++) {
+    const t = s / streamCount;
+    sPos[s * 3] = -2.5 + t * 1.5;
+    sPos[s * 3 + 1] = 1.4 + Math.sin(t * Math.PI) * 0.4;
+    sPos[s * 3 + 2] = 4.0 - t * 1.0;
+  }
+  streamGeo.setAttribute('position', new THREE.BufferAttribute(sPos, 3));
+  const streamMat = new THREE.PointsMaterial({
+    size: 0.22,
+    color: 0xb7df25,
+    transparent: true,
+    opacity: 0.85,
+    blending: THREE.AdditiveBlending
+  });
+  spellStreamParticles = new THREE.Points(streamGeo, streamMat);
+  scene.add(spellStreamParticles);
+
+  // Mouse Parallax Interaction
   window.addEventListener('mousemove', (e) => {
     mouseX = (e.clientX / window.innerWidth) * 2 - 1;
     mouseY = -(e.clientY / window.innerHeight) * 2 + 1;
   });
 
-  // Click sparks interaction
+  // Click Magical Spark Bursts
   window.addEventListener('click', (e) => {
     spawnMagicSparks(e.clientX, e.clientY);
   });
@@ -1623,24 +1876,28 @@ function spawnMagicSparks(screenX, screenY) {
   const x = ((screenX / window.innerWidth) * 2 - 1) * 7;
   const y = (-(screenY / window.innerHeight) * 2 + 1) * 4;
 
-  const sparkGeo = new THREE.BufferGeometry();
-  const count = 18;
+  const count = 22;
   const pos = new Float32Array(count * 3);
   const vel = [];
+  const palette = [0xb7df25, 0xf47a35, 0xa855f7, 0x06b6d4, 0xffea00];
+  const chosenColor = palette[Math.floor(Math.random() * palette.length)];
+
   for (let i = 0; i < count; i++) {
     pos[i * 3] = x;
     pos[i * 3 + 1] = y;
-    pos[i * 3 + 2] = 4;
+    pos[i * 3 + 2] = 4.2;
     vel.push({
-      vx: (Math.random() - 0.5) * 0.15,
-      vy: (Math.random() - 0.5) * 0.15,
-      vz: (Math.random() - 0.5) * 0.1
+      vx: (Math.random() - 0.5) * 0.16,
+      vy: (Math.random() - 0.5) * 0.16,
+      vz: (Math.random() - 0.5) * 0.12
     });
   }
+
+  const sparkGeo = new THREE.BufferGeometry();
   sparkGeo.setAttribute('position', new THREE.BufferAttribute(pos, 3));
   const mat = new THREE.PointsMaterial({
-    size: 0.25,
-    color: Math.random() > 0.5 ? 0xb7df25 : 0xffaa00,
+    size: 0.26,
+    color: chosenColor,
     transparent: true,
     opacity: 1,
     blending: THREE.AdditiveBlending
@@ -1671,26 +1928,66 @@ function animateThreeScene() {
   camera.position.y += (targetCameraY - camera.position.y) * 0.05;
   camera.lookAt(0, 0, 0);
 
-  // 1. Jack-o-lantern candle flicker & gentle bobbing
-  if (pumpkinMesh) {
-    pumpkinMesh.position.y = pumpkinMesh.userData.baseY + Math.sin(time * 1.5) * 0.15;
-    pumpkinMesh.rotation.y = -0.45 + Math.sin(time * 0.8) * 0.08;
-    if (pumpkinMesh.userData.candle) {
-      pumpkinMesh.userData.candle.intensity = 4.2 + Math.sin(time * 14) * 0.8 + Math.sin(time * 26) * 0.4;
+  // 1. Cute Witch on Broomstick Floating & Casting Animation
+  if (witchCharacter) {
+    const ud = witchCharacter.userData;
+    witchCharacter.position.y = ud.baseY + Math.sin(time * 2.0) * 0.28;
+    witchCharacter.rotation.z = Math.sin(time * 1.5) * 0.06;
+    witchCharacter.rotation.x = Math.sin(time * 1.2) * 0.04;
+
+    // Broom swaying
+    if (ud.broomGroup) {
+      ud.broomGroup.rotation.z = Math.sin(time * 2.2) * 0.05;
+    }
+    // Wand crystal pulsing glow
+    if (ud.wandLight) {
+      ud.wandLight.intensity = 3.0 + Math.sin(time * 6) * 1.2;
+    }
+    if (ud.crystalTip) {
+      ud.crystalTip.rotation.y += 0.03;
+      ud.crystalTip.rotation.z += 0.02;
     }
   }
 
-  // 2. Cute Ghost floating & swaying
-  if (ghostMesh) {
-    ghostMesh.position.y = ghostMesh.userData.baseY + Math.sin(time * 1.8 + ghostMesh.userData.floatPhase) * 0.25;
-    ghostMesh.rotation.z = Math.sin(time * 1.4) * 0.08;
+  // 2. Animated Wand Spell Stream Particles
+  if (spellStreamParticles) {
+    const pos = spellStreamParticles.geometry.attributes.position.array;
+    for (let s = 0; s < pos.length / 3; s++) {
+      const idx = s * 3;
+      pos[idx + 1] += Math.sin(time * 4 + s) * 0.01;
+      pos[idx + 2] += Math.cos(time * 3 + s) * 0.008;
+    }
+    spellStreamParticles.geometry.attributes.position.needsUpdate = true;
   }
 
-  // 3. Bats orbiting & flapping
+  // 3. Float, Rotate & Bubble 6 Potion Bottles
+  potionBottles.forEach((bottle) => {
+    bottle.rotation.y += bottle.userData.rotSpeed;
+    bottle.rotation.z = Math.sin(time + bottle.userData.floatPhase) * 0.12;
+    bottle.position.y = bottle.userData.baseY + Math.sin(time * 1.4 + bottle.userData.floatPhase) * 0.32;
+
+    // Animate inner bubbles rising through liquid
+    if (bottle.userData.bubbles) {
+      bottle.userData.bubbles.forEach(b => {
+        b.mesh.position.y += 0.008 * b.speed;
+        if (b.mesh.position.y > 0.45) b.mesh.position.y = -0.45;
+      });
+    }
+  });
+
+  // 4. Jack-o-lantern Candle Flicker
+  pumpkinMeshes.forEach(p => {
+    p.position.y = p.userData.baseY + Math.sin(time * 1.5) * 0.12;
+    if (p.userData.candle) {
+      p.userData.candle.intensity = 4.0 + Math.sin(time * 14) * 0.9 + Math.sin(time * 26) * 0.5;
+    }
+  });
+
+  // 5. Bats Orbiting Moon & Forest
   bats.forEach((bat) => {
     const ud = bat.userData;
     ud.orbitAngle += ud.orbitSpeed * delta;
-    bat.position.x = 5.5 + Math.cos(ud.orbitAngle) * ud.orbitRadius;
+    bat.position.x = 5.8 + Math.cos(ud.orbitAngle) * ud.orbitRadius;
     bat.position.z = -12 + Math.sin(ud.orbitAngle) * ud.orbitRadius;
     bat.position.y = ud.orbitY + Math.sin(time * 2 + ud.orbitAngle) * 0.6;
     bat.rotation.y = -ud.orbitAngle - Math.PI / 2;
@@ -1700,14 +1997,7 @@ function animateThreeScene() {
     if (ud.rightWing) ud.rightWing.rotation.z = -flap;
   });
 
-  // 4. Float & rotate 3D potion bottles
-  potionBottles.forEach((bottle) => {
-    bottle.rotation.y += bottle.userData.rotSpeed;
-    bottle.rotation.z = Math.sin(time + bottle.userData.floatPhase) * 0.12;
-    bottle.position.y = bottle.userData.baseY + Math.sin(time * 1.2 + bottle.userData.floatPhase) * 0.35;
-  });
-
-  // 5. Float magical fireflies
+  // 6. Float Magical Fireflies
   if (particlesMesh) {
     const pos = particlesMesh.geometry.attributes.position.array;
     for (let i = 1; i < pos.length; i += 3) {
@@ -1717,7 +2007,7 @@ function animateThreeScene() {
     particlesMesh.geometry.attributes.position.needsUpdate = true;
   }
 
-  // 6. Update spark particles
+  // 7. Spark Particle Decay
   for (let k = sparkParticles.length - 1; k >= 0; k--) {
     const sp = sparkParticles[k];
     sp.life -= delta * 1.8;
