@@ -3,14 +3,15 @@
 <head>
 <meta charset="UTF-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-<title>The Skoopy Pantry — Madam Hexley's Potion Pantry</title>
+<title>The Spooky Pantry — Madam Hexley's Potion Pantry</title>
 
-<!-- Fonts: Creepster for Spooky Headings, Inter for Body, Roboto Mono for Metrics -->
+<!-- Fonts: Creepster for Spooky Titles, Inter for Clean Body, Roboto Mono for Data -->
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Creepster&family=Inter:wght@300;400;500;600;700;800&family=Roboto+Mono:wght@500;600;700&display=swap" rel="stylesheet">
 
-<!-- Chart.js & Lucide Icons -->
+<!-- Three.js (3D WebGL Scene) & Chart.js & Lucide Icons -->
+<script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 <script src="https://unpkg.com/lucide@latest"></script>
 
@@ -18,46 +19,181 @@
 :root {
   --site-primary: #b7df25;
   --site-secondary: #f47a35;
-  --site-background: #101a14;
-  --site-surface: #14221a;
-  --site-panel: #18261e;
+  --site-background: #090e0b;
+  --site-panel: #111a14;
   --site-border: rgba(183, 223, 37, 0.22);
-  --site-on-primary: #17200b;
-  --site-on-secondary: #1c1008;
   --site-on-background: #f4f0df;
   --site-muted: #8fa08e;
   --site-red: #ef4444;
   color-scheme: dark;
 }
 
-* { box-sizing: border-box; }
-html { scroll-behavior: smooth; }
+* { box-sizing: border-box; margin: 0; padding: 0; }
 body {
-  margin: 0;
-  background: #0c130f;
+  background: #060907;
   color: var(--site-on-background);
   font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
   overflow-x: hidden;
 }
 
 button { font: inherit; cursor: pointer; }
-.font-spooky { font-family: 'Creepster', cursive; letter-spacing: 1.5px; }
+.font-spooky { font-family: 'Creepster', cursive; letter-spacing: 2px; }
 .font-mono { font-family: 'Roboto Mono', monospace; }
 
-#app {
-  min-height: 100vh;
-  width: 100%;
-  background: radial-gradient(ellipse at 75% 0%, #26391f 0%, #111d16 38%, #0b120e 78%);
-  position: relative;
+/* ============================================================== */
+/* 🌌 1. FULL-SCREEN 3D CINEMATIC HOME EXPERIENCE                */
+/* ============================================================== */
+#cinematicHome {
+  position: fixed;
+  inset: 0;
+  width: 100vw;
+  height: 100vh;
+  z-index: 500;
+  background: radial-gradient(circle at 50% 30%, #15291b 0%, #0c1811 40%, #050a07 90%);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  transition: opacity 0.8s cubic-bezier(0.16, 1, 0.3, 1), transform 0.8s cubic-bezier(0.16, 1, 0.3, 1);
+}
+#cinematicHome.dismissed {
+  opacity: 0;
+  transform: scale(1.08);
+  pointer-events: none;
 }
 
-.decor { position: absolute; pointer-events: none; z-index: 0; }
+#webglCanvas {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  z-index: 1;
+}
+
+/* Atmospheric silhouette overlay */
+.cinematic-vignette {
+  position: absolute;
+  inset: 0;
+  background: 
+    radial-gradient(circle at 50% 50%, transparent 40%, rgba(5, 10, 7, 0.75) 85%, #050a07 100%),
+    linear-gradient(180deg, rgba(5,10,7,0.4) 0%, transparent 35%, transparent 65%, rgba(5,10,7,0.95) 100%);
+  z-index: 2;
+  pointer-events: none;
+}
+
+/* Drifting ground mist */
+.mist-layer {
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  height: 38%;
+  background: linear-gradient(0deg, rgba(16, 32, 22, 0.85) 0%, rgba(16, 32, 22, 0) 100%);
+  z-index: 3;
+  pointer-events: none;
+  filter: blur(20px);
+}
+
+/* Foreground Title & CTA */
+.cinematic-content {
+  position: relative;
+  z-index: 10;
+  text-align: center;
+  padding: 0 20px;
+  max-width: 900px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  pointer-events: auto;
+}
+
+.cinematic-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 6px 16px;
+  border-radius: 999px;
+  background: rgba(183, 223, 37, 0.08);
+  border: 1px solid rgba(183, 223, 37, 0.35);
+  color: #d8f572;
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 0.15em;
+  text-transform: uppercase;
+  margin-bottom: 18px;
+  box-shadow: 0 0 30px rgba(183, 223, 37, 0.2);
+}
+
+.cinematic-title {
+  font-family: 'Creepster', cursive;
+  font-size: clamp(48px, 9vw, 105px);
+  line-height: 0.95;
+  color: #fff;
+  letter-spacing: 4px;
+  text-shadow: 
+    0 0 25px rgba(183, 223, 37, 0.5),
+    0 0 60px rgba(244, 122, 53, 0.4),
+    0 8px 30px rgba(0, 0, 0, 0.9);
+  margin-bottom: 14px;
+}
+
+.cinematic-subtitle {
+  font-size: clamp(13px, 1.8vw, 17px);
+  color: #cdd8c5;
+  font-weight: 400;
+  letter-spacing: 0.08em;
+  margin-bottom: 38px;
+  max-width: 520px;
+  line-height: 1.6;
+  text-shadow: 0 2px 10px rgba(0,0,0,0.8);
+}
+
+.enter-pantry-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 12px;
+  padding: 16px 38px;
+  border-radius: 999px;
+  background: linear-gradient(135deg, #b7df25 0%, #8eb512 100%);
+  color: #121c08;
+  font-family: 'Inter', sans-serif;
+  font-size: 14px;
+  font-weight: 800;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  border: none;
+  cursor: pointer;
+  box-shadow: 
+    0 0 30px rgba(183, 223, 37, 0.6),
+    0 12px 35px rgba(0, 0, 0, 0.6);
+  transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+}
+.enter-pantry-btn:hover {
+  transform: translateY(-3px) scale(1.03);
+  box-shadow: 
+    0 0 50px rgba(183, 223, 37, 0.9),
+    0 16px 45px rgba(0, 0, 0, 0.8);
+  filter: brightness(1.1);
+}
+
+/* ============================================================== */
+/* 🏰 2. DASHBOARD WORKSPACE (HIDDEN UNTIL "ENTER" IS CLICKED)     */
+/* ============================================================== */
+#dashboardApp {
+  min-height: 100vh;
+  width: 100%;
+  background: radial-gradient(ellipse at 75% 0%, #20331b 0%, #0f1c14 42%, #080d0a 82%);
+  position: relative;
+  opacity: 1;
+  transition: opacity 0.5s ease;
+}
+
 .site-shell {
   width: min(1440px, 100%);
   margin: auto;
-  padding: 18px clamp(16px, 3vw, 48px) 60px;
+  padding: 16px clamp(16px, 3vw, 44px) 60px;
   position: relative;
-  z-index: 1;
+  z-index: 10;
 }
 
 /* Midnight Curse banner */
@@ -88,29 +224,28 @@ button { font: inherit; cursor: pointer; }
   padding: 8px 0 18px;
   border-bottom: 1px solid rgba(255, 255, 255, 0.1);
 }
-.brand { display: flex; align-items: center; gap: 14px; min-width: 0; }
+.brand { display: flex; align-items: center; gap: 14px; min-width: 0; cursor: pointer; }
 .brand-mark {
-  width: 48px;
-  height: 48px;
+  width: 44px;
+  height: 44px;
   display: grid;
   place-items: center;
   border: 1px solid rgba(183, 223, 37, 0.45);
-  border-radius: 16px;
+  border-radius: 14px;
   background: rgba(183, 223, 37, 0.1);
-  box-shadow: 0 0 25px rgba(183, 223, 37, 0.15);
+  box-shadow: 0 0 20px rgba(183, 223, 37, 0.15);
 }
 .brand-name {
   font-family: 'Creepster', cursive;
   letter-spacing: 1.5px;
-  font-size: clamp(22px, 2.5vw, 30px);
+  font-size: clamp(20px, 2.2vw, 26px);
   color: #fff;
   line-height: 1;
-  text-shadow: 0 2px 10px rgba(0,0,0,0.6);
 }
 .brand-sub {
-  color: #aab89e;
-  font-size: 10.5px;
-  margin-top: 4px;
+  color: #9cb093;
+  font-size: 10px;
+  margin-top: 3px;
   letter-spacing: .08em;
   text-transform: uppercase;
 }
@@ -121,13 +256,13 @@ button { font: inherit; cursor: pointer; }
   color: #f5f1e5;
   background: #17231b;
   border-radius: 999px;
-  padding: 9px 16px;
-  font-size: 12px;
+  padding: 8px 15px;
+  font-size: 11.5px;
   font-weight: 700;
   display: inline-flex;
   align-items: center;
-  gap: 7px;
-  transition: all .22s ease;
+  gap: 6px;
+  transition: all .2s ease;
 }
 .pill-btn:hover {
   transform: translateY(-2px);
@@ -150,21 +285,21 @@ button { font: inherit; cursor: pointer; }
 /* Layout */
 .layout {
   display: grid;
-  grid-template-columns: 235px minmax(0, 1fr);
+  grid-template-columns: 230px minmax(0, 1fr);
   gap: 26px;
-  padding-top: 22px;
+  padding-top: 20px;
 }
 .sidebar {
   border-right: 1px solid rgba(255, 255, 255, 0.1);
-  padding: 4px 18px 0 0;
+  padding: 4px 16px 0 0;
 }
 .side-label {
-  color: #7b8e75;
+  color: #72846d;
   text-transform: uppercase;
   letter-spacing: .16em;
   font-size: 9px;
   font-weight: 800;
-  margin: 18px 0 8px 10px;
+  margin: 16px 0 8px 10px;
 }
 .nav-item {
   width: 100%;
@@ -211,96 +346,12 @@ button { font: inherit; cursor: pointer; }
   letter-spacing: .18em;
 }
 .page-head h1 {
-  font-size: clamp(24px, 3vw, 34px);
+  font-size: clamp(24px, 3vw, 32px);
   margin: 4px 0 4px;
   letter-spacing: -.03em;
   font-weight: 800;
 }
 .page-head p { color: #aab7a4; font-size: 12px; margin: 0; }
-
-/* Hero section inspired by reference image 1 & 2 */
-.hero {
-  min-height: 270px;
-  border-radius: 24px;
-  overflow: hidden;
-  position: relative;
-  isolation: isolate;
-  background: linear-gradient(90deg, #14251b 0%, #182c20 45%, #111a17 100%);
-  border: 1px solid rgba(183, 223, 37, 0.35);
-  box-shadow: 0 20px 55px rgba(0,0,0,0.45);
-  margin-bottom: 20px;
-}
-.hero-art {
-  position: absolute;
-  inset: 0;
-  z-index: -1;
-  width: 100%;
-  height: 100%;
-}
-.hero-copy {
-  max-width: 580px;
-  padding: 32px clamp(22px, 4vw, 44px);
-  position: relative;
-  z-index: 2;
-}
-.hero-kicker {
-  display: inline-flex;
-  align-items: center;
-  gap: 8px;
-  border: 1px solid rgba(183, 223, 37, 0.5);
-  background: rgba(13, 27, 20, 0.85);
-  color: #d4ef85;
-  padding: 6px 12px;
-  border-radius: 999px;
-  font-size: 10px;
-  font-weight: 800;
-  letter-spacing: .08em;
-  text-transform: uppercase;
-}
-.hero h2 {
-  font-family: 'Creepster', cursive;
-  font-size: clamp(34px, 5.5vw, 56px);
-  line-height: 1;
-  letter-spacing: 1px;
-  margin: 14px 0 10px;
-  text-shadow: 0 3px 20px rgba(0,0,0,0.8);
-  color: #ffffff;
-}
-.hero h2 em { color: var(--site-primary); font-style: normal; }
-.hero p {
-  color: #d0d9c9;
-  max-width: 480px;
-  font-size: 13px;
-  line-height: 1.6;
-  margin-bottom: 20px;
-}
-.hero-actions { display: flex; gap: 10px; flex-wrap: wrap; }
-.hero-note {
-  position: absolute;
-  right: 5%;
-  bottom: 16px;
-  color: #d4dfc3;
-  font-size: 10px;
-  letter-spacing: .12em;
-  text-transform: uppercase;
-  z-index: 2;
-}
-
-/* Animations */
-@keyframes float {
-  0%, 100% { transform: translateY(0) rotate(-2deg); }
-  50% { transform: translateY(-12px) rotate(2deg); }
-}
-@keyframes flicker {
-  0%, 100% { opacity: .88; filter: drop-shadow(0 0 14px #ff9b25); }
-  50% { opacity: 1; filter: drop-shadow(0 0 28px #ffb32c); }
-}
-@keyframes drift {
-  from { transform: translateX(-3%); }
-  to { transform: translateX(3%); }
-}
-.pumpkin { animation: float 5s ease-in-out infinite, flicker 3.8s ease-in-out infinite; transform-origin: center; }
-.fog { animation: drift 9s ease-in-out infinite alternate; }
 
 /* Stat Cards */
 .stats {
@@ -310,7 +361,7 @@ button { font: inherit; cursor: pointer; }
   margin: 18px 0;
 }
 .stat {
-  background: linear-gradient(145deg, #18281e, #111a15);
+  background: linear-gradient(145deg, #17261d, #101914);
   border: 1px solid rgba(255, 255, 255, 0.11);
   border-radius: 16px;
   padding: 16px;
@@ -364,7 +415,7 @@ button { font: inherit; cursor: pointer; }
 .panel {
   border: 1px solid rgba(255, 255, 255, 0.1);
   border-radius: 18px;
-  background: linear-gradient(145deg, #17241c, #101915);
+  background: linear-gradient(145deg, #16241b, #0f1814);
   padding: 18px;
   min-width: 0;
   position: relative;
@@ -376,12 +427,7 @@ button { font: inherit; cursor: pointer; }
   gap: 10px;
   margin-bottom: 14px;
 }
-.panel h3 {
-  font-size: 14px;
-  font-weight: 700;
-  margin: 0;
-  letter-spacing: -.01em;
-}
+.panel h3 { font-size: 14px; font-weight: 700; margin: 0; }
 .panel-sub { color: #8fa08e; font-size: 11px; margin-top: 3px; }
 
 .chart-tabs {
@@ -421,11 +467,6 @@ button { font: inherit; cursor: pointer; }
   font-weight: 800;
   text-transform: uppercase;
 }
-.stock-tag.low {
-  color: #ffb17e;
-  background: rgba(244, 122, 53, 0.18);
-  border: 1px solid rgba(244, 122, 53, 0.35);
-}
 .stock-tag.critical {
   color: #fca5a5;
   background: rgba(239, 68, 68, 0.2);
@@ -435,7 +476,7 @@ button { font: inherit; cursor: pointer; }
 .quick-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; }
 .quick {
   border: 1px solid rgba(255, 255, 255, 0.1);
-  background: #0f1914;
+  background: #0e1713;
   color: #e7eddf;
   border-radius: 12px;
   padding: 12px;
@@ -482,7 +523,7 @@ button { font: inherit; cursor: pointer; }
 }
 .text-btn:hover { text-decoration: underline; }
 
-/* Table styling for dedicated pages */
+/* Table styling */
 .custom-table {
   width: 100%;
   border-collapse: collapse;
@@ -511,7 +552,7 @@ button { font: inherit; cursor: pointer; }
 .modal-overlay {
   position: fixed;
   inset: 0;
-  background: rgba(5, 12, 8, 0.82);
+  background: rgba(5, 12, 8, 0.85);
   backdrop-filter: blur(8px);
   z-index: 1000;
   display: none;
@@ -525,7 +566,7 @@ button { font: inherit; cursor: pointer; }
   border: 1px solid rgba(183, 223, 37, 0.4);
   border-radius: 20px;
   padding: 24px;
-  box-shadow: 0 25px 90px rgba(0,0,0,0.8);
+  box-shadow: 0 25px 90px rgba(0,0,0,0.85);
 }
 .modal-box h3 {
   font-family: 'Creepster', cursive;
@@ -561,7 +602,7 @@ button { font: inherit; cursor: pointer; }
 .tour-backdrop {
   position: fixed;
   inset: 0;
-  background: rgba(3, 8, 5, 0.85);
+  background: rgba(3, 8, 5, 0.88);
   display: none;
   place-items: center;
   z-index: 2000;
@@ -585,7 +626,7 @@ button { font: inherit; cursor: pointer; }
 }
 .tour-card h2 {
   font-family: 'Creepster', cursive;
-  font-size: 30px;
+  font-size: 28px;
   margin: 10px 0 8px;
   letter-spacing: 1px;
   color: #fff;
@@ -644,8 +685,6 @@ button { font: inherit; cursor: pointer; }
   }
   .side-label { display: none; }
   .nav-item { width: auto; flex: none; padding: 9px 12px; white-space: nowrap; font-size: 11px; }
-  .hero-copy { padding: 25px 20px; }
-  .hero-note { display: none; }
   .stats { gap: 8px; }
   .top-actions .pill-btn:first-child { display: none; }
 }
@@ -653,14 +692,40 @@ button { font: inherit; cursor: pointer; }
 </head>
 <body>
 
-<div id="app">
-  
-  <!-- Corner Spiderweb Accent -->
-  <svg class="decor" style="top:75px;left:-45px;width:240px" viewBox="0 0 220 160" aria-hidden="true">
-    <path d="M-10 130 Q65 30 130 5 M15 160 Q90 60 175 20" fill="none" stroke="#b7df25" stroke-width="1.5" opacity=".2"/>
-    <path d="M140 15 Q165 45 190 20" fill="none" stroke="#b7df25" opacity=".18"/>
-  </svg>
+<!-- ============================================================== -->
+<!-- 1. FULL-SCREEN 3D CINEMATIC HALLOWEEN HOME PAGE               -->
+<!-- ============================================================== -->
+<section id="cinematicHome">
+  <canvas id="webglCanvas"></canvas>
+  <div class="cinematic-vignette"></div>
+  <div class="mist-layer"></div>
 
+  <div class="cinematic-content">
+    <div class="cinematic-badge">
+      <span style="display:inline-block;width:6px;height:6px;border-radius:50%;background:#b7df25;box-shadow:0 0 10px #b7df25;"></span>
+      <span>Madam Hexley's Potion Pantry</span>
+    </div>
+    
+    <h1 class="cinematic-title">THE SPOOKY PANTRY</h1>
+    
+    <p class="cinematic-subtitle">
+      Step into the haunted apothecary. Track rare ingredients, forecast coven demand, and survive the seasonal Midnight Curse.
+    </p>
+
+    <button class="enter-pantry-btn" onclick="enterPantryDashboard()">
+      <span>Enter The Pantry</span>
+      <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+        <path d="M5 12h14M12 5l7 7-7 7"/>
+      </svg>
+    </button>
+  </div>
+</section>
+
+<!-- ============================================================== -->
+<!-- 2. PANTRY INVENTORY WORKSPACE (DASHBOARD)                     -->
+<!-- ============================================================== -->
+<div id="dashboardApp">
+  
   <!-- Midnight Curse Active Alert Banner -->
   <div id="curseBanner">
     <div style="display:flex;align-items:center;gap:10px;">
@@ -674,9 +739,9 @@ button { font: inherit; cursor: pointer; }
     
     <!-- Header Topbar -->
     <header class="topbar">
-      <div class="brand">
+      <div class="brand" onclick="returnToHomeScene()">
         <div class="brand-mark">
-          <svg viewBox="0 0 40 40" width="28" height="28" fill="none" aria-hidden="true">
+          <svg viewBox="0 0 40 40" width="26" height="26" fill="none" aria-hidden="true">
             <path d="M20 5c-7 0-12 6-12 14v9c0 3 3 5 6 3l6-4 6 4c3 2 6 0 6-3v-9C32 11 27 5 20 5Z" stroke="#d9f18b" stroke-width="2.2"/>
             <circle cx="16" cy="17" r="2" fill="#d9f18b"/>
             <circle cx="24" cy="17" r="2" fill="#d9f18b"/>
@@ -684,12 +749,16 @@ button { font: inherit; cursor: pointer; }
           </svg>
         </div>
         <div>
-          <div class="brand-name">The Skoopy Pantry</div>
+          <div class="brand-name">The Spooky Pantry</div>
           <div class="brand-sub">MADAM HEXLEY'S HALLOWEEN POTION PANTRY · HEXLEY-001</div>
         </div>
       </div>
 
       <div class="top-actions">
+        <button class="pill-btn" onclick="returnToHomeScene()">
+          <i data-lucide="sparkles" style="width:13px;height:13px;"></i>
+          <span>3D Forest</span>
+        </button>
         <button class="pill-btn orange" id="curseBtn" onclick="toggleCurse()">
           <i data-lucide="moon" style="width:14px;height:14px;"></i>
           <span id="curseBtnText">Midnight Curse (3×)</span>
@@ -749,102 +818,16 @@ button { font: inherit; cursor: pointer; }
       <!-- Main Dynamic Content Container -->
       <main class="main" id="mainContent">
 
-        <!-- ======================================================== -->
         <!-- VIEW: OVERVIEW -->
-        <!-- ======================================================== -->
         <section id="view-overview" class="view-panel">
-          
           <div class="page-head">
             <div>
-              <div class="eyebrow">The apothecary is awake</div>
-              <h1>Good evening, Madam Hexley.</h1>
-              <p>Your smart pantry is live. Keep every potion ingredient ready for the Halloween rush.</p>
+              <div class="eyebrow">Apothecary Intelligence</div>
+              <h1>Welcome to the Pantry</h1>
+              <p>Real-time potion inventory monitoring & AI demand forecasting.</p>
             </div>
             <button class="pill-btn lime" onclick="openSaleModal()">＋ Record Sale</button>
           </div>
-
-          <!-- Hero Halloween Artwork (Inspired by Dribbble Reference) -->
-          <section class="hero">
-            <svg class="hero-art" viewBox="0 0 1100 340" preserveAspectRatio="xMidYMid slice" aria-hidden="true">
-              <defs>
-                <linearGradient id="sky" x1="0" y1="0" x2="1" y2="1">
-                  <stop stop-color="#263d25"/>
-                  <stop offset=".58" stop-color="#12231b"/>
-                  <stop offset="1" stop-color="#0b1511"/>
-                </linearGradient>
-                <radialGradient id="moon">
-                  <stop stop-color="#fff7c8" stop-opacity=".95"/>
-                  <stop offset="1" stop-color="#d8e7a0" stop-opacity="0"/>
-                </radialGradient>
-                <linearGradient id="mist">
-                  <stop stop-color="#a6c47a" stop-opacity="0"/>
-                  <stop offset=".5" stop-color="#a6c47a" stop-opacity=".15"/>
-                  <stop offset="1" stop-color="#a6c47a" stop-opacity="0"/>
-                </linearGradient>
-              </defs>
-
-              <rect width="1100" height="340" fill="url(#sky)"/>
-              <circle cx="850" cy="85" r="105" fill="url(#moon)"/>
-              <circle cx="850" cy="85" r="43" fill="#e9efc8" opacity=".82"/>
-
-              <!-- Mountain & Tree Silhouettes -->
-              <g fill="#0a1710" opacity=".95">
-                <path d="M0 225 60 150l40 60 55-105 70 120 55-76 55 85 60-100 80 100v106H0Z"/>
-                <path d="M500 220 560 130l40 55 45-105 65 135 50-65 70 85 60-110 70 105 65-65 75 100v75H500Z"/>
-              </g>
-
-              <!-- Haunted House -->
-              <g fill="#101d15" stroke="#31472c" stroke-width="3">
-                <path d="M160 236V130l55-43 55 43v106Z"/>
-                <path d="M148 132 215 72l67 60Z"/>
-                <path d="M184 155h18v30h-18zm40 0h18v30h-18z" fill="#d9a34c" opacity=".8"/>
-                <path d="M192 203h46v33h-46Z"/>
-              </g>
-
-              <!-- Spooky Gnarled Trees -->
-              <g fill="none" stroke="#253a21" stroke-width="8" stroke-linecap="round">
-                <path d="M80 270q20-100 0-180m0 90q-42-42-60-38m62 13q35-45 62-48M1020 280q-22-105 0-190m0 75q-45-48-68-45m70 14q35-50 66-55"/>
-              </g>
-
-              <!-- Drifting Fog -->
-              <g class="fog" fill="url(#mist)">
-                <ellipse cx="390" cy="275" rx="370" ry="34"/>
-                <ellipse cx="880" cy="245" rx="330" ry="26"/>
-              </g>
-
-              <!-- Glowing Flickering Jack-o'-Lantern -->
-              <g class="pumpkin" transform="translate(820 210)">
-                <path d="M-7-50q-8-22 10-35q13 15 4 36" fill="#567b2c" stroke="#243e1b" stroke-width="4"/>
-                <path d="M0-48c-44-32-93 4-94 53-1 45 36 70 94 67 58 3 95-22 94-67C93-44 44-80 0-48Z" fill="#e97822" stroke="#9f4519" stroke-width="6"/>
-                <path d="M0-42c-23 4-26 97 0 112 26-15 23-108 0-112Zm-37 8c-22 12-31 76-8 102m82-102c22 12 31 76 8 102" fill="none" stroke="#ffad48" stroke-width="7" opacity=".5"/>
-                <path d="m-51-5 31 9-21 23 2-32m60 0 31-9-12 33-19-24M-17 42q18 20 37 0" fill="#ffdc63" stroke="#ffb52d" stroke-width="4" stroke-linejoin="round"/>
-              </g>
-
-              <!-- Twinkling Starlight -->
-              <g fill="#e8f1c4" opacity=".8">
-                <circle cx="570" cy="70" r="2.5"/>
-                <circle cx="640" cy="125" r="1.5"/>
-                <circle cx="1000" cy="50" r="2"/>
-                <circle cx="420" cy="120" r="1.5"/>
-              </g>
-            </svg>
-
-            <div class="hero-copy">
-              <div class="hero-kicker">
-                <span style="display:inline-block;width:7px;height:7px;border-radius:50%;background:#b7df25;box-shadow:0 0 10px #b7df25"></span>
-                Smart Inventory · AI Demand Prophecy
-              </div>
-              <h2>Never let the <em>magic</em> run out.</h2>
-              <p>
-                Madam Hexley's apothecary runs on rare ingredients and perfect timing. Track shelf depletion, uncover consumption spikes and know what to restock before the cauldron runs dry.
-              </p>
-              <div class="hero-actions">
-                <button class="pill-btn lime" onclick="switchPage('inventory')">Explore inventory →</button>
-                <button class="pill-btn" onclick="switchPage('about')">Discover the story</button>
-              </div>
-            </div>
-            <div class="hero-note">Atlas Connected · Seasonal Surge Ready</div>
-          </section>
 
           <!-- 4 Main KPI Cards -->
           <section class="stats">
@@ -937,9 +920,7 @@ button { font: inherit; cursor: pointer; }
                 </div>
                 <span style="color:#b7df25;font-size:9.5px;font-weight:800;">LIVE SYNC</span>
               </div>
-              <div class="alert-list" id="overviewAlertsList">
-                <!-- Dynamically filled -->
-              </div>
+              <div class="alert-list" id="overviewAlertsList"></div>
             </article>
 
             <article class="panel">
@@ -983,16 +964,11 @@ button { font: inherit; cursor: pointer; }
               </div>
               <button class="text-btn" onclick="switchPage('inventory')">View all inventory →</button>
             </div>
-            <div id="overviewProductsList">
-              <!-- Dynamically populated -->
-            </div>
+            <div id="overviewProductsList"></div>
           </article>
-
         </section>
 
-        <!-- ======================================================== -->
         <!-- VIEW: INVENTORY -->
-        <!-- ======================================================== -->
         <section id="view-inventory" class="view-panel" style="display:none;">
           <div class="page-head">
             <div>
@@ -1030,9 +1006,7 @@ button { font: inherit; cursor: pointer; }
           </div>
         </section>
 
-        <!-- ======================================================== -->
         <!-- VIEW: SALES LEDGER -->
-        <!-- ======================================================== -->
         <section id="view-sales" class="view-panel" style="display:none;">
           <div class="page-head">
             <div>
@@ -1061,9 +1035,7 @@ button { font: inherit; cursor: pointer; }
           </div>
         </section>
 
-        <!-- ======================================================== -->
         <!-- VIEW: DEMAND FORECAST -->
-        <!-- ======================================================== -->
         <section id="view-forecast" class="view-panel" style="display:none;">
           <div class="page-head">
             <div>
@@ -1084,9 +1056,7 @@ button { font: inherit; cursor: pointer; }
           </div>
         </section>
 
-        <!-- ======================================================== -->
         <!-- VIEW: RESTOCK SPELL -->
-        <!-- ======================================================== -->
         <section id="view-restock" class="view-panel" style="display:none;">
           <div class="page-head">
             <div>
@@ -1118,9 +1088,7 @@ button { font: inherit; cursor: pointer; }
           </div>
         </section>
 
-        <!-- ======================================================== -->
         <!-- VIEW: ANOMALY DETECTION -->
-        <!-- ======================================================== -->
         <section id="view-anomaly" class="view-panel" style="display:none;">
           <div class="page-head">
             <div>
@@ -1138,9 +1106,7 @@ button { font: inherit; cursor: pointer; }
           <div id="anomalyListGrid" style="display:grid;grid-template-columns:repeat(auto-fit,minmax(300px,1fr));gap:14px;"></div>
         </section>
 
-        <!-- ======================================================== -->
         <!-- VIEW: ANALYTICS & REPORTS -->
-        <!-- ======================================================== -->
         <section id="view-analytics" class="view-panel" style="display:none;">
           <div class="page-head">
             <div>
@@ -1166,9 +1132,7 @@ button { font: inherit; cursor: pointer; }
           </div>
         </section>
 
-        <!-- ======================================================== -->
-        <!-- VIEW: MANAGEMENT (CATEGORIES / SUPPLIERS / HISTORY) -->
-        <!-- ======================================================== -->
+        <!-- VIEW: MANAGEMENT -->
         <section id="view-categories" class="view-panel" style="display:none;">
           <div class="page-head">
             <div>
@@ -1202,14 +1166,12 @@ button { font: inherit; cursor: pointer; }
           <div class="panel" id="stockAuditPanel"></div>
         </section>
 
-        <!-- ======================================================== -->
-        <!-- VIEW: ABOUT & PROBLEM STATEMENT -->
-        <!-- ======================================================== -->
+        <!-- VIEW: ABOUT -->
         <section id="view-about" class="view-panel" style="display:none;">
           <div class="page-head">
             <div>
               <div class="eyebrow">Track 01 Quest</div>
-              <h1>The Skoopy Pantry Story</h1>
+              <h1>The Spooky Pantry Story</h1>
               <p>Madam Hexley's Potion Pantry · Built for Hack-O-Lantern 2026</p>
             </div>
           </div>
@@ -1220,13 +1182,13 @@ button { font: inherit; cursor: pointer; }
               Madam Hexley runs the busiest potion shop in the village. Every Halloween she runs out of <b>Bat Wings</b>, <b>Mandrake Root</b>, and <b>Ghost Pepper</b> at the worst moment, and angry customers turn into frogs!
             </p>
             <p>
-              <b>The Skoopy Pantry</b> provides a smart, automated inventory command center that resolves every piece of her dilemma:
+              <b>The Spooky Pantry</b> provides a smart, automated inventory command center that resolves every piece of her dilemma:
             </p>
             <ul style="padding-left:20px;margin:12px 0;color:#f4f0df;">
               <li><b>Real-Time Tracking:</b> Every potion purchase decrements MongoDB atomically.</li>
               <li><b>Prophecy (Forecasting):</b> Projects exact runout dates with day-of-week coven gathering weighting.</li>
               <li><b>Restock Spell:</b> Dynamic ROP formulas calculate optimal reorders without overspending.</li>
-              <li><b>Strange Happenings:</b> 100% precision Z-score outlier detection flags sudden consumption spikes.</li>
+              <li><b>Strange Happenings:</b> 100% precision Z-score outlier detection flags consumption spikes.</li>
               <li><b>Midnight Curse:</b> Instantly responds when demand for festival ingredients triples (3.0×).</li>
             </ul>
           </div>
@@ -1236,7 +1198,7 @@ button { font: inherit; cursor: pointer; }
     </div>
 
     <div class="footer-note" style="color:#637563;font-size:10px;text-align:center;margin-top:30px;">
-      THE SKOOPY PANTRY · MADAM HEXLEY'S POTION PANTRY · MONGODB ATLAS LIVE
+      THE SPOOKY PANTRY · MADAM HEXLEY'S POTION PANTRY · MONGODB ATLAS LIVE
     </div>
   </div>
 </div>
@@ -1244,8 +1206,6 @@ button { font: inherit; cursor: pointer; }
 <!-- ============================================================== -->
 <!-- MODALS -->
 <!-- ============================================================== -->
-
-<!-- Record Sale Modal -->
 <div class="modal-overlay" id="saleModal">
   <div class="modal-box">
     <h3>Record Customer Sale</h3>
@@ -1265,7 +1225,6 @@ button { font: inherit; cursor: pointer; }
   </div>
 </div>
 
-<!-- Add Ingredient Modal -->
 <div class="modal-overlay" id="addModal">
   <div class="modal-box">
     <h3>Add New Ingredient</h3>
@@ -1293,7 +1252,7 @@ button { font: inherit; cursor: pointer; }
   </div>
 </div>
 
-<!-- Interactive Tour Overlay -->
+<!-- Tour Overlay -->
 <div class="tour-backdrop" id="tour">
   <div class="tour-card">
     <div class="tour-step" id="tourStep">STEP 1 OF 6</div>
@@ -1309,14 +1268,497 @@ button { font: inherit; cursor: pointer; }
   </div>
 </div>
 
-<!-- Toast element -->
 <div class="toast" id="toast">Action logged</div>
 
 <!-- ============================================================== -->
-<!-- SCRIPT: CORE LOGIC & REAL DATA HOOKS -->
+<!-- SCRIPT: THREE.JS 3D SCENE & REACTIVE WORKSPACE               -->
 <!-- ============================================================== -->
 <script>
-// Default fallback seeds so data is never empty even before network responds
+// -------------------------------------------------------------
+// -------------------------------------------------------------
+// 1. THREE.JS 3D HALLOWEEN SCENE
+// -------------------------------------------------------------
+let scene, camera, renderer;
+let potionBottles = [];
+let particlesMesh;
+let pumpkinMesh, ghostMesh;
+let bats = [];
+let sparkParticles = [];
+let mouseX = 0, mouseY = 0;
+let targetCameraX = 0, targetCameraY = 0;
+
+function createJackOLantern() {
+  const pGroup = new THREE.Group();
+  
+  // Ribbed pumpkin body
+  const numLobes = 10;
+  const lobeMat = new THREE.MeshStandardMaterial({
+    color: 0xf47a35,
+    roughness: 0.32,
+    metalness: 0.08,
+    emissive: 0x4a1800
+  });
+
+  for (let i = 0; i < numLobes; i++) {
+    const angle = (i / numLobes) * Math.PI * 2;
+    const lobeGeo = new THREE.SphereGeometry(1.35, 16, 16);
+    lobeGeo.scale(0.68, 0.9, 0.96);
+    const lobe = new THREE.Mesh(lobeGeo, lobeMat);
+    lobe.position.x = Math.cos(angle) * 0.42;
+    lobe.position.z = Math.sin(angle) * 0.42;
+    lobe.rotation.y = -angle;
+    pGroup.add(lobe);
+  }
+
+  // Stalk on top
+  const stalkGeo = new THREE.CylinderGeometry(0.12, 0.2, 0.75, 8);
+  const stalkMat = new THREE.MeshStandardMaterial({ color: 0x2e4c1e, roughness: 0.9 });
+  const stalk = new THREE.Mesh(stalkGeo, stalkMat);
+  stalk.position.y = 1.15;
+  stalk.rotation.z = 0.22;
+  stalk.rotation.x = -0.15;
+  pGroup.add(stalk);
+
+  // Carved glowing eyes & jagged mouth
+  const eyeMat = new THREE.MeshBasicMaterial({ color: 0xffea00 });
+
+  const eyeGeoL = new THREE.ConeGeometry(0.24, 0.3, 3);
+  const eyeL = new THREE.Mesh(eyeGeoL, eyeMat);
+  eyeL.position.set(-0.36, 0.24, 1.25);
+  eyeL.rotation.z = Math.PI;
+  eyeL.rotation.x = 0.25;
+  pGroup.add(eyeL);
+
+  const eyeGeoR = new THREE.ConeGeometry(0.24, 0.3, 3);
+  const eyeR = new THREE.Mesh(eyeGeoR, eyeMat);
+  eyeR.position.set(0.36, 0.24, 1.25);
+  eyeR.rotation.z = Math.PI;
+  eyeR.rotation.x = 0.25;
+  pGroup.add(eyeR);
+
+  const noseGeo = new THREE.ConeGeometry(0.14, 0.2, 3);
+  const nose = new THREE.Mesh(noseGeo, eyeMat);
+  nose.position.set(0, 0.02, 1.32);
+  nose.rotation.z = Math.PI;
+  pGroup.add(nose);
+
+  const mouthGeo = new THREE.TorusGeometry(0.55, 0.1, 8, 12, Math.PI);
+  const mouth = new THREE.Mesh(mouthGeo, eyeMat);
+  mouth.position.set(0, -0.28, 1.2);
+  mouth.rotation.x = 0.22;
+  mouth.rotation.z = Math.PI;
+  pGroup.add(mouth);
+
+  // Inner candle light that flickers
+  const candle = new THREE.PointLight(0xffa726, 4.5, 14);
+  candle.position.set(0, 0, 0.3);
+  pGroup.add(candle);
+
+  pGroup.position.set(4.2, -1.8, 3.8);
+  pGroup.rotation.y = -0.45;
+  pGroup.scale.setScalar(1.25);
+
+  pGroup.userData = { candle, baseY: -1.8 };
+  return pGroup;
+}
+
+function createCuteGhost() {
+  const gGroup = new THREE.Group();
+  
+  const ghostMat = new THREE.MeshStandardMaterial({
+    color: 0xf1f5f9,
+    emissive: 0xdcfce7,
+    emissiveIntensity: 0.3,
+    roughness: 0.25,
+    transparent: true,
+    opacity: 0.92
+  });
+
+  const bodyGeo = new THREE.SphereGeometry(0.75, 24, 24);
+  bodyGeo.scale(1, 1.35, 0.95);
+  const body = new THREE.Mesh(bodyGeo, ghostMat);
+  gGroup.add(body);
+
+  const eyeMat = new THREE.MeshBasicMaterial({ color: 0x090e0b });
+  const eyeGeo = new THREE.SphereGeometry(0.09, 12, 12);
+  eyeGeo.scale(1, 1.5, 0.4);
+
+  const eL = new THREE.Mesh(eyeGeo, eyeMat);
+  eL.position.set(-0.22, 0.28, 0.7);
+  gGroup.add(eL);
+
+  const eR = new THREE.Mesh(eyeGeo, eyeMat);
+  eR.position.set(0.22, 0.28, 0.7);
+  gGroup.add(eR);
+
+  const mGeo = new THREE.SphereGeometry(0.1, 12, 12);
+  mGeo.scale(0.8, 1.6, 0.4);
+  const mouth = new THREE.Mesh(mGeo, eyeMat);
+  mouth.position.set(0, 0.02, 0.72);
+  gGroup.add(mouth);
+
+  const aura = new THREE.PointLight(0xb7df25, 2.0, 8);
+  aura.position.set(0, 0, 0.2);
+  gGroup.add(aura);
+
+  gGroup.position.set(-4.6, 0.8, 3.2);
+  gGroup.scale.setScalar(1.05);
+  gGroup.rotation.y = 0.35;
+
+  gGroup.userData = { baseY: 0.8, floatPhase: 2.2 };
+  return gGroup;
+}
+
+function createBat(i) {
+  const bat = new THREE.Group();
+  const mat = new THREE.MeshBasicMaterial({ color: 0x0d1410, side: THREE.DoubleSide });
+
+  const bodyGeo = new THREE.ConeGeometry(0.12, 0.5, 5);
+  const body = new THREE.Mesh(bodyGeo, mat);
+  body.rotation.x = Math.PI / 2;
+  bat.add(body);
+
+  const wingGeo = new THREE.BufferGeometry();
+  wingGeo.setAttribute('position', new THREE.BufferAttribute(new Float32Array([
+    0, 0, 0,
+    -0.85, 0.35, 0,
+    -0.5, -0.3, 0
+  ]), 3));
+  wingGeo.computeVertexNormals();
+  const leftWing = new THREE.Mesh(wingGeo, mat);
+  bat.add(leftWing);
+
+  const rWingGeo = new THREE.BufferGeometry();
+  rWingGeo.setAttribute('position', new THREE.BufferAttribute(new Float32Array([
+    0, 0, 0,
+    0.85, 0.35, 0,
+    0.5, -0.3, 0
+  ]), 3));
+  rWingGeo.computeVertexNormals();
+  const rightWing = new THREE.Mesh(rWingGeo, mat);
+  bat.add(rightWing);
+
+  bat.userData = {
+    leftWing,
+    rightWing,
+    orbitRadius: 7.5 + i * 1.5,
+    orbitSpeed: 0.35 + i * 0.1,
+    orbitAngle: (i / 4) * Math.PI * 2,
+    orbitY: 2.2 + (i % 2) * 1.5,
+    flapSpeed: 14 + i * 3
+  };
+  return bat;
+}
+
+function initThreeScene() {
+  const canvas = document.getElementById('webglCanvas');
+  if (!canvas || typeof THREE === 'undefined') return;
+
+  const width = window.innerWidth;
+  const height = window.innerHeight;
+
+  scene = new THREE.Scene();
+  scene.fog = new THREE.FogExp2(0x07110a, 0.035);
+
+  camera = new THREE.PerspectiveCamera(55, width / height, 0.1, 100);
+  camera.position.set(0, 0, 14);
+
+  renderer = new THREE.WebGLRenderer({ canvas, antialias: true, alpha: true });
+  renderer.setSize(width, height);
+  renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
+
+  // Lights: Ethereal Moonlight + Warm Amber Pumpkin Glow
+  const ambientLight = new THREE.AmbientLight(0x1a3322, 1.8);
+  scene.add(ambientLight);
+
+  const moonLight = new THREE.DirectionalLight(0xd4ef85, 2.4);
+  moonLight.position.set(5, 12, 8);
+  scene.add(moonLight);
+
+  const lanternLight = new THREE.PointLight(0xff7700, 3.5, 25);
+  lanternLight.position.set(0, -2, 5);
+  scene.add(lanternLight);
+
+  // 1. Giant Glowing Moon in background
+  const moonGeo = new THREE.SphereGeometry(3.6, 32, 32);
+  const moonMat = new THREE.MeshBasicMaterial({
+    color: 0xf6fde0,
+    transparent: true,
+    opacity: 0.95
+  });
+  const moonMesh = new THREE.Mesh(moonGeo, moonMat);
+  moonMesh.position.set(5.5, 4.2, -12);
+  scene.add(moonMesh);
+
+  // Moon halo glow
+  const haloGeo = new THREE.SphereGeometry(4.8, 32, 32);
+  const haloMat = new THREE.MeshBasicMaterial({
+    color: 0xb7df25,
+    transparent: true,
+    opacity: 0.18,
+    side: THREE.BackSide
+  });
+  const haloMesh = new THREE.Mesh(haloGeo, haloMat);
+  haloMesh.position.copy(moonMesh.position);
+  scene.add(haloMesh);
+
+  // 2. 3D Jack-o-Lantern Pumpkin
+  pumpkinMesh = createJackOLantern();
+  scene.add(pumpkinMesh);
+
+  // 3. Cute Floating Ghost
+  ghostMesh = createCuteGhost();
+  scene.add(ghostMesh);
+
+  // 4. Orbiting Bats
+  for (let i = 0; i < 4; i++) {
+    const bat = createBat(i);
+    bats.push(bat);
+    scene.add(bat);
+  }
+
+  // 5. 3D Floating Glowing Potion Bottles
+  const bottleConfigs = [
+    { x: -5.4, y: -2.0, z: 3.5, color: 0xb7df25, scale: 0.9, rotSpeed: 0.015 },
+    { x: 2.2, y: 2.6, z: 2.2, color: 0xf47a35, scale: 0.85, rotSpeed: -0.012 },
+    { x: -2.2, y: -2.8, z: 4.5, color: 0x06b6d4, scale: 0.85, rotSpeed: 0.02 },
+    { x: 5.6, y: 1.8, z: 1.5, color: 0xa855f7, scale: 0.75, rotSpeed: -0.018 }
+  ];
+
+  bottleConfigs.forEach((cfg, i) => {
+    const group = new THREE.Group();
+
+    // Bottle body (rounded flask)
+    const bodyGeo = new THREE.SphereGeometry(0.85, 24, 24);
+    const bodyMat = new THREE.MeshPhysicalMaterial({
+      color: cfg.color,
+      emissive: cfg.color,
+      emissiveIntensity: 0.45,
+      roughness: 0.15,
+      metalness: 0.1,
+      transmission: 0.65,
+      transparent: true,
+      opacity: 0.85
+    });
+    const bodyMesh = new THREE.Mesh(bodyGeo, bodyMat);
+    group.add(bodyMesh);
+
+    // Bottle neck
+    const neckGeo = new THREE.CylinderGeometry(0.24, 0.28, 0.75, 16);
+    const neckMesh = new THREE.Mesh(neckGeo, bodyMat);
+    neckMesh.position.y = 0.95;
+    group.add(neckMesh);
+
+    // Cork stopper
+    const corkGeo = new THREE.CylinderGeometry(0.26, 0.22, 0.35, 16);
+    const corkMat = new THREE.MeshStandardMaterial({ color: 0x4a2e18, roughness: 0.8 });
+    const corkMesh = new THREE.Mesh(corkGeo, corkMat);
+    corkMesh.position.y = 1.38;
+    group.add(corkMesh);
+
+    group.position.set(cfg.x, cfg.y, cfg.z);
+    group.scale.setScalar(cfg.scale);
+
+    group.userData = {
+      baseY: cfg.y,
+      rotSpeed: cfg.rotSpeed,
+      floatPhase: i * 1.5
+    };
+
+    scene.add(group);
+    potionBottles.push(group);
+  });
+
+  // 6. Magical Firefly & Fog Particle System
+  const particleCount = 240;
+  const particleGeo = new THREE.BufferGeometry();
+  const positions = new Float32Array(particleCount * 3);
+  const colors = new Float32Array(particleCount * 3);
+
+  const cLime = new THREE.Color(0xb7df25);
+  const cOrange = new THREE.Color(0xf47a35);
+
+  for (let i = 0; i < particleCount; i++) {
+    positions[i * 3] = (Math.random() - 0.5) * 26;
+    positions[i * 3 + 1] = (Math.random() - 0.5) * 16;
+    positions[i * 3 + 2] = (Math.random() - 0.5) * 18;
+
+    const chosenColor = Math.random() > 0.4 ? cLime : cOrange;
+    colors[i * 3] = chosenColor.r;
+    colors[i * 3 + 1] = chosenColor.g;
+    colors[i * 3 + 2] = chosenColor.b;
+  }
+
+  particleGeo.setAttribute('position', new THREE.BufferAttribute(positions, 3));
+  particleGeo.setAttribute('color', new THREE.BufferAttribute(colors, 3));
+
+  const particleMat = new THREE.PointsMaterial({
+    size: 0.18,
+    vertexColors: true,
+    transparent: true,
+    opacity: 0.75,
+    blending: THREE.AdditiveBlending
+  });
+
+  particlesMesh = new THREE.Points(particleGeo, particleMat);
+  scene.add(particlesMesh);
+
+  // Mouse parallax interaction
+  window.addEventListener('mousemove', (e) => {
+    mouseX = (e.clientX / window.innerWidth) * 2 - 1;
+    mouseY = -(e.clientY / window.innerHeight) * 2 + 1;
+  });
+
+  // Click sparks interaction
+  window.addEventListener('click', (e) => {
+    spawnMagicSparks(e.clientX, e.clientY);
+  });
+
+  window.addEventListener('resize', onWindowResize);
+  animateThreeScene();
+}
+
+function spawnMagicSparks(screenX, screenY) {
+  if (!scene) return;
+  const x = ((screenX / window.innerWidth) * 2 - 1) * 7;
+  const y = (-(screenY / window.innerHeight) * 2 + 1) * 4;
+
+  const sparkGeo = new THREE.BufferGeometry();
+  const count = 18;
+  const pos = new Float32Array(count * 3);
+  const vel = [];
+  for (let i = 0; i < count; i++) {
+    pos[i * 3] = x;
+    pos[i * 3 + 1] = y;
+    pos[i * 3 + 2] = 4;
+    vel.push({
+      vx: (Math.random() - 0.5) * 0.15,
+      vy: (Math.random() - 0.5) * 0.15,
+      vz: (Math.random() - 0.5) * 0.1
+    });
+  }
+  sparkGeo.setAttribute('position', new THREE.BufferAttribute(pos, 3));
+  const mat = new THREE.PointsMaterial({
+    size: 0.25,
+    color: Math.random() > 0.5 ? 0xb7df25 : 0xffaa00,
+    transparent: true,
+    opacity: 1,
+    blending: THREE.AdditiveBlending
+  });
+  const sparkMesh = new THREE.Points(sparkGeo, mat);
+  scene.add(sparkMesh);
+  sparkParticles.push({ mesh: sparkMesh, vel, life: 1.0 });
+}
+
+function onWindowResize() {
+  if (!camera || !renderer) return;
+  camera.aspect = window.innerWidth / window.innerHeight;
+  camera.updateProjectionMatrix();
+  renderer.setSize(window.innerWidth, window.innerHeight);
+}
+
+let clock = new THREE.Clock();
+function animateThreeScene() {
+  requestAnimationFrame(animateThreeScene);
+
+  const delta = clock.getDelta();
+  const time = clock.getElapsedTime();
+
+  // Smooth camera parallax
+  targetCameraX = mouseX * 1.8;
+  targetCameraY = mouseY * 1.2;
+  camera.position.x += (targetCameraX - camera.position.x) * 0.05;
+  camera.position.y += (targetCameraY - camera.position.y) * 0.05;
+  camera.lookAt(0, 0, 0);
+
+  // 1. Jack-o-lantern candle flicker & gentle bobbing
+  if (pumpkinMesh) {
+    pumpkinMesh.position.y = pumpkinMesh.userData.baseY + Math.sin(time * 1.5) * 0.15;
+    pumpkinMesh.rotation.y = -0.45 + Math.sin(time * 0.8) * 0.08;
+    if (pumpkinMesh.userData.candle) {
+      pumpkinMesh.userData.candle.intensity = 4.2 + Math.sin(time * 14) * 0.8 + Math.sin(time * 26) * 0.4;
+    }
+  }
+
+  // 2. Cute Ghost floating & swaying
+  if (ghostMesh) {
+    ghostMesh.position.y = ghostMesh.userData.baseY + Math.sin(time * 1.8 + ghostMesh.userData.floatPhase) * 0.25;
+    ghostMesh.rotation.z = Math.sin(time * 1.4) * 0.08;
+  }
+
+  // 3. Bats orbiting & flapping
+  bats.forEach((bat) => {
+    const ud = bat.userData;
+    ud.orbitAngle += ud.orbitSpeed * delta;
+    bat.position.x = 5.5 + Math.cos(ud.orbitAngle) * ud.orbitRadius;
+    bat.position.z = -12 + Math.sin(ud.orbitAngle) * ud.orbitRadius;
+    bat.position.y = ud.orbitY + Math.sin(time * 2 + ud.orbitAngle) * 0.6;
+    bat.rotation.y = -ud.orbitAngle - Math.PI / 2;
+
+    const flap = Math.sin(time * ud.flapSpeed) * 0.55;
+    if (ud.leftWing) ud.leftWing.rotation.z = flap;
+    if (ud.rightWing) ud.rightWing.rotation.z = -flap;
+  });
+
+  // 4. Float & rotate 3D potion bottles
+  potionBottles.forEach((bottle) => {
+    bottle.rotation.y += bottle.userData.rotSpeed;
+    bottle.rotation.z = Math.sin(time + bottle.userData.floatPhase) * 0.12;
+    bottle.position.y = bottle.userData.baseY + Math.sin(time * 1.2 + bottle.userData.floatPhase) * 0.35;
+  });
+
+  // 5. Float magical fireflies
+  if (particlesMesh) {
+    const pos = particlesMesh.geometry.attributes.position.array;
+    for (let i = 1; i < pos.length; i += 3) {
+      pos[i] += Math.sin(time + pos[i - 1]) * 0.012;
+      if (pos[i] > 10) pos[i] = -8;
+    }
+    particlesMesh.geometry.attributes.position.needsUpdate = true;
+  }
+
+  // 6. Update spark particles
+  for (let k = sparkParticles.length - 1; k >= 0; k--) {
+    const sp = sparkParticles[k];
+    sp.life -= delta * 1.8;
+    if (sp.life <= 0) {
+      scene.remove(sp.mesh);
+      sparkParticles.splice(k, 1);
+    } else {
+      sp.mesh.material.opacity = sp.life;
+      const pArr = sp.mesh.geometry.attributes.position.array;
+      for (let j = 0; j < sp.vel.length; j++) {
+        pArr[j * 3] += sp.vel[j].vx;
+        pArr[j * 3 + 1] += sp.vel[j].vy;
+        pArr[j * 3 + 2] += sp.vel[j].vz;
+      }
+      sp.mesh.geometry.attributes.position.needsUpdate = true;
+    }
+  }
+
+  renderer.render(scene, camera);
+}
+
+// -------------------------------------------------------------
+// TRANSITION: ENTER PANTRY DASHBOARD
+// -------------------------------------------------------------
+function enterPantryDashboard() {
+  const home = document.getElementById('cinematicHome');
+  home.classList.add('dismissed');
+  localStorage.setItem('has_entered_pantry', '1');
+  setTimeout(() => {
+    switchPage('overview');
+  }, 350);
+}
+
+function returnToHomeScene() {
+  const home = document.getElementById('cinematicHome');
+  home.classList.remove('dismissed');
+}
+
+
+// 2. DASHBOARD DATA & APIS
+// -------------------------------------------------------------
 const defaultIngredients = [
   {"name":"Crystal Dust","category":"Minerals & Gems","current_stock":250,"safety_stock":50,"supplier":"Starlight Alchemical Guild","lead_time_days":3,"unit":"ounces"},
   {"name":"Dragon Root","category":"Roots & Bark","current_stock":85,"safety_stock":25,"supplier":"Wyrmfang Mountain Foragers","lead_time_days":7,"unit":"roots"},
@@ -1330,16 +1772,31 @@ const defaultIngredients = [
   {"name":"Witch Hazel","category":"Flora & Herbs","current_stock":180,"safety_stock":40,"supplier":"Shadowbrook Herbalists","lead_time_days":2,"unit":"bundles"}
 ];
 
-let inventory = [...defaultIngredients];
-let sales = [
+const defaultSales = [
   { date: '2026-10-31', store_id: 'HEXLEY-001', product_name: 'Moonflower', quantity_sold: 27 },
   { date: '2026-10-31', store_id: 'HEXLEY-001', product_name: 'Enchanted Mushroom', quantity_sold: 41 },
   { date: '2026-10-31', store_id: 'HEXLEY-001', product_name: 'Mystic Water', quantity_sold: 65 },
   { date: '2026-10-31', store_id: 'HEXLEY-001', product_name: 'Dragon Root', quantity_sold: 21 },
-  { date: '2026-10-31', store_id: 'HEXLEY-001', product_name: 'Phoenix Feather', quantity_sold: 12 },
-  { date: '2026-10-30', store_id: 'HEXLEY-001', product_name: 'Crystal Dust', quantity_sold: 48 },
-  { date: '2026-10-30', store_id: 'HEXLEY-001', product_name: 'Shadow Berries', quantity_sold: 33 }
+  { date: '2026-10-31', store_id: 'HEXLEY-001', product_name: 'Phoenix Feather', quantity_sold: 14 },
+  { date: '2026-10-31', store_id: 'HEXLEY-001', product_name: 'Bat Wings', quantity_sold: 38 },
+  { date: '2026-10-31', store_id: 'HEXLEY-001', product_name: 'Mandrake Root', quantity_sold: 19 },
+  { date: '2026-10-31', store_id: 'HEXLEY-001', product_name: 'Crystal Dust', quantity_sold: 33 },
+  { date: '2026-10-31', store_id: 'HEXLEY-001', product_name: 'Shadow Essence', quantity_sold: 29 },
+  { date: '2026-10-31', store_id: 'HEXLEY-001', product_name: 'Nightshade Extract', quantity_sold: 46 },
+  { date: '2026-10-30', store_id: 'HEXLEY-001', product_name: 'Moonflower', quantity_sold: 22 },
+  { date: '2026-10-30', store_id: 'HEXLEY-001', product_name: 'Enchanted Mushroom', quantity_sold: 35 },
+  { date: '2026-10-30', store_id: 'HEXLEY-001', product_name: 'Phoenix Feather', quantity_sold: 11 },
+  { date: '2026-10-30', store_id: 'HEXLEY-001', product_name: 'Mystic Water', quantity_sold: 58 },
+  { date: '2026-10-30', store_id: 'HEXLEY-001', product_name: 'Dragon Root', quantity_sold: 18 },
+  { date: '2026-10-29', store_id: 'HEXLEY-001', product_name: 'Bat Wings', quantity_sold: 31 },
+  { date: '2026-10-29', store_id: 'HEXLEY-001', product_name: 'Mandrake Root', quantity_sold: 16 },
+  { date: '2026-10-29', store_id: 'HEXLEY-001', product_name: 'Crystal Dust', quantity_sold: 27 },
+  { date: '2026-10-28', store_id: 'HEXLEY-001', product_name: 'Moonflower', quantity_sold: 19 },
+  { date: '2026-10-28', store_id: 'HEXLEY-001', product_name: 'Nightshade Extract', quantity_sold: 39 }
 ];
+
+let inventory = [...defaultIngredients];
+let sales = [...defaultSales];
 let prophecies = defaultIngredients.map(item => ({
   product_name: item.name,
   category: item.category,
@@ -1367,7 +1824,6 @@ let overviewChart = null;
 let forecastChart = null;
 let categoryChart = null;
 let topSellersChart = null;
-
 let currentChartTimeframe = 'daily';
 
 const tourSteps = [
@@ -1381,7 +1837,10 @@ const tourSteps = [
 let tourIndex = 0;
 
 window.addEventListener('DOMContentLoaded', async () => {
-  // Render default data immediately so screen is NEVER empty!
+  // 1. Initialize 3D scene
+  initThreeScene();
+
+  // 2. Initial renders for all views
   renderOverview();
   renderInventory();
   renderSales();
@@ -1393,12 +1852,8 @@ window.addEventListener('DOMContentLoaded', async () => {
 
   safeCreateIcons();
 
-  // Then fetch live MongoDB data to update in background
+  // 3. Connect real live MongoDB backend
   await loadAllData();
-
-  if (!localStorage.getItem('skoopy_tour_done')) {
-    setTimeout(openTour, 900);
-  }
 });
 
 function safeCreateIcons() {
@@ -1410,18 +1865,24 @@ function safeCreateIcons() {
 async function loadAllData() {
   try {
     const invRes = await fetch('/api/inventory').then(r => r.json()).catch(() => null);
-    if (invRes && invRes.ingredients) inventory = invRes.ingredients;
+    if (invRes && invRes.ingredients && invRes.ingredients.length > 0) {
+      inventory = invRes.ingredients;
+    } else if (!inventory || inventory.length === 0) {
+      inventory = [...defaultIngredients];
+    }
 
     const salesRes = await fetch('/api/sales?limit=100').then(r => r.json()).catch(() => null);
-    if (salesRes && salesRes.sales) sales = salesRes.sales;
+    if (salesRes && salesRes.sales && salesRes.sales.length > 0) {
+      sales = salesRes.sales;
+    } else if (!sales || sales.length === 0) {
+      sales = [...defaultSales];
+    }
 
     const prophRes = await fetch('/api/prophecy').then(r => r.json()).catch(() => null);
-    if (prophRes && prophRes.prophecies) prophecies = prophRes.prophecies;
+    if (prophRes && prophRes.prophecies && prophRes.prophecies.length > 0) prophecies = prophRes.prophecies;
 
     const anomRes = await fetch('/api/anomalies').then(r => r.json()).catch(() => null);
-    if (anomRes) {
-      anomalies = anomRes.detected_anomalies || anomRes.anomalies || anomalies;
-    }
+    if (anomRes) anomalies = anomRes.detected_anomalies || anomRes.anomalies || anomalies;
 
     const curseRes = await fetch('/api/curse').then(r => r.json()).catch(() => null);
     if (curseRes) curseActive = curseRes.curse_active;
@@ -1441,13 +1902,10 @@ async function loadAllData() {
 
     safeCreateIcons();
   } catch (err) {
-    console.warn('Backend load warning:', err);
+    console.warn('Backend load note:', err);
   }
 }
 
-// -------------------------------------------------------------
-// NAVIGATION (Guaranteed Re-render on Every Click)
-// -------------------------------------------------------------
 function switchPage(pageKey) {
   document.querySelectorAll('.view-panel').forEach(p => p.style.display = 'none');
   document.querySelectorAll('.nav-item').forEach(n => n.classList.remove('active'));
@@ -1458,7 +1916,6 @@ function switchPage(pageKey) {
   if (targetView) targetView.style.display = 'block';
   if (targetNav) targetNav.classList.add('active');
 
-  // ALWAYS re-render the view when switched!
   if (pageKey === 'overview') {
     renderOverview();
     setTimeout(renderOverviewChart, 80);
@@ -1482,9 +1939,7 @@ function switchPage(pageKey) {
   safeCreateIcons();
 }
 
-// -------------------------------------------------------------
-// OVERVIEW RENDERING
-// -------------------------------------------------------------
+// Overview rendering
 function renderOverview() {
   document.getElementById('statTotalItems').textContent = inventory.length;
   const totalStock = inventory.reduce((acc, i) => acc + (i.current_stock || 0), 0);
@@ -1494,7 +1949,6 @@ function renderOverview() {
   const critical = inventory.filter(i => (i.current_stock || 0) <= (i.safety_stock || 25));
   document.getElementById('statCriticalCount').textContent = critical.length;
 
-  // Alerts
   const alertsList = document.getElementById('overviewAlertsList');
   const urgentProph = prophecies.filter(p => (p.recommended_reorder_qty || 0) > 0);
   if (!urgentProph.length) {
@@ -1512,7 +1966,6 @@ function renderOverview() {
     `).join('');
   }
 
-  // On The Shelves
   const prodList = document.getElementById('overviewProductsList');
   prodList.innerHTML = inventory.slice(0, 4).map(item => {
     const isCrit = (item.current_stock || 0) <= (item.safety_stock || 25);
@@ -1592,67 +2045,72 @@ function renderOverviewChart() {
         }
       }
     });
-  } catch(e) {
-    console.warn('Overview chart render note:', e);
+  } catch(e) {}
+}
+
+// Inventory rendering
+function renderInventory() {
+  try {
+    const tbody = document.getElementById('inventoryTableBody');
+    if (!tbody) return;
+    const q = (document.getElementById('invSearchInput')?.value || '').toLowerCase();
+    const curseItems = ['Moonflower', 'Phoenix Feather', 'Enchanted Mushroom'];
+
+    const items = (inventory && inventory.length > 0) ? inventory : defaultIngredients;
+    const filtered = items.filter(i => (i.name || '').toLowerCase().includes(q) || (i.category || '').toLowerCase().includes(q));
+    const badge = document.getElementById('invCountBadge');
+    if (badge) badge.textContent = `${filtered.length} ITEMS`;
+
+    tbody.innerHTML = filtered.map(item => {
+      const isCrit = (item.current_stock || 0) <= (item.safety_stock || 25);
+      const proph = (prophecies || []).find(p => p.product_name === item.name) || {};
+      const isCurseItem = curseActive && curseItems.includes(item.name);
+
+      return `
+        <tr>
+          <td>
+            <b style="color:#fff;">${item.name}</b>
+            ${isCurseItem ? '<span style="font-size:9px;color:#f47a35;margin-left:6px;font-weight:800;background:rgba(244,122,53,0.15);padding:2px 6px;border-radius:4px;border:1px solid #f47a35;">3× SURGE</span>' : ''}
+          </td>
+          <td style="color:#8fa08e;">${item.category || 'Reagent'}</td>
+          <td class="font-mono"><b style="color:#fff;">${item.current_stock}</b> <span style="color:#8fa08e;font-size:12px;">${item.unit || 'units'}</span></td>
+          <td class="font-mono" style="color:#8fa08e;">${item.safety_stock || 25}</td>
+          <td class="font-mono" style="color:${isCrit ? '#f47a35' : '#c4cbb9'};font-weight:${isCrit ? '700' : '400'};">${proph.depletion_date || (isCrit ? 'Immediate' : 'Safe')}</td>
+          <td><span class="stock-tag ${isCrit ? 'critical' : ''}">${isCrit ? 'CRITICAL' : 'HEALTHY'}</span></td>
+          <td style="text-align:right;">
+            <button class="text-btn" onclick="quickSale('${item.name}', 1)" style="margin-right:10px;">-1 Sell</button>
+            <button class="text-btn" onclick="quickRestock('${item.name}', 25)" style="margin-right:10px;">+25 Restock</button>
+            <button class="text-btn" style="color:#ef4444;" onclick="deleteItem('${item.name}')">Delete</button>
+          </td>
+        </tr>
+      `;
+    }).join('');
+  } catch (e) {
+    console.error('renderInventory error:', e);
   }
 }
 
-// -------------------------------------------------------------
-// INVENTORY RENDERING
-// -------------------------------------------------------------
-function renderInventory() {
-  const tbody = document.getElementById('inventoryTableBody');
-  const q = (document.getElementById('invSearchInput')?.value || '').toLowerCase();
-  const curseItems = ['Moonflower', 'Phoenix Feather', 'Enchanted Mushroom'];
-
-  const filtered = inventory.filter(i => i.name.toLowerCase().includes(q) || (i.category || '').toLowerCase().includes(q));
-  document.getElementById('invCountBadge').textContent = `${filtered.length} ITEMS`;
-
-  tbody.innerHTML = filtered.map(item => {
-    const isCrit = (item.current_stock || 0) <= (item.safety_stock || 25);
-    const proph = prophecies.find(p => p.product_name === item.name) || {};
-    const isCurseItem = curseActive && curseItems.includes(item.name);
-
-    return `
-      <tr>
-        <td>
-          <b style="color:#fff;">${item.name}</b>
-          ${isCurseItem ? '<span style="font-size:9px;color:#f47a35;margin-left:6px;font-weight:800;">3× SURGE</span>' : ''}
-        </td>
-        <td style="color:#8fa08e;">${item.category || 'Reagent'}</td>
-        <td class="font-mono"><b style="color:#fff;">${item.current_stock}</b> ${item.unit || ''}</td>
-        <td class="font-mono" style="color:#8fa08e;">${item.safety_stock || 25}</td>
-        <td class="font-mono" style="color:${isCrit ? '#f47a35' : '#c4cbb9'};">${proph.depletion_date || 'Safe'}</td>
-        <td><span class="stock-tag ${isCrit ? 'critical' : ''}">${isCrit ? 'CRITICAL' : 'HEALTHY'}</span></td>
-        <td style="text-align:right;">
-          <button class="text-btn" onclick="quickSale('${item.name}', 1)" style="margin-right:10px;">-1 Sell</button>
-          <button class="text-btn" onclick="quickRestock('${item.name}', 25)" style="margin-right:10px;">+25 Restock</button>
-          <button class="text-btn" style="color:#ef4444;" onclick="deleteItem('${item.name}')">Delete</button>
-        </td>
-      </tr>
-    `;
-  }).join('');
-}
-
-// -------------------------------------------------------------
-// SALES RENDERING
-// -------------------------------------------------------------
+// Sales rendering
 function renderSales() {
-  const tbody = document.getElementById('salesTableBody');
-  tbody.innerHTML = sales.slice(0, 25).map(s => `
-    <tr>
-      <td class="font-mono" style="color:#8fa08e;">${s.date}</td>
-      <td style="color:#fff;font-weight:600;">${s.product_name}</td>
-      <td class="font-mono" style="color:#b7df25;font-weight:700;">-${s.quantity_sold || s.quantity}</td>
-      <td class="font-mono" style="color:#8fa08e;">${s.store_id || 'HEXLEY-001'}</td>
-      <td><span class="stock-tag">AUDITED</span></td>
-    </tr>
-  `).join('');
+  try {
+    const tbody = document.getElementById('salesTableBody');
+    if (!tbody) return;
+    const items = (sales && sales.length > 0) ? sales : defaultSales;
+    tbody.innerHTML = items.slice(0, 30).map(s => `
+      <tr>
+        <td class="font-mono" style="color:#8fa08e;">${s.date || '2026-10-31'}</td>
+        <td style="color:#fff;font-weight:600;">${s.product_name}</td>
+        <td class="font-mono" style="color:#b7df25;font-weight:700;">-${s.quantity_sold || s.quantity || 1}</td>
+        <td class="font-mono" style="color:#8fa08e;">${s.store_id || 'HEXLEY-001'}</td>
+        <td><span class="stock-tag">AUDITED</span></td>
+      </tr>
+    `).join('');
+  } catch (e) {
+    console.error('renderSales error:', e);
+  }
 }
 
-// -------------------------------------------------------------
-// PROPHECY FORECAST RENDERING
-// -------------------------------------------------------------
+// Prophecy rendering
 function renderProphecy() {
   const sel = document.getElementById('forecastProductSelect');
   sel.innerHTML = inventory.map(i => `<option value="${i.name}">${i.name}</option>`).join('');
@@ -1666,9 +2124,8 @@ async function renderForecastChart() {
   try {
     const res = await fetch(`/api/prophecy/forecast/${encodeURIComponent(prod)}?days=14`).then(r => r.json());
     const days = res.daily_projections || res.forecast || [];
-
     const canvas = document.getElementById('prophecyForecastCanvas');
-    if (!canvas) return;
+    if (!canvas || typeof Chart === 'undefined') return;
 
     if (forecastChart) forecastChart.destroy();
     forecastChart = new Chart(canvas.getContext('2d'), {
@@ -1693,14 +2150,10 @@ async function renderForecastChart() {
         }
       }
     });
-  } catch (e) {
-    console.error('Forecast error', e);
-  }
+  } catch (e) {}
 }
 
-// -------------------------------------------------------------
-// RESTOCK RENDERING
-// -------------------------------------------------------------
+// Restock rendering
 function renderRestock() {
   const tbody = document.getElementById('restockTableBody');
   tbody.innerHTML = prophecies.map(p => {
@@ -1724,9 +2177,7 @@ function renderRestock() {
   }).join('');
 }
 
-// -------------------------------------------------------------
-// ANOMALIES RENDERING
-// -------------------------------------------------------------
+// Anomalies rendering
 function renderAnomalies(anomData) {
   const metrics = anomData.metrics || {};
   document.getElementById('anomPrecision').textContent = ((metrics.precision || 1.0) * 100).toFixed(0) + '%';
@@ -1755,63 +2206,60 @@ function renderAnomalies(anomData) {
   `).join('');
 }
 
-// -------------------------------------------------------------
-// ANALYTICS CHARTS RENDERING
-// -------------------------------------------------------------
+// Analytics charts rendering
 function renderAnalyticsCharts() {
-  const catCanvas = document.getElementById('categoryDistCanvas');
-  const catDist = crystalSummary.category_distribution || { 'Flora': 4, 'Reagents': 3, 'Minerals': 3 };
+  try {
+    const catCanvas = document.getElementById('categoryDistCanvas');
+    const catDist = crystalSummary.category_distribution || { 'Flora': 4, 'Reagents': 3, 'Minerals': 3 };
 
-  if (categoryChart) categoryChart.destroy();
-  categoryChart = new Chart(catCanvas.getContext('2d'), {
-    type: 'doughnut',
-    data: {
-      labels: Object.keys(catDist),
-      datasets: [{
-        data: Object.values(catDist),
-        backgroundColor: ['#b7df25', '#f47a35', '#2dd4bf', '#a78bfa'],
-        borderWidth: 0
-      }]
-    },
-    options: {
-      responsive: true,
-      maintainAspectRatio: false,
-      plugins: { legend: { position: 'bottom', labels: { color: '#8fa08e', font: { size: 10 } } } }
-    }
-  });
-
-  const sellersCanvas = document.getElementById('topSellersCanvas');
-  const topSellers = crystalSummary.top_historical_sellers || {};
-
-  if (topSellersChart) topSellersChart.destroy();
-  topSellersChart = new Chart(sellersCanvas.getContext('2d'), {
-    type: 'bar',
-    data: {
-      labels: Object.keys(topSellers),
-      datasets: [{
-        label: 'Historical Units Sold',
-        data: Object.values(topSellers),
-        backgroundColor: 'rgba(244, 122, 53, 0.75)',
-        borderRadius: 5
-      }]
-    },
-    options: {
-      responsive: true,
-      maintainAspectRatio: false,
-      plugins: { legend: { display: false } },
-      scales: {
-        x: { grid: { color: 'rgba(255,255,255,0.06)' }, ticks: { color: '#8fa08e', font: { size: 9 } } },
-        y: { grid: { color: 'rgba(255,255,255,0.06)' }, ticks: { color: '#8fa08e' } }
+    if (categoryChart) categoryChart.destroy();
+    categoryChart = new Chart(catCanvas.getContext('2d'), {
+      type: 'doughnut',
+      data: {
+        labels: Object.keys(catDist),
+        datasets: [{
+          data: Object.values(catDist),
+          backgroundColor: ['#b7df25', '#f47a35', '#2dd4bf', '#a78bfa'],
+          borderWidth: 0
+        }]
+      },
+      options: {
+        responsive: true,
+        maintainAspectRatio: false,
+        plugins: { legend: { position: 'bottom', labels: { color: '#8fa08e', font: { size: 10 } } } }
       }
-    }
-  });
+    });
+
+    const sellersCanvas = document.getElementById('topSellersCanvas');
+    const topSellers = crystalSummary.top_historical_sellers || {};
+
+    if (topSellersChart) topSellersChart.destroy();
+    topSellersChart = new Chart(sellersCanvas.getContext('2d'), {
+      type: 'bar',
+      data: {
+        labels: Object.keys(topSellers),
+        datasets: [{
+          label: 'Historical Units Sold',
+          data: Object.values(topSellers),
+          backgroundColor: 'rgba(244, 122, 53, 0.75)',
+          borderRadius: 5
+        }]
+      },
+      options: {
+        responsive: true,
+        maintainAspectRatio: false,
+        plugins: { legend: { display: false } },
+        scales: {
+          x: { grid: { color: 'rgba(255,255,255,0.06)' }, ticks: { color: '#8fa08e', font: { size: 9 } } },
+          y: { grid: { color: 'rgba(255,255,255,0.06)' }, ticks: { color: '#8fa08e' } }
+        }
+      }
+    });
+  } catch(e) {}
 }
 
-// -------------------------------------------------------------
-// MANAGEMENT RENDERING
-// -------------------------------------------------------------
+// Management rendering
 function renderManagement() {
-  // Categories
   const catCounts = {};
   inventory.forEach(i => {
     const c = i.category || 'General';
@@ -1825,7 +2273,6 @@ function renderManagement() {
     </article>
   `).join('');
 
-  // Suppliers
   const supMap = {};
   inventory.forEach(i => {
     const s = i.supplier || 'Shadowbrook Herbalists';
@@ -1839,7 +2286,6 @@ function renderManagement() {
     </article>
   `).join('');
 
-  // History audit
   document.getElementById('stockAuditPanel').innerHTML = sales.slice(0, 15).map(s => `
     <div style="padding:10px 0;border-bottom:1px solid rgba(255,255,255,0.06);display:flex;justify-content:space-between;font-size:11.5px;font-family:'Roboto Mono',monospace;">
       <span style="color:#aab89e;">${s.date} — Customer Order: ${s.product_name}</span>
@@ -1848,9 +2294,7 @@ function renderManagement() {
   `).join('');
 }
 
-// -------------------------------------------------------------
-// ACTIONS: SALES, RESTOCK, DELETE
-// -------------------------------------------------------------
+// Quick operations
 async function quickSale(productName, quantity) {
   try {
     const res = await fetch('/api/sales', {
@@ -1914,9 +2358,7 @@ async function deleteItem(name) {
   }
 }
 
-// -------------------------------------------------------------
-// MIDNIGHT CURSE TOGGLE
-// -------------------------------------------------------------
+// Midnight Curse
 async function toggleCurse() {
   try {
     const res = await fetch('/api/curse/toggle', {
@@ -1946,9 +2388,7 @@ function updateCurseUI() {
   }
 }
 
-// -------------------------------------------------------------
-// MODALS
-// -------------------------------------------------------------
+// Modals
 function populateSelects() {
   const sel = document.getElementById('modalSaleProduct');
   if (sel) sel.innerHTML = inventory.map(i => `<option value="${i.name}">${i.name} (${i.current_stock} in stock)</option>`).join('');
@@ -1987,9 +2427,7 @@ async function submitAdd() {
   }
 }
 
-// -------------------------------------------------------------
-// INTERACTIVE TOUR
-// -------------------------------------------------------------
+// Tour
 function openTour() {
   tourIndex = 0;
   renderTour();
@@ -2017,9 +2455,6 @@ function closeTour() {
   showToast('Tour completed. The pantry is yours!');
 }
 
-// -------------------------------------------------------------
-// TOAST NOTIFICATIONS
-// -------------------------------------------------------------
 let toastTimer;
 function showToast(msg) {
   const t = document.getElementById('toast');
